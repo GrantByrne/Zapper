@@ -1,0 +1,40 @@
+@page "/bluetooth"
+@using Zapper.Core
+
+<h1>Bluetooth Devices</h1>
+
+<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <td>Name</td>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var name in _bluetoothDevicesNames.OrderBy(p => p))
+    {
+        <tr>
+            <td>@name</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code
+{
+    private readonly BluetoothManager _bluetoothManager = new();
+
+    private List<string> _bluetoothDevicesNames = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await _bluetoothManager.StartUp();
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        _bluetoothDevicesNames = (await _bluetoothManager.GetBluetoothDevices()).ToList();
+    }
+}
