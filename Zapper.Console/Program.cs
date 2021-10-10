@@ -1,37 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using HashtagChris.DotNetBlueZ;
-using HashtagChris.DotNetBlueZ.Extensions;
+﻿using Zapper.Core;
 
 namespace Zapper.Console
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            System.Console.WriteLine("Hello World!");
+            var devices = DeviceManager.Get();
 
-            var adapter = (await BlueZManager.GetAdaptersAsync()).FirstOrDefault();
-
-            var devices = await adapter.GetDevicesAsync();
-
-            foreach (var d in devices)
+            foreach (var device in devices)
             {
-                var name = "";
-
-                try
-                {
-                    name = await d.GetNameAsync();
-                }
-                catch (Exception)
-                {
-                }
-                
-                System.Console.WriteLine($"Found device! {name}");
+                System.Console.WriteLine(device.Name);
             }
 
-            System.Console.ReadKey();
+            System.Console.ReadLine();
         }
     }
 }
