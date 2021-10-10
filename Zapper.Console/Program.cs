@@ -8,32 +8,13 @@ namespace Zapper.Console
     {
         public static void Main(string[] args)
         {
-            var devices = DeviceManager.Get()
-                .ToArray();
+            using var lol = new Lol();
 
-            for (var x = 0; x < devices.Length; x++)
-            {
-                var device = devices[x];
-                System.Console.WriteLine($"{x}.");
-                var details = DisplayDeviceDetails(device);
-                System.Console.WriteLine(details);
-                System.Console.WriteLine();
-            }
-
-            var choice = System.Console.ReadLine();
-
-            if (!int.TryParse(choice, out var index))
-            {
-                return;
-            }
-
-            var d = devices[index];
-
-            using var lol = new DeviceInputReader(d);
-            
             lol.OnKeyPress += LolOnOnKeyPress;
 
             System.Console.ReadLine();
+
+            lol.OnKeyPress -= LolOnOnKeyPress;
         }
 
         private static void LolOnOnKeyPress(KeyPressEvent e)

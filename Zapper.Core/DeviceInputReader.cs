@@ -1,22 +1,47 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Zapper.Core
 {
-    public class KeyPressEvent : EventArgs
+    public class Lol : IDisposable
     {
-        public KeyPressEvent(Keycode code, KeyState state)
+        private List<DeviceInputReader> _readers = new();
+        
+        public event DeviceInputReader.RaiseKeyPress OnKeyPress;
+
+        public Lol()
         {
-            Code = code;
-            State = state;
+            var files = Directory.GetFiles("/dev/input/", "event*");
+
+            foreach (var file in files)
+            {
+                var reader = new DeviceInputReader(file);
+                
+                reader.OnKeyPress += ReaderOnOnKeyPress;
+
+                _readers.Add(reader);
+            }
         }
 
-        public Keycode Code { get; }
-        public KeyState State { get; }
-    }
+        private void ReaderOnOnKeyPress(KeyPressEvent e)
+        {
+            OnKeyPress?.Invoke(e);
+        }
 
+        public void Dispose()
+        {
+            foreach (var d in _readers)
+            {
+                d.OnKeyPress -= ReaderOnOnKeyPress;
+                d.Dispose();
+            }
+
+            _readers = null;
+        }
+    }
+    
     public class DeviceInputReader : IDisposable
     {
         public delegate void RaiseKeyPress(KeyPressEvent e);
@@ -24,17 +49,15 @@ namespace Zapper.Core
         public event RaiseKeyPress OnKeyPress;
 
         private const int BufferLength = 24;
-
-        private readonly FileStream _stream;
+        
         private readonly byte[] _buffer = new byte[BufferLength];
+        
+        private FileStream _stream;
 
         private bool _disposing;
 
-        public DeviceInputReader(LinuxDevice device)
+        public DeviceInputReader(string path)
         {
-            var e = device.Handlers.First(e => e.StartsWith("event"));
-            var path = $"/dev/input/{e}";
-
             _stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
             Task.Run(Run);
@@ -70,6 +93,7 @@ namespace Zapper.Core
         {
             _disposing = true;
             _stream.Dispose();
+            _stream = null;
         }
     }
 }
