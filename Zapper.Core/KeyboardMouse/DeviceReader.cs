@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
-    public static class DeviceManager
+    public static class DeviceReader
     {
         public static IEnumerable<LinuxDevice> Get(string path = "/proc/bus/input/devices")
         {

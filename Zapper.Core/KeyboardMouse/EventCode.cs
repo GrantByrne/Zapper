@@ -1,6 +1,6 @@
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
-    public enum Keycode
+    public enum EventCode
     {
         Esc = 1,
         Key1,

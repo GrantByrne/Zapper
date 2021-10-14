@@ -1,4 +1,4 @@
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
     public enum KeyState
     {

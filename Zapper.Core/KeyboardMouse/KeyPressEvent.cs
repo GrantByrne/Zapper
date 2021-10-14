@@ -1,16 +1,16 @@
 using System;
 
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
     public class KeyPressEvent : EventArgs
     {
-        public KeyPressEvent(Keycode code, KeyState state)
+        public KeyPressEvent(EventCode code, KeyState state)
         {
             Code = code;
             State = state;
         }
 
-        public Keycode Code { get; }
+        public EventCode Code { get; }
         
         public KeyState State { get; }
     }

@@ -1,6 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
-using Zapper.Core.Keyboard;
+using Zapper.Core.KeyboardMouse;
 
 namespace Zapper.Core.Test
 {
@@ -11,7 +11,7 @@ namespace Zapper.Core.Test
         {
             var path = "./devices.txt";
             
-            var result = DeviceManager.Get(path);
+            var result = DeviceReader.Get(path);
             
             Assert.IsTrue(result.Any(), "Expected to get some devices back");
         }

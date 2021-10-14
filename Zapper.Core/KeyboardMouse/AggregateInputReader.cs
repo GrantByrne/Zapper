@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
-    public class AllDeviceInputManager : IDisposable
+    public class AggregateInputReader : IDisposable
     {
-        private List<DeviceInputReader> _readers = new();
+        private List<InputReader> _readers = new();
         
-        public event DeviceInputReader.RaiseKeyPress OnKeyPress;
+        public event InputReader.RaiseKeyPress OnKeyPress;
 
-        public AllDeviceInputManager()
+        public AggregateInputReader()
         {
             var files = Directory.GetFiles("/dev/input/", "event*");
 
             foreach (var file in files)
             {
-                var reader = new DeviceInputReader(file);
+                var reader = new InputReader(file);
                 
                 reader.OnKeyPress += ReaderOnOnKeyPress;
 

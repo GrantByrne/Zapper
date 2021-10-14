@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using System.Text;
-using Zapper.Core;
+﻿using Zapper.Core.KeyboardMouse;
+using Zapper.Core.Mouse;
 
 namespace Zapper.Console
 {
@@ -8,7 +7,7 @@ namespace Zapper.Console
     {
         public static void Main(string[] args)
         {
-            var remoteInputHandler = new RemoteEventHandler();
+            var lol = new AggregateInputReader();
 
             System.Console.ReadLine();
         }

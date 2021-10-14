@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Zapper.Core.Keyboard
+namespace Zapper.Core.KeyboardMouse
 {
     public class LinuxDevice
     {

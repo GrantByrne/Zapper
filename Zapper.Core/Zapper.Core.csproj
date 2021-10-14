@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <Folder Include="Infrared" />
-      <Folder Include="Mouse" />
       <Folder Include="WebOs" />
     </ItemGroup>
 
