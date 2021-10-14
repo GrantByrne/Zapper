@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Zapper.Core
 {
-    public class DeviceManager
+    public static class DeviceManager
     {
         public static IEnumerable<LinuxDevice> Get(string path = "/proc/bus/input/devices")
         {

@@ -1,7 +1,7 @@
-@page "/bluetooth"
+@page "/AddDevice"
 @using Zapper.Core
 
-<h1>Bluetooth Devices</h1>
+<h1>Add Device</h1>
 
 <button class="btn btn-primary" @onclick="Refresh">Refresh</button>
 
@@ -23,6 +23,9 @@
 
 @code
 {
+    private bool _displayBluetoothConfig;
+    private bool _displayIrConfig;
+    
     private readonly BluetoothManager _bluetoothManager = new();
 
     private List<string> _bluetoothDevicesNames = new();

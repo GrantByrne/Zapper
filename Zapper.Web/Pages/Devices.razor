@@ -1,0 +1,45 @@
+@page "/Devices"
+@using Zapper.Web.Data
+
+<h1>Devices</h1>
+
+<div class="row" style="margin-bottom:7px">
+    <div class="col-12">
+        <button class="btn btn-primary pull-right" style="float:right">Add Device</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>On?</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var device in _devices)
+                {
+                    <tr>
+                        <td>
+                            <a href="#">@device.Name</a>
+                        </td>
+                        <td>@(device.On ? "Yes" : "No")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+    </div>
+</div>
+
+@code
+{
+    private readonly DeviceManager _deviceManager = new();
+
+    private Device[] _devices = Array.Empty<Device>();
+
+    protected override void OnInitialized()
+    {
+        _devices = _deviceManager.Get();
+    }
+}

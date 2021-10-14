@@ -1,0 +1,26 @@
+@page "/ManageDevice/{Id:guid}"
+@using Zapper.Web.Data
+
+<h1>Device</h1>
+
+@if (_device != null)
+{
+    <ul>
+        <li><strong>Name</strong> @_device.Name</li>
+    </ul>   
+}
+
+@code
+{
+    [Parameter]
+    public Guid Id { get; set; }
+    
+    private readonly DeviceManager _deviceManager = new();
+
+    private Device _device;
+
+    protected override void OnInitialized()
+    {
+        _device = _deviceManager.Get(Id);
+    }
+}
