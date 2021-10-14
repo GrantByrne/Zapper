@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Zapper.Core
+namespace Zapper.Core.Keyboard
 {
     public class AllDeviceInputManager : IDisposable
     {

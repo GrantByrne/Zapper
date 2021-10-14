@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 
-namespace Zapper.Core
+namespace Zapper.Core.Bluetooth
 {
     public class BluetoothManager : IDisposable
     {

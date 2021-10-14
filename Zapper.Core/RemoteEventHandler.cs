@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Zapper.Core.Keyboard;
 
 namespace Zapper.Core
 {
-    public class RemoteInputHandler : IDisposable
+    public class RemoteEventHandler : IDisposable
     {
         private readonly AllDeviceInputManager _allDeviceInputManager;
         private readonly Dictionary<(Keycode, KeyState), Action> _actions;
 
-        public RemoteInputHandler()
+        public RemoteEventHandler()
         {
             _allDeviceInputManager = new AllDeviceInputManager();
             _actions = new Dictionary<(Keycode, KeyState), Action>();

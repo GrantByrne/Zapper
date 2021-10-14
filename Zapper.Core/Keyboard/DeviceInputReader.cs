@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Zapper.Core
+namespace Zapper.Core.Keyboard
 {
     public class DeviceInputReader : IDisposable
     {

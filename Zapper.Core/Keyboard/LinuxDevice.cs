@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Zapper.Core
+namespace Zapper.Core.Keyboard
 {
     public class LinuxDevice
     {

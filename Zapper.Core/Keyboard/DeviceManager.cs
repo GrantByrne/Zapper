@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Zapper.Core
+namespace Zapper.Core.Keyboard
 {
     public static class DeviceManager
     {

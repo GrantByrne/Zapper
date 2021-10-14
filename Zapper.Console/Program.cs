@@ -8,7 +8,7 @@ namespace Zapper.Console
     {
         public static void Main(string[] args)
         {
-            var remoteInputHandler = new RemoteInputHandler();
+            var remoteInputHandler = new RemoteEventHandler();
 
             System.Console.ReadLine();
         }

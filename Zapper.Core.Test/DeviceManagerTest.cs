@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using Zapper.Core.Keyboard;
 
 namespace Zapper.Core.Test
 {
