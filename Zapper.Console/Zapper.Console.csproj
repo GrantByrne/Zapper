@@ -9,6 +9,7 @@
       <PackageReference Include="HashtagChris.DotNetBlueZ" Version="1.3.1" />
       <PackageReference Include="HidSharp" Version="2.1.0" />
       <PackageReference Include="LibUsbDotNet" Version="2.2.29" />
+      <PackageReference Include="WebOsTv.Net" Version="1.1.27" />
     </ItemGroup>
 
     <ItemGroup>

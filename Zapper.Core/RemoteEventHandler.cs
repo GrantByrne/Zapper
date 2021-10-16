@@ -15,8 +15,6 @@ namespace Zapper.Core
             _actions = new Dictionary<(EventCode, KeyState), Action>();
             
             _aggregateInputReader.OnKeyPress += HandleInput;
-            
-            RegisterActions();
         }
 
         private void HandleInput(KeyPressEvent e)
@@ -29,17 +27,19 @@ namespace Zapper.Core
             }
         }
 
-        private void RegisterActions()
+        public void RegisterAction(EventCode code, Action action)
         {
-            _actions.Add((EventCode.Up, KeyState.KeyDown), () => Console.WriteLine("Up"));
-            _actions.Add((EventCode.Left, KeyState.KeyDown), () => Console.WriteLine("Left"));
-            _actions.Add((EventCode.Right, KeyState.KeyDown), () => Console.WriteLine("Right"));
-            _actions.Add((EventCode.Down, KeyState.KeyDown), () => Console.WriteLine("Down"));
-            _actions.Add((EventCode.Enter, KeyState.KeyDown), () => Console.WriteLine("Enter"));
+            _actions[(code, KeyState.KeyDown)] = action;
+        }
+
+        public void RemoveAction(EventCode code)
+        {
+            _actions.Remove((code, KeyState.KeyDown));
         }
 
         public void Dispose()
         {
+            _aggregateInputReader.OnKeyPress -= HandleInput;
             _aggregateInputReader.Dispose();
         }
     }

@@ -6,11 +6,11 @@
 
     <ItemGroup>
       <PackageReference Include="HashtagChris.DotNetBlueZ" Version="1.3.1" />
+      <PackageReference Include="WebOsTv.Net" Version="1.1.27" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Infrared" />
-      <Folder Include="WebOs" />
     </ItemGroup>
 
 </Project>
