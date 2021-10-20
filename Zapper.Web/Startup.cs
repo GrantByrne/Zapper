@@ -26,6 +26,7 @@ namespace Zapper.Web
             services.AddServerSideBlazor();
             services.AddSingleton<IAggregateInputReader, AggregateInputReader>();
             services.AddSingleton<IDeviceManager, DeviceManager>();
+            services.AddSingleton<IRemoteManager, RemoteManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

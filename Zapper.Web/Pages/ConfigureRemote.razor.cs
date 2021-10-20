@@ -28,6 +28,9 @@ namespace Zapper.Web.Pages
         
         [Inject]
         public IDeviceManager DeviceManager { get; set; }
+        
+        [Inject]
+        public IRemoteManager RemoteManager { get; set; }
 
         protected override void OnInitialized()
         {
@@ -138,7 +141,9 @@ namespace Zapper.Web.Pages
         {
             try
             {
-                // TODO - Update this so that it save changes to a database
+                var buttons = _buttons.Values;
+                RemoteManager.Update(buttons);
+                _dirty = false;
             }
             catch (Exception ex)
             {
