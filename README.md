@@ -23,7 +23,8 @@ My hope is to make a system that meets my needs, but it also extensible to fits 
 
 ## Parts List
 
-- Raspberry Pi 4
-- SD Card
-- IR Adapter
-- USB Wireless Remote
+- [Raspberry Pi](https://www.amazon.com/dp/B07TC2BK1X?psc=1&ref=ppx_yo2_dt_b_product_details)
+- [Clear Case](https://www.amazon.com/dp/B07W72KL1W?psc=1&ref=ppx_yo2_dt_b_product_details)
+- [SD Card](https://www.amazon.com/SanDisk-Ultra-microSDXC-Memory-Adapter/dp/B073JWXGNT/ref=sr_1_6?dchild=1&keywords=raspberry+pi+4+sd+card&qid=1634703971&s=electronics&sr=1-6)
+- [IR Adapter](https://www.amazon.com/dp/B0713SK7RJ?psc=1&ref=ppx_yo2_dt_b_product_details)
+- [USB Wireless Remote](https://www.amazon.com/gp/product/B07NNWRG3B/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1)
