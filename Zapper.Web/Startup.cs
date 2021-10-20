@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebOsTv.Net;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Core.WebOs;
 using Zapper.Web.Data;
@@ -25,10 +26,12 @@ namespace Zapper.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            
             services.AddSingleton<IAggregateInputReader, AggregateInputReader>();
             services.AddSingleton<IDeviceManager, DeviceManager>();
             services.AddSingleton<IRemoteManager, RemoteManager>();
             services.AddSingleton<IWebOsActions, WebOsActions>();
+            services.AddSingleton<IService, Service>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

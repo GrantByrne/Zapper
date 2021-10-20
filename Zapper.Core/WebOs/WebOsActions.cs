@@ -19,7 +19,8 @@ namespace Zapper.Core.WebOs
         {
             _service = service;
             _logger = logger;
-            service.ConnectAsync("192.168.1.100");
+            
+            //service.ConnectAsync("192.168.1.100");
 
             AddAction("Mute", service.Audio.MuteAsync);
             AddAction("Unmute", service.Audio.UnmuteAsync);
