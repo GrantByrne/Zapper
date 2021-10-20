@@ -3,11 +3,6 @@ using System.Collections.Generic;
 
 namespace Zapper.Core.WebOs
 {
-    public interface IWebOsActions
-    {
-        IEnumerable<string> GetAll();
-    }
-
     public class WebOsActions : IWebOsActions
     {
         private readonly Dictionary<string, Action> _actions = new();
