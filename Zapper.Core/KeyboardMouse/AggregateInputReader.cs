@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Zapper.Core.KeyboardMouse
 {
-    public class AggregateInputReader : IDisposable
+    public class AggregateInputReader : IDisposable, IAggregateInputReader
     {
         private List<InputReader> _readers = new();
         

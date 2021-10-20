@@ -1,17 +1,19 @@
 using System;
 using System.Linq;
+using Zapper.Core.WebOs;
+using Zapper.Web.Data.Abstract;
 
 namespace Zapper.Web.Data
 {
-    public class DeviceManager
+    public class DeviceManager : IDeviceManager
     {
         private readonly Device[] _devices;
-        
+
         public DeviceManager()
         {
             _devices = BuildDevices();
         }
-        
+
         public Device[] Get()
         {
             return _devices;
@@ -28,21 +30,47 @@ namespace Zapper.Web.Data
             {
                 Id = Guid.NewGuid(),
                 Name = "LG WebOS TV",
-                On = true
+                On = true,
+                AvailableActions = WebOsActions
+                    .GetAll()
+                    .Select(a => new DeviceAction {Action = a})
+                    .ToList()
             };
 
             var d2 = new Device
             {
                 Id = Guid.NewGuid(),
                 Name = "SMFL Amplifier",
-                On = true
+                On = true,
+                AvailableActions = new[]
+                    {
+                        "Volume Up",
+                        "Volume Down",
+                        "Change Source"
+                    }
+                    .Select(a => new DeviceAction {Action = a})
+                    .ToList()
             };
 
             var d3 = new Device
             {
                 Id = Guid.NewGuid(),
                 Name = "Nvidia Shield",
-                On = true
+                On = true,
+                AvailableActions = new[]
+                    {
+                        "Up",
+                        "Down",
+                        "Left",
+                        "Right",
+                        "A",
+                        "B",
+                        "X",
+                        "Y",
+                        "Start"
+                    }
+                    .Select(a => new DeviceAction {Action = a})
+                    .ToList()
             };
 
             return new[] {d1, d2, d3};

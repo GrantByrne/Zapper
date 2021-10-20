@@ -1,24 +1,32 @@
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Zapper.Core.WebOs
 {
-    public class WebOsActions
+    public static class WebOsActions
     {
-        public IEnumerable<WebOsAction> GetAll()
+        public static IEnumerable<string> GetAll()
         {
-            var actions = new[]
+            return new[]
             {
-                new WebOsAction { Name = "Volume Down" },
-                new WebOsAction { Name = "Volume Up" },
+                "Mute",
+                "Unmute",
+                "Volume Up",
+                "Volume Down",
+                "Channel Down",
+                "Channel Up",
+                "Turn On 3D",
+                "Turn Off 3D",
+                "Home",
+                "Back",
+                "Up",
+                "Down",
+                "Left",
+                "Right",
+                "Red",
+                "Blue",
+                "Yellow",
+                "Green"
             };
-
-            return actions;
         }
-    }
-
-    public class WebOsAction
-    {
-        public string Name { get; set; }
     }
 }

@@ -1,7 +1,102 @@
 @page "/ConfigureRemote"
 
 <h1>Configure Remote</h1>
-
-@code
+<div id="configure-remote-menu" class="row">
+    <div class="col-12">
+        <button class="btn btn-primary"
+                @onclick="Scan">
+            @_scanButtonText
+            @if (_scanning)
+            {
+                <span class="oi oi-aperture" aria-hidden="true"></span>
+            }
+        </button>
+    </div>
+</div>
+<div class="row @(_scanning ? "" : "disabled")">
+    <div class="col-6">
+        <h2>Buttons</h2>
+        <div class="list-of-buttons btn-group-vertical">
+            @foreach (var button in _buttons.Select(kvp => kvp.Value).OrderBy(v => v.Name))
+            {
+                <button @onclick="() => SelectButton(button)"
+                        class="btn btn-outline-secondary @(button == _selectedButton ? "active" : "")">
+                    @button.Name
+                </button>
+            }
+        </div>
+    </div>
+    @if (_selectedButton != null)
+    {
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3>@_selectedButton.Name</h3>
+                    <button class="btn btn-primary" @onclick="AddAction">
+                        <span class="oi oi-plus"></span> Add Action
+                    </button>
+                    <button class="btn btn-primary" @onclick="RemoveButton">
+                        <span class="oi oi-trash"></span> Remove Button
+                    </button>
+                    <h5 style="margin-top:15px">Actions</h5>
+                    @if (string.IsNullOrWhiteSpace(_selectedButton.Action))
+                    {
+                        <p>No actions for this button</p>
+                    }
+                    else
+                    {
+                        @_selectedButton.Action
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@if (_dirty)
 {
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-success" style="margin-top: 15px" @onclick="SaveChanges">
+                Save Changes
+            </button>
+        </div>
+    </div>
+}
+<Modal @ref="Modal">
+    <Title>Add an action</Title>
+    <Body>
+    <strong>Devices</strong>
+    <div class="list-of-buttons btn-group-vertical">
+        @foreach (var d in _devices.OrderBy(d => d.Name))
+        {
+            <button class="btn btn-outline-secondary @(d == _selectedDevice ? "active" : "")"
+                    @onclick="() => SelectDevice(d)">
+                @d.Name
+            </button>
+        }
+    </div>
+    @if (_selectedDevice != null)
+    {
+        <strong>Actions</strong>
+        <div class="list-of-buttons btn-group-vertical">
+            @foreach (var a in _selectedDevice.AvailableActions)
+            {
+                <button class="btn btn-outline-secondary @(a == _selectedAction ? "active" : "")"
+                        @onclick="() => SelectAction(a)">
+                    @a.Action
+                </button>
+            }
+        </div>
+    }
+    </Body>
+    <Footer>
+        <button type="button" class="btn btn-primary" @onclick="AddActionToButton">Add</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseAddActionButton">Close</button>
+    </Footer>
+</Modal>
+
+@code {
+
+
+
 }

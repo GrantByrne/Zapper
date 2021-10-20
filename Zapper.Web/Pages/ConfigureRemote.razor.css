@@ -1,0 +1,36 @@
+.selectable-list>li:hover {
+    background-color: gray;
+}
+
+#configure-remote-menu {
+    margin-bottom: 15px;
+}
+
+.selected {
+    background-color: gray;
+}
+
+.list-of-buttons {
+    width: 100%;
+}
+
+.oi-plus {
+    margin-right: 5px;
+}
+
+.oi-aperture {
+    margin-left: 5px;
+    animation-name: spin;
+    animation-duration: 5000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}

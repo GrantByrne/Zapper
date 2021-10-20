@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Zapper.Core.KeyboardMouse;
+using Zapper.Web.Data;
+using Zapper.Web.Data.Abstract;
 
 namespace Zapper.Web
 {
@@ -21,6 +24,8 @@ namespace Zapper.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSingleton<IAggregateInputReader, AggregateInputReader>();
+            services.AddSingleton<IDeviceManager, DeviceManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
