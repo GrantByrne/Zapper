@@ -1,5 +1,7 @@
 @page "/ManageDevice/{Id:guid}"
 @using Zapper.Web.Data
+@using Zapper.Web.Data.Abstract
+@inject IDeviceManager _deviceManager;
 
 <h1>Device</h1>
 
@@ -14,8 +16,6 @@
 {
     [Parameter]
     public Guid Id { get; set; }
-    
-    private readonly DeviceManager _deviceManager = new();
 
     private Device _device;
 

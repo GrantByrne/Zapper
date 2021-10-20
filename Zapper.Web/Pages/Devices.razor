@@ -1,5 +1,7 @@
 @page "/Devices"
 @using Zapper.Web.Data
+@using Zapper.Web.Data.Abstract
+@inject IDeviceManager _deviceManager;
 
 <h1>Devices</h1>
 
@@ -34,8 +36,6 @@
 
 @code
 {
-    private readonly DeviceManager _deviceManager = new();
-
     private Device[] _devices = Array.Empty<Device>();
 
     protected override void OnInitialized()

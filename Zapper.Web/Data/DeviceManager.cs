@@ -7,10 +7,12 @@ namespace Zapper.Web.Data
 {
     public class DeviceManager : IDeviceManager
     {
+        private readonly IWebOsActions _webOsActions;
         private readonly Device[] _devices;
 
-        public DeviceManager()
+        public DeviceManager(IWebOsActions webOsActions)
         {
+            _webOsActions = webOsActions;
             _devices = BuildDevices();
         }
 
@@ -24,14 +26,14 @@ namespace Zapper.Web.Data
             return _devices.First(d => d.Id == id);
         }
 
-        private static Device[] BuildDevices()
+        private Device[] BuildDevices()
         {
             var d1 = new Device
             {
                 Id = Guid.NewGuid(),
                 Name = "LG WebOS TV",
                 On = true,
-                AvailableActions = WebOsActions
+                AvailableActions = _webOsActions
                     .GetAll()
                     .Select(a => new DeviceAction {Action = a})
                     .ToList()
