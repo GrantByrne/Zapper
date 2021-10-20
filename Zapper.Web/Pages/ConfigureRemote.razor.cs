@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Serilog;
 using Zapper.Core.KeyboardMouse;
@@ -11,8 +12,7 @@ namespace Zapper.Web.Pages
 {
     public partial class ConfigureRemote : ComponentBase
     {
-        private readonly Dictionary<string, RemoteButton> _buttons = new();
-        
+        private Dictionary<string, RemoteButton> _buttons = new();
         private RemoteButton _selectedButton;
         private bool _scanning;
         private string _scanButtonText = "Scan for Input";
@@ -34,6 +34,10 @@ namespace Zapper.Web.Pages
 
         protected override void OnInitialized()
         {
+            var buttons = RemoteManager.Get();
+
+            _buttons = buttons.ToDictionary(p => p.Name);
+            
             AggregateInputReader.OnKeyPress += AddButton;
         }
 
