@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WebOsTv.Net;
 using WebOsTv.Net.Services;
 
@@ -8,37 +10,60 @@ namespace Zapper.Core.WebOs
     public class WebOsActions : IWebOsActions, IDisposable
     {
         private readonly IService _service;
+        private readonly ILogger<WebOsActions> _logger;
         private readonly Dictionary<string, Action> _actions = new();
 
-        public WebOsActions(IService service)
+        public WebOsActions(
+            IService service,
+            ILogger<WebOsActions> logger)
         {
             _service = service;
+            _logger = logger;
             service.ConnectAsync("192.168.1.100");
-            
-            _actions.Add("Mute", () => { service.Audio.MuteAsync(); } );
-            _actions.Add("Unmute", () => { service.Audio.UnmuteAsync(); } );
-            _actions.Add("Volume Up", () => { service.Audio.VolumeUpAsync(); } );
-            _actions.Add("Volume Down", () => { service.Audio.VolumeDownAsync(); } );
-            _actions.Add("Channel Down", () => { service.Tv.ChannelDownAsync(); } );
-            _actions.Add("Channel Up", () => { service.Tv.ChannelUpAsync(); } );
-            _actions.Add("Turn On 3D", () => { service.Tv.TurnOn3dAsync(); } );
-            _actions.Add("Turn Off 3D", () => { service.Tv.TurnOff3dAsync(); } );
-            _actions.Add("Home", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Home); } );
-            _actions.Add("Back", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Back); } );
-            _actions.Add("Up", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Up); } );
-            _actions.Add("Down", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Down); } );
-            _actions.Add("Left", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Left); } );
-            _actions.Add("Right", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Right); } );
-            _actions.Add("Red", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Red); } );
-            _actions.Add("Blue", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Blue); } );
-            _actions.Add("Yellow", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Yellow); } );
-            _actions.Add("Green", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Green); } );
-            _actions.Add("FastForward", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.FastForward); } );
-            _actions.Add("Pause", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Pause); } );
-            _actions.Add("Play", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Play); } );
-            _actions.Add("Rewind", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Rewind); } );
-            _actions.Add("Stop", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.Stop); } );
-            _actions.Add("PowerOff", () => { service.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff); } );
+
+            AddAction("Mute", service.Audio.MuteAsync);
+            AddAction("Unmute", service.Audio.UnmuteAsync);
+            AddAction("Volume Up", () => service.Audio.VolumeUpAsync());
+            AddAction("Volume Down", () => service.Audio.VolumeDownAsync());
+            AddAction("Channel Down", service.Tv.ChannelDownAsync);
+            AddAction("Channel Up", service.Tv.ChannelUpAsync);
+            AddAction("Turn On", service.Tv.TurnOn3dAsync);
+            AddAction("Turn Off", service.Tv.TurnOff3dAsync);
+            AddAction("Home", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Home));
+            AddAction("Back", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Back));
+            AddAction("Up", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Up));
+            AddAction("Down", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Down));
+            AddAction("Left", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Left));
+            AddAction("Right", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Right));
+            AddAction("Red", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Red));
+            AddAction("Blue", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Blue));
+            AddAction("Yellow", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Yellow));
+            AddAction("Green", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Green));
+            AddAction("FastForward", () => service.Control.SendIntentAsync(ControlService.ControlIntent.FastForward));
+            AddAction("Pause", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Pause));
+            AddAction("Play", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Play));
+            AddAction("Rewind", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Rewind));
+            AddAction("Stop", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Stop));
+            AddAction("PowerOff", () => service.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff));
+        }
+
+        private void AddAction(string name, Func<Task> action)
+        {
+            async void Action()
+            {
+                try
+                {
+                    _logger.LogInformation($"Running the WebOS command: {name}");
+                    await action();
+                    _logger.LogInformation($"Completed running the WebOS command: {name}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to completed WebOS command: {name}");
+                }
+            }
+
+            _actions.Add(name, Action);
         }
 
         public IEnumerable<string> GetAll()
