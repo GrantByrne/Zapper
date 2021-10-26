@@ -19,33 +19,47 @@ namespace Zapper.Core.WebOs
         {
             _service = service;
             _logger = logger;
-            
-            //service.ConnectAsync("192.168.1.100");
 
-            AddAction("Mute", service.Audio.MuteAsync);
-            AddAction("Unmute", service.Audio.UnmuteAsync);
-            AddAction("Volume Up", () => service.Audio.VolumeUpAsync());
-            AddAction("Volume Down", () => service.Audio.VolumeDownAsync());
-            AddAction("Channel Down", service.Tv.ChannelDownAsync);
-            AddAction("Channel Up", service.Tv.ChannelUpAsync);
-            AddAction("Turn On", service.Tv.TurnOn3dAsync);
-            AddAction("Turn Off", service.Tv.TurnOff3dAsync);
-            AddAction("Home", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Home));
-            AddAction("Back", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Back));
-            AddAction("Up", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Up));
-            AddAction("Down", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Down));
-            AddAction("Left", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Left));
-            AddAction("Right", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Right));
-            AddAction("Red", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Red));
-            AddAction("Blue", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Blue));
-            AddAction("Yellow", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Yellow));
-            AddAction("Green", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Green));
-            AddAction("FastForward", () => service.Control.SendIntentAsync(ControlService.ControlIntent.FastForward));
-            AddAction("Pause", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Pause));
-            AddAction("Play", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Play));
-            AddAction("Rewind", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Rewind));
-            AddAction("Stop", () => service.Control.SendIntentAsync(ControlService.ControlIntent.Stop));
-            AddAction("PowerOff", () => service.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff));
+            AddAction(WebOsActionKey.Mute, service.Audio.MuteAsync);
+            AddAction(WebOsActionKey.Unmute, service.Audio.UnmuteAsync);
+            AddAction(WebOsActionKey.VolumeUp, () => service.Audio.VolumeUpAsync());
+            AddAction(WebOsActionKey.VolumeDown, () => service.Audio.VolumeDownAsync());
+            AddAction(WebOsActionKey.ChannelDown, service.Tv.ChannelDownAsync);
+            AddAction(WebOsActionKey.ChannelUp, service.Tv.ChannelUpAsync);
+            AddAction(WebOsActionKey.TurnOn3d, service.Tv.TurnOn3dAsync);
+            AddAction(WebOsActionKey.TurnOff3d, service.Tv.TurnOff3dAsync);
+            AddAction(WebOsActionKey.Home, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Home));
+            AddAction(WebOsActionKey.Back, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Back));
+            AddAction(WebOsActionKey.Up, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Up));
+            AddAction(WebOsActionKey.Down, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Down));
+            AddAction(WebOsActionKey.Left, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Left));
+            AddAction(WebOsActionKey.Right, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Right));
+            AddAction(WebOsActionKey.Red, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Red));
+            AddAction(WebOsActionKey.Blue, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Blue));
+            AddAction(WebOsActionKey.Yellow, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Yellow));
+            AddAction(WebOsActionKey.Green, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Green));
+            AddAction(WebOsActionKey.FastForward, () => service.Control.SendIntentAsync(ControlService.ControlIntent.FastForward));
+            AddAction(WebOsActionKey.Pause, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Pause));
+            AddAction(WebOsActionKey.Play, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Play));
+            AddAction(WebOsActionKey.Rewind, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Rewind));
+            AddAction(WebOsActionKey.Stop, () => service.Control.SendIntentAsync(ControlService.ControlIntent.Stop));
+            AddAction(WebOsActionKey.PowerOff, () => service.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff));
+        }
+        
+        public IEnumerable<string> GetAll()
+        {
+            return _actions.Keys;
+        }
+
+        public Action Get(string key)
+        {
+            _actions.TryGetValue(key, out var action);
+            return action;
+        }
+
+        public void Dispose()
+        {
+            _service?.Close();
         }
 
         private void AddAction(string name, Func<Task> action)
@@ -65,16 +79,6 @@ namespace Zapper.Core.WebOs
             }
 
             _actions.Add(name, Action);
-        }
-
-        public IEnumerable<string> GetAll()
-        {
-            return _actions.Keys;
-        }
-
-        public void Dispose()
-        {
-            _service?.Close();
         }
     }
 }

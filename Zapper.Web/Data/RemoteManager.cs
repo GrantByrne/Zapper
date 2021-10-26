@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Zapper.Core;
+using Zapper.Core.WebOs;
 using Zapper.Web.Data.Abstract;
 
 namespace Zapper.Web.Data
@@ -9,15 +10,18 @@ namespace Zapper.Web.Data
     public class RemoteManager : IRemoteManager
     {
         private readonly IRemoteEventHandler _remoteEventHandler;
+        private readonly IWebOsActions _webOsActions;
         private readonly ILogger<RemoteManager> _logger;
 
         private List<RemoteButton> _cache = new();
 
         public RemoteManager(
             IRemoteEventHandler remoteEventHandler,
+            IWebOsActions webOsActions,
             ILogger<RemoteManager> logger)
         {
             _remoteEventHandler = remoteEventHandler;
+            _webOsActions = webOsActions;
             _logger = logger;
         }
 
@@ -30,9 +34,11 @@ namespace Zapper.Web.Data
         {
             _remoteEventHandler.ClearActions();
 
-            foreach (var remote in remoteButtons)
+            var validButtons = remoteButtons.Where(b => !string.IsNullOrEmpty(b.Action));
+            foreach (var remote in validButtons)
             {
-                _remoteEventHandler.RegisterAction(remote.Code, () => { _logger.LogInformation($"{remote.Name} Button was pressed"); });   
+                var a = _webOsActions.Get(remote.Action);
+                _remoteEventHandler.RegisterAction(remote.Code, a);   
             }
             
             _cache = remoteButtons.ToList();
