@@ -17,7 +17,7 @@
             <thead>
             <tr>
                 <th>Name</th>
-                <th>On?</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -27,7 +27,9 @@
                     <td>
                         <a href="#">@device.Name</a>
                     </td>
-                    <td>@(device.On ? "Yes" : "No")</td>
+                    <td>
+                        <button @onclick="() => Delete(device)" class="btn btn-primary">Delete</button>
+                    </td>
                 </tr>
             }
             </tbody>
@@ -121,6 +123,22 @@
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to save changes");
+        }
+    }
+
+    private void Delete(Device device)
+    {
+        try
+        {
+            Log.Information("Attempting to delete device: {device}", device);
+            
+            _deviceManager.Delete(device.Id);
+            
+            Log.Information("Finished deleting devtice");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to delete device");
         }
     }
 }

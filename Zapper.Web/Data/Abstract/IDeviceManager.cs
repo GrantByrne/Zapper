@@ -10,5 +10,7 @@ namespace Zapper.Web.Data.Abstract
         Device Get(Guid id);
 
         void CreateWebOsDevice(string name, string ipAddress);
+
+        void Delete(Guid id);
     }
 }
