@@ -4,18 +4,15 @@ using Zapper.Core.KeyboardMouse;
 
 namespace Zapper.Core
 {
-    public class RemoteEventHandler
+    public class RemoteEventHandler : IRemoteEventHandler
     {
-        private readonly IAggregateInputReader _aggregateInputReader;
         private readonly Dictionary<(EventCode, KeyState), Action> _actions;
 
         public RemoteEventHandler(IAggregateInputReader aggregateInputReader)
         {
-            _aggregateInputReader = aggregateInputReader;
-            
             _actions = new Dictionary<(EventCode, KeyState), Action>();
             
-            _aggregateInputReader.OnKeyPress += HandleInput;
+            aggregateInputReader.OnKeyPress += HandleInput;
         }
 
         private void HandleInput(KeyPressEvent e)
@@ -36,6 +33,11 @@ namespace Zapper.Core
         public void RemoveAction(EventCode code)
         {
             _actions.Remove((code, KeyState.KeyDown));
+        }
+
+        public void ClearActions()
+        {
+            _actions.Clear();
         }
     }
 }

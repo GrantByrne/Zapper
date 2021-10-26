@@ -62,7 +62,7 @@ namespace Zapper.Web.Pages
 
                 Log.Information($"The keypress {val} is new. Registering it.");
 
-                _buttons.Add(val, new RemoteButton { Name = val });
+                _buttons.Add(val, new RemoteButton { Name = val, Code = e.Code});
                 _dirty = true;
                 InvokeAsync(StateHasChanged);
             }
