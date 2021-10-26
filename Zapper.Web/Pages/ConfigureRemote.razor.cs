@@ -16,7 +16,7 @@ namespace Zapper.Web.Pages
         private RemoteButton _selectedButton;
         private bool _scanning;
         private string _scanButtonText = "Scan for Input";
-        private Device[] _devices = Array.Empty<Device>();
+        private IEnumerable<Device> _devices = Array.Empty<Device>();
         private Device _selectedDevice;
         private DeviceAction _selectedAction;
         private bool _dirty;

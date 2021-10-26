@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 
 namespace Zapper.Web.Data.Abstract
 {
     public interface IDeviceManager
     {
-        Device[] Get();
+        IEnumerable<Device> Get();
         
         Device Get(Guid id);
+
+        void CreateWebOsDevice(string name, string ipAddress);
     }
 }

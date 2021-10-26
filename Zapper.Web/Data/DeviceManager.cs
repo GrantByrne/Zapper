@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Zapper.Core;
 using Zapper.Core.WebOs;
 using Zapper.Web.Data.Abstract;
 
@@ -8,7 +10,7 @@ namespace Zapper.Web.Data
     public class DeviceManager : IDeviceManager
     {
         private readonly IWebOsActions _webOsActions;
-        private readonly Device[] _devices;
+        private readonly List<Device> _devices;
 
         public DeviceManager(IWebOsActions webOsActions)
         {
@@ -16,7 +18,7 @@ namespace Zapper.Web.Data
             _devices = BuildDevices();
         }
 
-        public Device[] Get()
+        public IEnumerable<Device> Get()
         {
             return _devices;
         }
@@ -26,7 +28,24 @@ namespace Zapper.Web.Data
             return _devices.First(d => d.Id == id);
         }
 
-        private Device[] BuildDevices()
+        public void CreateWebOsDevice(string name, string ipAddress)
+        {
+            var device = new Device
+            {
+               Id = Guid.NewGuid(),
+               Name = name,
+               AvailableActions = _webOsActions
+                   .GetAll()
+                   .Select(a => new DeviceAction {Action = a})
+                   .ToList(),
+               IpAddress = ipAddress,
+               SupportDeviceType = SupportedDevice.WebOs
+            };
+            
+            _devices.Add(device);
+        }
+
+        private List<Device> BuildDevices()
         {
             var d1 = new Device
             {
@@ -75,7 +94,7 @@ namespace Zapper.Web.Data
                     .ToList()
             };
 
-            return new[] {d1, d2, d3};
+            return new[] {d1, d2, d3}.ToList();
         }
     }
 }

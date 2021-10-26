@@ -1,45 +1,124 @@
 @page "/Devices"
 @using Zapper.Web.Data
 @using Zapper.Web.Data.Abstract
+@using Zapper.Core
 @inject IDeviceManager _deviceManager;
 
 <h1>Devices</h1>
 
 <div class="row" style="margin-bottom:7px">
     <div class="col-12">
-        <button class="btn btn-primary pull-right" style="float:right">Add Device</button>
+        <button class="btn btn-primary pull-right" style="float:right" @onclick="AddDevice">Add Device</button>
     </div>
 </div>
 <div class="row">
     <div class="col-12">
         <table class="table table-striped table-hover">
-                <thead>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>On?</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var device in _devices)
+            {
                 <tr>
-                    <th>Name</th>
-                    <th>On?</th>
+                    <td>
+                        <a href="#">@device.Name</a>
+                    </td>
+                    <td>@(device.On ? "Yes" : "No")</td>
                 </tr>
-                </thead>
-                <tbody>
-                @foreach (var device in _devices)
-                {
-                    <tr>
-                        <td>
-                            <a href="#">@device.Name</a>
-                        </td>
-                        <td>@(device.On ? "Yes" : "No")</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+            }
+            </tbody>
+        </table>
     </div>
 </div>
 
+<Modal @ref="Modal">
+    <Title>Add a Device</Title>
+    <Body>
+    <h3>Device Type</h3>
+    <div class="list-of-buttons btn-group-vertical">
+        @foreach (var d in _supportedDeviceTypes.OrderBy(d => d))
+        {
+            <button class="btn btn-outline-secondary" @onclick="() => SelectDeviceType(d)">@d</button>
+        }
+    </div>
+
+    @if (_selectedDeviceType == SupportedDevice.WebOs)
+    {
+        <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
+    }
+    </Body>
+    <Footer>
+        @if (_showSaveChanges)
+        {
+            <button class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
+        }
+    </Footer>
+</Modal>
+
 @code
 {
-    private Device[] _devices = Array.Empty<Device>();
+    private IEnumerable<Device> _devices = Array.Empty<Device>();
+    private Modal Modal { get; set; }
+    private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
+    private readonly string[] _supportedDeviceTypes = {"WebOS", "IR"};
 
+    private string _selectedDeviceType;
+    private bool _showSaveChanges;
+    
     protected override void OnInitialized()
     {
         _devices = _deviceManager.Get();
+    }
+
+    private void AddDevice()
+    {
+        try
+        {
+            Log.Information("Bring up the modal to add a new device");
+            Modal.Open();
+            Log.Information("Brought up the modal to add a new device");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to bring up the modal for a new device");
+        }
+    }
+
+    private void SelectDeviceType(string deviceType)
+    {
+        try
+        {
+            Log.Information($"Selected the {deviceType} device type");
+            _selectedDeviceType = deviceType;
+            _showSaveChanges = true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error occurred while selecting device type");
+        }
+    }
+
+    private void SaveChanges()
+    {
+        try
+        {
+            Log.Information("Attempting to save changes");
+
+            // TODO - Add input validation
+            var name = ConfigureWebOsDevice.Name;
+            var ipAddress = ConfigureWebOsDevice.IpAddress;
+            
+            _deviceManager.CreateWebOsDevice(name, ipAddress);
+            
+            Log.Information("Finished saving changes");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to save changes");
+        }
     }
 }
