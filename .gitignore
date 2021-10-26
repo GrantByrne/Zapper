@@ -43,4 +43,4 @@ Thumbs.db
 Desktop.ini
 .DS_Store
 
-lgkeys.json
+**/lgkeys.json
