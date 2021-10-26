@@ -13,7 +13,7 @@ namespace Zapper.Web.Data
         
         private readonly IWebOsActions _webOsActions;
         private readonly IFileSerializerConnection _fileSerializerConnection;
-        private readonly List<Device> _devices;
+        private List<Device> _devices;
 
         public DeviceManager(
             IWebOsActions webOsActions,
@@ -22,7 +22,7 @@ namespace Zapper.Web.Data
             _webOsActions = webOsActions;
             _fileSerializerConnection = fileSerializerConnection;
 
-            _devices = _fileSerializerConnection.Read<List<Device>>(Path) ?? new List<Device>();
+            Initialize();
         }
 
         public IEnumerable<Device> Get()
@@ -63,6 +63,19 @@ namespace Zapper.Web.Data
             _devices.Add(device);
             
             _fileSerializerConnection.Write(_devices, Path);
+        }
+        
+        private void Initialize()
+        {
+            _devices = _fileSerializerConnection.Read<List<Device>>(Path) ?? new List<Device>();
+
+            foreach (var device in _devices.Where(d => d.SupportDeviceType == SupportedDevice.WebOs))
+            {
+                device.AvailableActions = _webOsActions
+                    .GetAll()
+                    .Select(a => new DeviceAction {Action = a})
+                    .ToList();
+            }
         }
     }
 }

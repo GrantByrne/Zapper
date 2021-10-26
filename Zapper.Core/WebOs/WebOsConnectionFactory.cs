@@ -10,7 +10,7 @@ namespace Zapper.Core.WebOs
     {
         private readonly ILogger<WebOsConnectionFactory> _logger;
         private readonly Dictionary<string, IService> _services = new();
-        private bool connecting;
+        private bool _connecting;
 
         public WebOsConnectionFactory(ILogger<WebOsConnectionFactory> logger)
         {
@@ -24,12 +24,12 @@ namespace Zapper.Core.WebOs
             
             _logger.LogInformation($"WebOS connection not found. Attempting to connect to {url}");
 
-            service = new Service();
-
-            if (connecting)
+            if (_connecting)
                 return null;
 
-            connecting = true;
+            _connecting = true;
+            
+            service = new Service();
 
             try
             {
@@ -41,7 +41,7 @@ namespace Zapper.Core.WebOs
             }
             finally
             {
-                connecting = false;
+                _connecting = false;
             }
             
             _services[url] = service;

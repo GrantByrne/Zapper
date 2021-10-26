@@ -62,6 +62,9 @@ namespace Zapper.Web
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            var remoteManager = app.ApplicationServices.GetService<IRemoteManager>();
+            remoteManager?.Initialize();
         }
     }
 }

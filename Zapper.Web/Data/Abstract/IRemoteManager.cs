@@ -7,5 +7,7 @@ namespace Zapper.Web.Data.Abstract
         IEnumerable<RemoteButton> Get();
         
         void Update(IEnumerable<RemoteButton> remoteButtons);
+
+        void Initialize();
     }
 }
