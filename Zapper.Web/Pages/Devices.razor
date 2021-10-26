@@ -114,6 +114,8 @@
             
             _deviceManager.CreateWebOsDevice(name, ipAddress);
             
+            Modal.Close();
+
             Log.Information("Finished saving changes");
         }
         catch (Exception ex)
