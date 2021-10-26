@@ -9,20 +9,27 @@ namespace Zapper.Web.Data
 {
     public class RemoteManager : IRemoteManager
     {
+        private const string Path = "remotes.json";
+        
         private readonly IRemoteEventHandler _remoteEventHandler;
         private readonly IWebOsActions _webOsActions;
         private readonly ILogger<RemoteManager> _logger;
+        private readonly IFileSerializerConnection _fileSerializerConnection;
 
-        private List<RemoteButton> _cache = new();
+        private List<RemoteButton> _cache;
 
         public RemoteManager(
             IRemoteEventHandler remoteEventHandler,
             IWebOsActions webOsActions,
-            ILogger<RemoteManager> logger)
+            ILogger<RemoteManager> logger,
+            IFileSerializerConnection fileSerializerConnection)
         {
             _remoteEventHandler = remoteEventHandler;
             _webOsActions = webOsActions;
             _logger = logger;
+            _fileSerializerConnection = fileSerializerConnection;
+
+            _cache = _fileSerializerConnection.Read<List<RemoteButton>>(Path) ?? new List<RemoteButton>();
         }
 
         public IEnumerable<RemoteButton> Get()
@@ -42,6 +49,8 @@ namespace Zapper.Web.Data
             }
             
             _cache = remoteButtons.ToList();
+            
+            _fileSerializerConnection.Write(_cache, Path);
         }
     }
 }

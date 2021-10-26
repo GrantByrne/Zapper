@@ -7,6 +7,11 @@ namespace Zapper.Core
     {
         public T Read<T>(string path)
         {
+            if (!File.Exists(path))
+            {
+                return default;
+            }
+            
             var json = File.ReadAllText(path);
             var result = JsonSerializer.Deserialize<T>(json);
             return result;
