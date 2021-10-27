@@ -39,8 +39,6 @@ namespace Zapper.Web.Pages
             var buttons = RemoteManager.Get();
 
             _buttons = buttons.ToDictionary(p => p.Name);
-            
-            AggregateInputReader.OnKeyPress += AddButton;
         }
 
         private void AddButton(KeyPressEvent e)
@@ -94,6 +92,16 @@ namespace Zapper.Web.Pages
             try
             {
                 _scanning = !_scanning;
+
+                if (_scanning)
+                {
+                    AggregateInputReader.OnKeyPress += AddButton;
+                }
+                else
+                {
+                    AggregateInputReader.OnKeyPress -= AddButton;
+                }
+                
                 _selectedButton = null;
 
                 _scanButtonText = _scanning ? "Scanning" : "Scan for Input";
