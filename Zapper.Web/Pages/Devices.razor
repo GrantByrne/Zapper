@@ -2,7 +2,9 @@
 @using Zapper.Web.Data
 @using Zapper.Web.Data.Abstract
 @using Zapper.Core
+@using Microsoft.Extensions.Logging
 @inject IDeviceManager _deviceManager;
+@inject ILogger<Devices> _logger;
 
 <h1>Devices</h1>
 
@@ -80,13 +82,13 @@
     {
         try
         {
-            Log.Information("Bring up the modal to add a new device");
+            _logger.LogInformation("Bring up the modal to add a new device");
             Modal.Open();
-            Log.Information("Brought up the modal to add a new device");
+            _logger.LogInformation("Brought up the modal to add a new device");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to bring up the modal for a new device");
+            _logger.LogError(ex, "Failed to bring up the modal for a new device");
         }
     }
 
@@ -94,13 +96,13 @@
     {
         try
         {
-            Log.Information($"Selected the {deviceType} device type");
+            _logger.LogInformation($"Selected the {deviceType} device type");
             _selectedDeviceType = deviceType;
             _showSaveChanges = true;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Error occurred while selecting device type");
+            _logger.LogError(ex, "Error occurred while selecting device type");
         }
     }
 
@@ -108,7 +110,7 @@
     {
         try
         {
-            Log.Information("Attempting to save changes");
+            _logger.LogInformation("Attempting to save changes");
 
             // TODO - Add input validation
             var name = ConfigureWebOsDevice.Name;
@@ -118,11 +120,11 @@
             
             Modal.Close();
 
-            Log.Information("Finished saving changes");
+            _logger.LogInformation("Finished saving changes");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to save changes");
+            _logger.LogError(ex, "Failed to save changes");
         }
     }
 
@@ -130,15 +132,15 @@
     {
         try
         {
-            Log.Information("Attempting to delete device: {device}", device);
+            _logger.LogInformation("Attempting to delete device: {device}", device);
             
             _deviceManager.Delete(device.Id);
             
-            Log.Information("Finished deleting devtice");
+            _logger.LogInformation("Finished deleting device");
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to delete device");
+            _logger.LogError(ex, "Failed to delete device");
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
-using Serilog;
+using Microsoft.Extensions.Logging;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Web.Data;
 using Zapper.Web.Data.Abstract;
@@ -32,6 +32,8 @@ namespace Zapper.Web.Pages
         [Inject]
         public IRemoteManager RemoteManager { get; set; }
 
+        [Inject] public ILogger<ConfigureRemote> Logger { get; set; }
+
         protected override void OnInitialized()
         {
             var buttons = RemoteManager.Get();
@@ -47,20 +49,20 @@ namespace Zapper.Web.Pages
             {
                 if (!_scanning)
                 {
-                    Log.Information("Not scanning for keypresses, so moving on");
+                    Logger.LogInformation("Not scanning for keypresses, so moving on");
                     return;
                 }
 
-                Log.Information("Received a key press event update");
+                Logger.LogInformation("Received a key press event update");
 
                 var val = e.Code.ToString();
                 if (_buttons.ContainsKey(val))
                 {
-                    Log.Information($"The keypress {val} is already registered. Moving on.");
+                    Logger.LogInformation($"The keypress {val} is already registered. Moving on.");
                     return;
                 }
 
-                Log.Information($"The keypress {val} is new. Registering it.");
+                Logger.LogInformation($"The keypress {val} is new. Registering it.");
 
                 _buttons.Add(val, new RemoteButton { Name = val, Code = e.Code});
                 _dirty = true;
@@ -68,7 +70,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while processing button event");
+                Logger.LogError(ex, "Error occurred while processing button event");
             }
         }
 
@@ -83,7 +85,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occured while try to select a button to focus");
+                Logger.LogError(ex, "Error occured while try to select a button to focus");
             }
         }
 
@@ -98,7 +100,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while stopping/starting a scan");   
+                Logger.LogError(ex, "Error occurred while stopping/starting a scan");   
             }
         }
 
@@ -113,7 +115,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while trying to bring up the modal to selection an action");
+                Logger.LogError(ex, "Error occurred while trying to bring up the modal to selection an action");
             }
         }
 
@@ -125,7 +127,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while selecting device");
+                Logger.LogError(ex, "Error occurred while selecting device");
             }
         }
 
@@ -137,7 +139,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occured while selecting device action");
+                Logger.LogError(ex, "Error occured while selecting device action");
             }
         }
 
@@ -151,7 +153,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while trying to save changes");
+                Logger.LogError(ex, "Error occurred while trying to save changes");
             }
         }
 
@@ -167,7 +169,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "An error occurred while trying to add an action to a button");
+                Logger.LogError(ex, "An error occurred while trying to add an action to a button");
             }
         }
 
@@ -181,7 +183,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to close the add action modal");
+                Logger.LogError(ex, "Failed to close the add action modal");
             }
         }
 
@@ -195,7 +197,7 @@ namespace Zapper.Web.Pages
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error occurred while trying to remove the button");
+                Logger.LogError(ex, "Error occurred while trying to remove the button");
             }
         }
     }
