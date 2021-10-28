@@ -4,12 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Zapper.Core.Bluetooth
 {
     public class BluetoothManager : IDisposable
     {
+        private readonly ILogger<BluetoothManager> _logger;
         private Adapter _adapter;
+
+        public BluetoothManager(ILogger<BluetoothManager> logger)
+        {
+            _logger = logger;
+        }
         
         public async Task StartUp()
         {
@@ -33,7 +40,7 @@ namespace Zapper.Core.Bluetooth
                 }
                 catch (Exception ex)
                 {
-                    
+                    _logger.LogError(ex, "Error occurred while getting bluetooth devices.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(name))
