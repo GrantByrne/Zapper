@@ -1,8 +1,6 @@
-using System;
-
 namespace Zapper.Core.KeyboardMouse
 {
-    public class KeyPressEvent : EventArgs
+    public readonly struct KeyPressEvent
     {
         public KeyPressEvent(EventCode code, KeyState state)
         {

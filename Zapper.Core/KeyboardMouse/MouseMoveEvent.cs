@@ -1,8 +1,6 @@
-using System;
-
 namespace Zapper.Core.KeyboardMouse
 {
-    public class MouseMoveEvent : EventArgs
+    public readonly struct MouseMoveEvent
     {
         public MouseMoveEvent(MouseAxis axis, int amount)
         {
@@ -12,6 +10,6 @@ namespace Zapper.Core.KeyboardMouse
         
         public MouseAxis Axis { get; }
         
-        public int Amount { get; set; }
+        public int Amount { get; }
     }
 }
