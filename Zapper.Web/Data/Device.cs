@@ -15,6 +15,7 @@ namespace Zapper.Web.Data
         
         public string SupportDeviceType { get; set; }
 
+
         public List<DeviceAction> AvailableActions = new();
     }
 }

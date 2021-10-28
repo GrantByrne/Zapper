@@ -19,6 +19,7 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Device Type</th>
                 <th></th>
             </tr>
             </thead>
@@ -26,9 +27,8 @@
             @foreach (var device in _devices)
             {
                 <tr>
-                    <td>
-                        <a href="#">@device.Name</a>
-                    </td>
+                    <td><a href="#">@device.Name</a></td>
+                    <td>@device.SupportDeviceType</td>
                     <td>
                         <button @onclick="() => Delete(device)" class="btn btn-primary">Delete</button>
                     </td>
