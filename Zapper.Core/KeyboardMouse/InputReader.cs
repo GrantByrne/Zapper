@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Zapper.Core.KeyboardMouse
@@ -8,8 +9,10 @@ namespace Zapper.Core.KeyboardMouse
     {
         private const int BufferLength = 24;
         
+        private static readonly int PiOffset;
+
         private readonly byte[] _buffer = new byte[BufferLength];
-        
+
         private FileStream _stream;
         private bool _disposing;
 
@@ -20,6 +23,14 @@ namespace Zapper.Core.KeyboardMouse
         public event RaiseKeyPress OnKeyPress;
 
         public event RaiseMouseMove OnMouseMove;
+
+        static InputReader()
+        {
+            if (RunningOnRaspberryPi())
+            {
+                PiOffset = -8;
+            }
+        }
 
         public InputReader(string path)
         {
@@ -37,17 +48,11 @@ namespace Zapper.Core.KeyboardMouse
 
                 _stream.Read(_buffer, 0, BufferLength);
 
-                var typeBits = new[] {_buffer[16], _buffer[17]};
-                var codeBits = new[] {_buffer[18], _buffer[19]};
-                var valueBits = new[] {_buffer[20], _buffer[21], _buffer[22], _buffer[23]};
-                
-                var type = BitConverter.ToInt16(typeBits, 0);
-                var code = BitConverter.ToInt16(codeBits, 0);
-                var value = BitConverter.ToInt32(valueBits, 0);
+                var type = GetEventType();
+                var code = GetCode();
+                var value = GetValue();
 
-                var eventType = (EventType) type;
-
-                switch (eventType)
+                switch (type)
                 {
                     case EventType.EV_KEY:
                         HandleKeyPressEvent(code, value);
@@ -59,6 +64,49 @@ namespace Zapper.Core.KeyboardMouse
                         break;
                 }
             }
+        }
+
+        private int GetValue()
+        {
+            var valueBits = new[]
+            {
+                _buffer[20 + PiOffset],
+                _buffer[21 + PiOffset],
+                _buffer[22 + PiOffset],
+                _buffer[23 + PiOffset]
+            };
+            
+            var value = BitConverter.ToInt32(valueBits, 0);
+            
+            return value;
+        }
+
+        private short GetCode()
+        {
+            var codeBits = new[]
+            {
+                _buffer[18 + PiOffset],
+                _buffer[19 + PiOffset]
+            };
+            
+            var code = BitConverter.ToInt16(codeBits, 0);
+            
+            return code;
+        }
+
+        private EventType GetEventType()
+        {
+            var typeBits = new[]
+            {
+                _buffer[16 + PiOffset],
+                _buffer[17 + PiOffset]
+            };
+
+            var type = BitConverter.ToInt16(typeBits, 0);
+
+            var eventType = (EventType) type;
+            
+            return eventType;
         }
 
         private void HandleKeyPressEvent(short code, int value)
@@ -75,7 +123,13 @@ namespace Zapper.Core.KeyboardMouse
             _stream.Dispose();
             _stream = null;
         }
+
+        private static bool RunningOnRaspberryPi()
+        {
+            var path = "/proc/cpuinfo";
+            var text = File.ReadAllLines(path);
+            var runningOnPi = text.Any(l => l.Contains("Raspberry Pi"));
+            return runningOnPi;
+        }
     }
-
-
 }
