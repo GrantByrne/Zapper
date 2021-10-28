@@ -29,8 +29,7 @@
 @code {
     public string Name { get; set; }
     public string IpAddress { get; set; }
-
-    private bool _testingConnection;
+    
     private string _connectionTestSummary;
     private bool _connectTestSuccess;
 
@@ -40,13 +39,10 @@
         {
             _logger.LogInformation("Testing out the WebOS Connection");
 
-            _testingConnection = true;
-
             var service = new Service();
             await service.ConnectAsync(IpAddress);
 
             _connectionTestSummary = $"Successfully connected to {IpAddress}";
-            _testingConnection = false;
             _connectTestSuccess = true;
 
             _logger.LogInformation("Finished testing the WebOS Connection");
@@ -54,7 +50,6 @@
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while testing the WebOS Connection");
-            _testingConnection = false;
             _connectTestSuccess = false;
             _connectionTestSummary = ex.Message;
         }
