@@ -49,10 +49,17 @@
             <button class="btn btn-outline-secondary" @onclick="() => SelectDeviceType(d)">@d</button>
         }
     </div>
-
     @if (_selectedDeviceType == SupportedDevice.WebOs)
     {
         <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
+    }
+    else if (_selectedDeviceType == SupportedDevice.Ir)
+    {
+        <ConfigureIrDevice @ref="ConfigureIrDevice"/>
+    }
+    else if (_selectedDeviceType == SupportedDevice.Bluetooth)
+    {
+        <strong>I'm working on it!</strong>
     }
     </Body>
     <Footer>
@@ -68,7 +75,8 @@
     private IEnumerable<Device> _devices = Array.Empty<Device>();
     private Modal Modal { get; set; }
     private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
-    private readonly string[] _supportedDeviceTypes = {"WebOS", "IR"};
+    private ConfigureIrDevice ConfigureIrDevice { get; set; }
+    private readonly string[] _supportedDeviceTypes = SupportedDevice.All();
 
     private string _selectedDeviceType;
     private bool _showSaveChanges;
@@ -112,12 +120,19 @@
         {
             _logger.LogInformation("Attempting to save changes");
 
-            // TODO - Add input validation
-            var name = ConfigureWebOsDevice.Name;
-            var ipAddress = ConfigureWebOsDevice.IpAddress;
-            
-            _deviceManager.CreateWebOsDevice(name, ipAddress);
-            
+            switch (_selectedDeviceType)
+            {
+                case SupportedDevice.WebOs:
+                    var webOsName = ConfigureWebOsDevice.Name;
+                    var ipAddress = ConfigureWebOsDevice.IpAddress;
+                    _deviceManager.CreateWebOsDevice(webOsName, ipAddress);
+                    break;
+                case SupportedDevice.Ir:
+                    var irName = ConfigureIrDevice.Name;
+                    _deviceManager.CreateIrDevice(irName);
+                    break;
+            }
+
             Modal.Close();
 
             _logger.LogInformation("Finished saving changes");

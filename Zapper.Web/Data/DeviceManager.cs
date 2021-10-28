@@ -45,6 +45,20 @@ namespace Zapper.Web.Data
             _devices.Remove(device);  
             _fileSerializerConnection.Write(_devices, Path);
         }
+        
+        public void CreateIrDevice(string name)
+        {
+            var device = new Device
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                SupportDeviceType = SupportedDevice.Ir
+            };
+            
+            _devices.Add(device);
+            
+            _fileSerializerConnection.Write(_devices, Path);
+        }
 
         public void CreateWebOsDevice(string name, string ipAddress)
         {

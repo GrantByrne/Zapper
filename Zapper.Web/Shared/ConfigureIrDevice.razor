@@ -1,0 +1,13 @@
+<h3>Configure IR Device</h3>
+<div>
+    <div class="form-group row">
+        <label for="deviceName" class="col-2 col-form-label">Name</label>
+        <div class="col-10">
+            <input type="text" class="form-control" id="deviceName" placeholder="Device Name" @bind="Name"/>
+        </div>
+    </div>
+</div>
+
+@code {
+    public string Name { get; set; }
+}
