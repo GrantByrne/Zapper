@@ -6,19 +6,20 @@ namespace Zapper.Core.KeyboardMouse
 {
     public class InputReader : IDisposable
     {
-        public delegate void RaiseKeyPress(KeyPressEvent e);
-
-        public delegate void RaiseMouseMove(MouseMoveEvent e);
-
-        public event RaiseKeyPress OnKeyPress;
-        public event RaiseMouseMove OnMouseMove;
-
         private const int BufferLength = 24;
         
         private readonly byte[] _buffer = new byte[BufferLength];
         
         private FileStream _stream;
         private bool _disposing;
+
+        public delegate void RaiseKeyPress(KeyPressEvent e);
+
+        public delegate void RaiseMouseMove(MouseMoveEvent e);
+
+        public event RaiseKeyPress OnKeyPress;
+
+        public event RaiseMouseMove OnMouseMove;
 
         public InputReader(string path)
         {
@@ -36,9 +37,13 @@ namespace Zapper.Core.KeyboardMouse
 
                 _stream.Read(_buffer, 0, BufferLength);
 
-                var type = BitConverter.ToInt16(new[] {_buffer[16], _buffer[17]}, 0);
-                var code = BitConverter.ToInt16(new[] {_buffer[18], _buffer[19]}, 0);
-                var value = BitConverter.ToInt32(new[] {_buffer[20], _buffer[21], _buffer[22], _buffer[23]}, 0);
+                var typeBits = new[] {_buffer[16], _buffer[17]};
+                var codeBits = new[] {_buffer[18], _buffer[19]};
+                var valueBits = new[] {_buffer[20], _buffer[21], _buffer[22], _buffer[23]};
+                
+                var type = BitConverter.ToInt16(typeBits, 0);
+                var code = BitConverter.ToInt16(codeBits, 0);
+                var value = BitConverter.ToInt32(valueBits, 0);
 
                 var eventType = (EventType) type;
 
@@ -71,4 +76,6 @@ namespace Zapper.Core.KeyboardMouse
             _stream = null;
         }
     }
+
+
 }
