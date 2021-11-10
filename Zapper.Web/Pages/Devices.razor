@@ -125,7 +125,8 @@
                 case SupportedDevice.WebOs:
                     var webOsName = ConfigureWebOsDevice.Name;
                     var ipAddress = ConfigureWebOsDevice.IpAddress;
-                    _deviceManager.CreateWebOsDevice(webOsName, ipAddress);
+                    var macAddress = ConfigureWebOsDevice.MacAddress;
+                    _deviceManager.CreateWebOsDevice(webOsName, ipAddress, macAddress);
                     break;
                 case SupportedDevice.Ir:
                     var irName = ConfigureIrDevice.Name;

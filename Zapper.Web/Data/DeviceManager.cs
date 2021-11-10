@@ -60,7 +60,7 @@ namespace Zapper.Web.Data
             _fileSerializerConnection.Write(_devices, Path);
         }
 
-        public void CreateWebOsDevice(string name, string ipAddress)
+        public void CreateWebOsDevice(string name, string ipAddress, string macAddress)
         {
             var device = new Device
             {
@@ -71,7 +71,8 @@ namespace Zapper.Web.Data
                    .Select(a => new DeviceAction {Action = a})
                    .ToList(),
                IpAddress = ipAddress,
-               SupportDeviceType = SupportedDevice.WebOs
+               SupportDeviceType = SupportedDevice.WebOs,
+               MacAddress = macAddress
             };
             
             _devices.Add(device);

@@ -9,7 +9,7 @@ namespace Zapper.Web.Data.Abstract
         
         Device Get(Guid id);
 
-        void CreateWebOsDevice(string name, string ipAddress);
+        void CreateWebOsDevice(string name, string ipAddress, string macAddress);
 
         void CreateIrDevice(string name);
 
