@@ -13,14 +13,17 @@ namespace Zapper.Core.Devices
         
         private readonly IWebOsActions _webOsActions;
         private readonly IFileSerializerConnection _fileSerializerConnection;
+        private readonly IWebOsStatusManager _webOsStatusManager;
         private List<Device> _devices;
 
         public DeviceManager(
             IWebOsActions webOsActions,
-            IFileSerializerConnection fileSerializerConnection)
+            IFileSerializerConnection fileSerializerConnection,
+            IWebOsStatusManager webOsStatusManager)
         {
             _webOsActions = webOsActions;
             _fileSerializerConnection = fileSerializerConnection;
+            _webOsStatusManager = webOsStatusManager;
 
             Initialize();
         }
@@ -44,6 +47,11 @@ namespace Zapper.Core.Devices
             
             _devices.Remove(device);  
             _fileSerializerConnection.Write(_devices, Path);
+
+            if (device.SupportDeviceType == SupportedDevice.WebOs)
+            {
+                _webOsStatusManager.DeRegister(device.Id);
+            }
         }
         
         public void CreateIrDevice(string name)
@@ -78,6 +86,7 @@ namespace Zapper.Core.Devices
             _devices.Add(device);
             
             _fileSerializerConnection.Write(_devices, Path);
+            _webOsStatusManager.Register(device.Id, ipAddress);
         }
         
         private void Initialize()
@@ -90,6 +99,8 @@ namespace Zapper.Core.Devices
                     .GetAll()
                     .Select(a => new DeviceAction {Action = a})
                     .ToList();
+                
+                _webOsStatusManager.Register(device.Id, device.IpAddress);
             }
         }
     }

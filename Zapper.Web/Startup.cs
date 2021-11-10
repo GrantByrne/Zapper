@@ -42,6 +42,7 @@ namespace Zapper.Web
             services.AddSingleton<IRemoteEventHandler, RemoteEventHandler>();
             services.AddSingleton<IWebOsConnectionFactory, WebOsConnectionFactory>();
             services.AddSingleton<IFileSerializerConnection, FileSerializerConnection>();
+            services.AddSingleton<IWebOsStatusManager, WebOsStatusManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
