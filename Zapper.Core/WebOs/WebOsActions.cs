@@ -12,14 +12,17 @@ namespace Zapper.Core.WebOs
     {
         private readonly IWebOsConnectionFactory _webOsConnectionFactory;
         private readonly ILogger<WebOsActions> _logger;
+        private readonly IWebOsStatusManager _webOsStatusManager;
         private readonly Dictionary<string, Action> _actions = new();
 
         public WebOsActions(
             IWebOsConnectionFactory webOsConnectionFactory,
-            ILogger<WebOsActions> logger)
+            ILogger<WebOsActions> logger,
+            IWebOsStatusManager webOsStatusManager)
         {
             _webOsConnectionFactory = webOsConnectionFactory;
             _logger = logger;
+            _webOsStatusManager = webOsStatusManager;
 
             AddAction(WebOsActionKey.Mute, service => service.Audio.MuteAsync());
             AddAction(WebOsActionKey.Unmute, service => service.Audio.UnmuteAsync());
@@ -45,8 +48,22 @@ namespace Zapper.Core.WebOs
             AddAction(WebOsActionKey.Rewind, service => service.Control.SendIntentAsync(ControlService.ControlIntent.Rewind));
             AddAction(WebOsActionKey.Stop, service => service.Control.SendIntentAsync(ControlService.ControlIntent.Stop));
             AddAction(WebOsActionKey.PowerOff, service => service.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff));
+            AddAction(WebOsActionKey.PowerOn, PowerOn);
+            AddAction(WebOsActionKey.ToggleOnOff, ToggleOnOff);
         }
-        
+
+        private Task PowerOn(IService arg)
+        {
+            // TODO - Send a wake on lan packet
+            throw new NotImplementedException();
+        }
+
+        private Task ToggleOnOff(IService arg)
+        {
+            // TODO - We'll need to figure out a way to get the device id to figure out which Web OS tv to turn on/on
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<string> GetAll()
         {
             return _actions.Keys;

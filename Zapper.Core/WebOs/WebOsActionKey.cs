@@ -26,5 +26,7 @@ namespace Zapper.Core.WebOs
         public const string Rewind = "Rewind";
         public const string Stop = "Stop";
         public const string PowerOff = "Power Off";
+        public const string PowerOn = "Power On";
+        public const string ToggleOnOff = "Toggle On/Off";
     }
 }
