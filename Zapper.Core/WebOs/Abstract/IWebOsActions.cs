@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zapper.Core.WebOs
+namespace Zapper.Core.WebOs.Abstract
 {
     public interface IWebOsActions
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebOsTv.Net;
+using Zapper.Core.WebOs.Abstract;
 
 namespace Zapper.Core.WebOs
 {

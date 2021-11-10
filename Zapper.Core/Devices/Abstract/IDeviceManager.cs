@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zapper.Web.Data.Abstract
+namespace Zapper.Core.Devices.Abstract
 {
     public interface IDeviceManager
     {

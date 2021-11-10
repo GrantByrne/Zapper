@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WebOsTv.Net;
 using WebOsTv.Net.Services;
+using Zapper.Core.WebOs.Abstract;
 
 namespace Zapper.Core.WebOs
 {

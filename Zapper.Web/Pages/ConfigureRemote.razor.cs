@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Zapper.Core.Devices;
+using Zapper.Core.Devices.Abstract;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Web.Data;
 using Zapper.Web.Data.Abstract;

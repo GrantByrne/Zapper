@@ -1,4 +1,4 @@
-namespace Zapper.Web.Data
+namespace Zapper.Core.Devices
 {
     public class DeviceAction
     {

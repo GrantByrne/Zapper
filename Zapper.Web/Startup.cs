@@ -5,8 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebOsTv.Net;
 using Zapper.Core;
+using Zapper.Core.Devices;
+using Zapper.Core.Devices.Abstract;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Core.WebOs;
+using Zapper.Core.WebOs.Abstract;
 using Zapper.Web.Data;
 using Zapper.Web.Data.Abstract;
 

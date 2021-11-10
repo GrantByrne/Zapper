@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using WebOsTv.Net;
 
-namespace Zapper.Core.WebOs
+namespace Zapper.Core.WebOs.Abstract
 {
     public interface IWebOsConnectionFactory
     {

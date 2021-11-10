@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zapper.Web.Data
+namespace Zapper.Core.Devices
 {
     public class Device
     {
@@ -16,8 +16,7 @@ namespace Zapper.Web.Data
         public string SupportDeviceType { get; set; }
         
         public string MacAddress { get; set; }
-
-
+        
         public List<DeviceAction> AvailableActions = new();
     }
 }

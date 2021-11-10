@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zapper.Core;
-using Zapper.Core.WebOs;
-using Zapper.Web.Data.Abstract;
+using Zapper.Core.Devices.Abstract;
+using Zapper.Core.WebOs.Abstract;
 
-namespace Zapper.Web.Data
+namespace Zapper.Core.Devices
 {
     public class DeviceManager : IDeviceManager
     {
@@ -64,15 +63,15 @@ namespace Zapper.Web.Data
         {
             var device = new Device
             {
-               Id = Guid.NewGuid(),
-               Name = name,
-               AvailableActions = _webOsActions
-                   .GetAll()
-                   .Select(a => new DeviceAction {Action = a})
-                   .ToList(),
-               IpAddress = ipAddress,
-               SupportDeviceType = SupportedDevice.WebOs,
-               MacAddress = macAddress
+                Id = Guid.NewGuid(),
+                Name = name,
+                AvailableActions = _webOsActions
+                    .GetAll()
+                    .Select(a => new DeviceAction {Action = a})
+                    .ToList(),
+                IpAddress = ipAddress,
+                SupportDeviceType = SupportedDevice.WebOs,
+                MacAddress = macAddress
             };
             
             _devices.Add(device);

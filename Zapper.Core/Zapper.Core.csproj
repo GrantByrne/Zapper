@@ -9,8 +9,4 @@
       <PackageReference Include="WebOsTv.Net" Version="1.1.27" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Infrared" />
-    </ItemGroup>
-
 </Project>

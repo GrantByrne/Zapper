@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zapper.Core;
 using Zapper.Core.WebOs;
+using Zapper.Core.WebOs.Abstract;
 using Zapper.Web.Data.Abstract;
 
 namespace Zapper.Web.Data
