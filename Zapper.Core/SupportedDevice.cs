@@ -10,9 +10,7 @@ namespace Zapper.Core
         {
             return new[]
             {
-                WebOs,
-                Ir,
-                Bluetooth
+                WebOs
             };
         }
     }
