@@ -1,4 +1,4 @@
-# Zapper
+# :zap: Zapper
 
 
 **Important** - This project is currently a work in progress. Please don't try to use it. I'm certain you will be quite disapointed.
@@ -18,4 +18,4 @@ In addition to this, I've been happy-ish with my current setup; however, I would
 
 I also think that since home theater set up can get really complicated with many many different components, it's a problem that lends itself well to crowd sourcing through open source.
 
-My hope is to make a system that meets my needs, but it also extensible to fits the needs of other people looking to have a more flexible universal remote experience.
+My hope is to make a system that meets my needs, but is also extensible to fits the needs of other people looking to have a more flexible universal remote experience.
