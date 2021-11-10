@@ -17,7 +17,7 @@ namespace Zapper.Core.WebOs
         public WebOsStatusManager()
         {
             _timer.Enabled = true;
-            _timer.Interval = 1000 * 60; // One minute
+            _timer.Interval = 1000 * 30; // 30 Seconds
             _timer.Elapsed += (_, _) => { Run(); };
             _timer.Start();
         }

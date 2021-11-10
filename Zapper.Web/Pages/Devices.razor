@@ -1,10 +1,12 @@
 @page "/Devices"
-@using Zapper.Core
 @using Microsoft.Extensions.Logging
 @using Zapper.Core.Devices
 @using Zapper.Core.Devices.Abstract
+@using Zapper.Core.WebOs.Abstract
+@using Zapper.Web.Data
 @inject IDeviceManager _deviceManager;
 @inject ILogger<Devices> _logger;
+@inject IWebOsStatusManager _webOsStatusManager;
 
 <h1>Devices</h1>
 
@@ -20,6 +22,7 @@
             <tr>
                 <th>Name</th>
                 <th>Device Type</th>
+                <th>Status</th>
                 <th></th>
             </tr>
             </thead>
@@ -28,7 +31,8 @@
             {
                 <tr>
                     <td><a href="/ConfigureDevice/{@device.Id}">@device.Name</a></td>
-                    <td>@device.SupportDeviceType</td>
+                    <td>@device.DeviceType</td>
+                    <td>@device.Status</td>
                     <td>
                         <button @onclick="() => Delete(device)" class="btn btn-primary">Delete</button>
                     </td>
@@ -72,7 +76,7 @@
 
 @code
 {
-    private IEnumerable<Device> _devices = Array.Empty<Device>();
+    private List<DeviceModel> _devices = new();
     private Modal Modal { get; set; }
     private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
     private ConfigureIrDevice ConfigureIrDevice { get; set; }
@@ -83,7 +87,19 @@
     
     protected override void OnInitialized()
     {
-        _devices = _deviceManager.Get();
+        var devices = _deviceManager.Get();
+
+        foreach (var device in devices)
+        {
+            var d = new DeviceModel();
+
+            d.Id = device.Id;
+            d.Status = _webOsStatusManager.GetStatus(d.Id);
+            d.DeviceType = device.SupportDeviceType;
+            d.Name = device.Name;
+
+            _devices.Add(d);
+        }
     }
 
     private void AddDevice()
@@ -144,7 +160,7 @@
         }
     }
 
-    private void Delete(Device device)
+    private void Delete(DeviceModel device)
     {
         try
         {
