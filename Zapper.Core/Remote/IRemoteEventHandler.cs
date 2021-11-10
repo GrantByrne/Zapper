@@ -1,7 +1,7 @@
 using System;
 using Zapper.Core.KeyboardMouse;
 
-namespace Zapper.Core
+namespace Zapper.Core.Remote
 {
     public interface IRemoteEventHandler
     {

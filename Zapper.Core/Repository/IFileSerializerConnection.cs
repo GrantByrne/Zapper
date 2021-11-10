@@ -1,4 +1,4 @@
-namespace Zapper.Core
+namespace Zapper.Core.Repository
 {
     public interface IFileSerializerConnection
     {

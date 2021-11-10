@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Zapper.Core.KeyboardMouse;
+using Zapper.Core.KeyboardMouse.Abstract;
 
-namespace Zapper.Core
+namespace Zapper.Core.Remote
 {
     public class RemoteEventHandler : IRemoteEventHandler
     {

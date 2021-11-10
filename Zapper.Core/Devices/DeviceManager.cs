@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Zapper.Core.Devices.Abstract;
+using Zapper.Core.Repository;
 using Zapper.Core.WebOs.Abstract;
 
 namespace Zapper.Core.Devices

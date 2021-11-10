@@ -1,4 +1,4 @@
-namespace Zapper.Core.KeyboardMouse
+namespace Zapper.Core.KeyboardMouse.Abstract
 {
     public interface IAggregateInputReader
     {

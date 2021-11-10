@@ -1,4 +1,4 @@
-namespace Zapper.Core
+namespace Zapper.Core.Devices
 {
     public static class SupportedDevice
     {

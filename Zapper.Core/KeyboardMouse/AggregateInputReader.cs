@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Zapper.Core.KeyboardMouse.Abstract;
 
 namespace Zapper.Core.KeyboardMouse
 {

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace Zapper.Core
+namespace Zapper.Core.Repository
 {
     public class FileSerializerConnection : IFileSerializerConnection
     {
