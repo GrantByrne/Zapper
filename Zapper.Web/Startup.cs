@@ -37,12 +37,13 @@ namespace Zapper.Web
             services.AddSingleton<IAggregateInputReader, AggregateInputReader>();
             services.AddSingleton<IDeviceManager, DeviceManager>();
             services.AddSingleton<IRemoteManager, RemoteManager>();
-            services.AddSingleton<IWebOsActions, WebOsActions>();
             services.AddSingleton<IService, Service>();
             services.AddSingleton<IRemoteEventHandler, RemoteEventHandler>();
             services.AddSingleton<IWebOsConnectionFactory, WebOsConnectionFactory>();
             services.AddSingleton<IFileSerializerConnection, FileSerializerConnection>();
             services.AddSingleton<IWebOsStatusManager, WebOsStatusManager>();
+            services.AddSingleton<IWakeOnLanManager, WakeOnLanManager>();
+            services.AddSingleton<IWebOsActionFactory, WebOsActionFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

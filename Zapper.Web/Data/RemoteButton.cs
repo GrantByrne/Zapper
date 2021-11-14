@@ -1,3 +1,4 @@
+using System;
 using Zapper.Core.KeyboardMouse;
 
 namespace Zapper.Web.Data
@@ -9,5 +10,7 @@ namespace Zapper.Web.Data
         public string Action { get; set; }
         
         public EventCode Code { get; set; }
+        
+        public Guid DeviceId { get; set; }
     }
 }

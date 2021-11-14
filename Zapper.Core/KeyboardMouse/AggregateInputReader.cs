@@ -5,6 +5,23 @@ using Zapper.Core.KeyboardMouse.Abstract;
 
 namespace Zapper.Core.KeyboardMouse
 {
+    public class InputHandler
+    {
+        private readonly IAggregateInputReader _aggregateInputReader;
+
+        public InputHandler(IAggregateInputReader aggregateInputReader)
+        {
+            _aggregateInputReader = aggregateInputReader;
+            
+            _aggregateInputReader.OnKeyPress += Handle;
+        }
+
+        private void Handle(KeyPressEvent e)
+        {
+            
+        } 
+    }
+
     public class AggregateInputReader : IDisposable, IAggregateInputReader
     {
         private List<InputReader> _readers = new();

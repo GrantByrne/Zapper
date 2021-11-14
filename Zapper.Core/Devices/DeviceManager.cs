@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Zapper.Core.Devices.Abstract;
 using Zapper.Core.Repository;
+using Zapper.Core.WebOs;
 using Zapper.Core.WebOs.Abstract;
 
 namespace Zapper.Core.Devices
@@ -11,17 +12,14 @@ namespace Zapper.Core.Devices
     {
         private const string Path = "devices.json";
         
-        private readonly IWebOsActions _webOsActions;
         private readonly IFileSerializerConnection _fileSerializerConnection;
         private readonly IWebOsStatusManager _webOsStatusManager;
         private List<Device> _devices;
 
         public DeviceManager(
-            IWebOsActions webOsActions,
             IFileSerializerConnection fileSerializerConnection,
             IWebOsStatusManager webOsStatusManager)
         {
-            _webOsActions = webOsActions;
             _fileSerializerConnection = fileSerializerConnection;
             _webOsStatusManager = webOsStatusManager;
 
@@ -70,19 +68,22 @@ namespace Zapper.Core.Devices
 
         public void CreateWebOsDevice(string name, string ipAddress, string macAddress)
         {
-            var device = new Device
-            {
-                Id = Guid.NewGuid(),
-                Name = name,
-                AvailableActions = _webOsActions
-                    .GetAll()
-                    .Select(a => new DeviceAction {Action = a})
-                    .ToList(),
-                IpAddress = ipAddress,
-                SupportDeviceType = SupportedDevice.WebOs,
-                MacAddress = macAddress
-            };
+            var device = new Device();
             
+            device.Id = Guid.NewGuid();
+            device.Name = name;
+            
+            device.AvailableActions = WebOsActionKey.All()
+                .Select(a => new DeviceAction {
+                    Action = a,
+                    DeviceId = device.Id
+                })
+                .ToList();
+            
+            device.IpAddress = ipAddress;
+            device.SupportDeviceType = SupportedDevice.WebOs;
+            device.MacAddress = macAddress;
+
             _devices.Add(device);
             
             _fileSerializerConnection.Write(_devices, Path);
@@ -95,8 +96,7 @@ namespace Zapper.Core.Devices
 
             foreach (var device in _devices.Where(d => d.SupportDeviceType == SupportedDevice.WebOs))
             {
-                device.AvailableActions = _webOsActions
-                    .GetAll()
+                device.AvailableActions = WebOsActionKey.All()
                     .Select(a => new DeviceAction {Action = a})
                     .ToList();
                 

@@ -35,15 +35,15 @@
                 </div>
                 <div class="card-body">
                     <button class="btn btn-primary" @onclick="AddAction">
-                        <span class="oi oi-plus"></span> Add Action
+                        <span class="oi oi-plus"></span> Set Action
                     </button>
                     <button class="btn btn-primary" @onclick="RemoveButton">
                         <span class="oi oi-trash"></span> Remove Button
                     </button>
-                    <h5 style="margin-top:15px">Actions</h5>
+                    <h5 style="margin-top:15px">Action</h5>
                     @if (string.IsNullOrWhiteSpace(_selectedButton.Action))
                     {
-                        <p>No actions for this button</p>
+                        <p>No action specified for this button</p>
                     }
                     else
                     {

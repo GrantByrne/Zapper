@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Zapper.Core;
+using Zapper.Core.Devices;
+using Zapper.Core.Devices.Abstract;
 using Zapper.Core.Remote;
 using Zapper.Core.Repository;
 using Zapper.Core.WebOs;
@@ -14,19 +16,22 @@ namespace Zapper.Web.Data
         private const string Path = "remotes.json";
         
         private readonly IRemoteEventHandler _remoteEventHandler;
-        private readonly IWebOsActions _webOsActions;
         private readonly IFileSerializerConnection _fileSerializerConnection;
+        private readonly IWebOsActionFactory _webOsActionFactory;
+        private readonly IDeviceManager _deviceManager;
 
         private List<RemoteButton> _cache;
 
         public RemoteManager(
             IRemoteEventHandler remoteEventHandler,
-            IWebOsActions webOsActions,
-            IFileSerializerConnection fileSerializerConnection)
+            IFileSerializerConnection fileSerializerConnection,
+            IWebOsActionFactory webOsActionFactory,
+            IDeviceManager deviceManager)
         {
             _remoteEventHandler = remoteEventHandler;
-            _webOsActions = webOsActions;
             _fileSerializerConnection = fileSerializerConnection;
+            _webOsActionFactory = webOsActionFactory;
+            _deviceManager = deviceManager;
         }
 
         public void Initialize()
@@ -36,7 +41,8 @@ namespace Zapper.Web.Data
             var validButtons = _cache.Where(b => !string.IsNullOrEmpty(b.Action));
             foreach (var remote in validButtons)
             {
-                var a = _webOsActions.Get(remote.Action);
+                var device = _deviceManager.Get(remote.DeviceId);
+                var a = _webOsActionFactory.Build(remote.Action, device);
                 _remoteEventHandler.RegisterAction(remote.Code, a);   
             }
         }
@@ -53,7 +59,8 @@ namespace Zapper.Web.Data
             var validButtons = remoteButtons.Where(b => !string.IsNullOrEmpty(b.Action));
             foreach (var remote in validButtons)
             {
-                var a = _webOsActions.Get(remote.Action);
+                var device = _deviceManager.Get(remote.DeviceId);
+                var a = _webOsActionFactory.Build(remote.Action, device);
                 _remoteEventHandler.RegisterAction(remote.Code, a);   
             }
             

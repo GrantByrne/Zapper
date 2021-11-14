@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Zapper.Core.WebOs
 {
     public static class WebOsActionKey
@@ -28,5 +30,40 @@ namespace Zapper.Core.WebOs
         public const string PowerOff = "Power Off";
         public const string PowerOn = "Power On";
         public const string ToggleOnOff = "Toggle On/Off";
+
+        public static IEnumerable<string> All()
+        {
+            var keys = new[]
+            {
+                Mute,
+                Unmute,
+                VolumeUp,
+                VolumeDown,
+                ChannelDown,
+                ChannelUp,
+                TurnOn3d,
+                TurnOff3d,
+                Home,
+                Back,
+                Up,
+                Down,
+                Left,
+                Right,
+                Red,
+                Blue,
+                Yellow,
+                Green,
+                FastForward,
+                Pause,
+                Play,
+                Rewind,
+                Stop,
+                PowerOff,
+                PowerOn,
+                ToggleOnOff
+            };
+
+            return keys;
+        }
     }
 }
