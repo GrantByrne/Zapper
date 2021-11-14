@@ -7,7 +7,7 @@
 ## Overview
 
 
-The aim of the Zapper project is to create a unversal remote hub that runs on a Raspberry Pi. Using components that you can easily purchase online (Raspberry Pi, IR Hat, USB Wirless remote, etc...) you should be able to have a hub that can control your home theatre of IR, Bluetooth, and WebOS devices. This would also allow you to bring your own remote.
+The aim of the project is to create a unversal remote hub that runs on a Raspberry Pi. Using components that you can easily purchase online (Raspberry Pi, IR Hat, USB Wirless remote, etc...) you should be able to have a hub that can control your home theatre of IR, Bluetooth, and WebOS devices. This would also allow you to bring your own remote.
 
 
 ## Doesn't That Basically Already Exist?
