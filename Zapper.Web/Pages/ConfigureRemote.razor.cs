@@ -173,6 +173,7 @@ namespace Zapper.Web.Pages
             try
             {
                 _selectedButton.Action = _selectedAction.Action;
+                _selectedButton.DeviceId = _selectedDevice.Id;
                 _dirty = true;
                 Modal.Close();
                 _selectedAction = null;
