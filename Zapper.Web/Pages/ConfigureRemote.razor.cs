@@ -161,6 +161,13 @@ namespace Zapper.Web.Pages
         {
             try
             {
+                if (_actionSelector?.SelectedAction == null ||
+                    _selectedDevice == null)
+                {
+                    Logger.LogInformation("User didn't select an action or device. Not saving anything.");
+                    return;
+                }
+                
                 _selectedButton.Action = _actionSelector.SelectedAction.Action;
                 _selectedButton.DeviceId = _selectedDevice.Id;
                 _dirty = true;
