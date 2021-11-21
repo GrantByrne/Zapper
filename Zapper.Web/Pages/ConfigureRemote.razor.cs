@@ -40,6 +40,11 @@ namespace Zapper.Web.Pages
 
         protected override void OnInitialized()
         {
+            Load();
+        }
+
+        private void Load()
+        {
             var buttons = RemoteManager.Get();
 
             _buttons = buttons.ToDictionary(p => p.Name);
@@ -206,6 +211,19 @@ namespace Zapper.Web.Pages
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error occurred while trying to remove the button");
+            }
+        }
+
+        private void Cancel()
+        {
+            try
+            {
+                Load();
+                _dirty = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error occurred while rolling back the remote configuration");
             }
         }
     }
