@@ -1,0 +1,42 @@
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices
+
+<strong>Actions</strong>
+<div class="list-of-buttons btn-group-vertical">
+    @foreach (var a in SelectedDevice.AvailableActions)
+    {
+        <button class="btn btn-outline-secondary @(a == SelectedAction ? "active" : "")"
+                @onclick="() => SelectAction(a)">
+            @a.Action
+        </button>
+    }
+</div>
+
+@code {
+    
+    [Parameter]
+    public Device SelectedDevice { get; set; }
+    
+    public DeviceAction SelectedAction { get; set; }
+    
+    [Inject] 
+    public ILogger<ActionSelector> Logger { get; set; }
+    
+    private void SelectAction(DeviceAction deviceAction)
+    {
+        try
+        {
+            SelectedAction = deviceAction;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occured while selecting device action");
+        }
+    }
+
+    public void Clear()
+    {
+        SelectedAction = null;
+    }
+    
+}

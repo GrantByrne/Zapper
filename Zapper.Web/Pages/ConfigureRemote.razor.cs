@@ -21,8 +21,8 @@ namespace Zapper.Web.Pages
         private string _scanButtonText = "Scan for Input";
         private IEnumerable<Device> _devices = Array.Empty<Device>();
         private Device _selectedDevice;
-        private DeviceAction _selectedAction;
         private bool _dirty;
+        private ActionSelector _actionSelector;
 
         private Modal Modal { get; set; }
         
@@ -35,7 +35,8 @@ namespace Zapper.Web.Pages
         [Inject]
         public IRemoteManager RemoteManager { get; set; }
 
-        [Inject] public ILogger<ConfigureRemote> Logger { get; set; }
+        [Inject] 
+        public ILogger<ConfigureRemote> Logger { get; set; }
 
         protected override void OnInitialized()
         {
@@ -142,18 +143,6 @@ namespace Zapper.Web.Pages
             }
         }
 
-        private void SelectAction(DeviceAction deviceAction)
-        {
-            try
-            {
-                _selectedAction = deviceAction;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error occured while selecting device action");
-            }
-        }
-
         private void SaveChanges()
         {
             try
@@ -172,12 +161,12 @@ namespace Zapper.Web.Pages
         {
             try
             {
-                _selectedButton.Action = _selectedAction.Action;
+                _selectedButton.Action = _actionSelector.SelectedAction.Action;
                 _selectedButton.DeviceId = _selectedDevice.Id;
                 _dirty = true;
                 Modal.Close();
-                _selectedAction = null;
                 _selectedDevice = null;
+                _actionSelector.Clear();
             }
             catch (Exception ex)
             {
@@ -190,7 +179,7 @@ namespace Zapper.Web.Pages
             try
             {
                 Modal.Close();
-                _selectedAction = null;
+                _actionSelector.Clear();
                 _selectedDevice = null;
             }
             catch (Exception ex)

@@ -79,16 +79,7 @@
     </div>
     @if (_selectedDevice != null)
     {
-        <strong>Actions</strong>
-        <div class="list-of-buttons btn-group-vertical">
-            @foreach (var a in _selectedDevice.AvailableActions)
-            {
-                <button class="btn btn-outline-secondary @(a == _selectedAction ? "active" : "")"
-                        @onclick="() => SelectAction(a)">
-                    @a.Action
-                </button>
-            }
-        </div>
+        <ActionSelector @ref="_actionSelector" SelectedDevice="_selectedDevice" />
     }
     </Body>
     <Footer>
