@@ -186,7 +186,7 @@ namespace Zapper.Web.Pages
             try
             {
                 Modal.Close();
-                _actionSelector.Clear();
+                _actionSelector?.Clear();
                 _selectedDevice = null;
             }
             catch (Exception ex)
