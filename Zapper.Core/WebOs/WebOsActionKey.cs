@@ -36,7 +36,7 @@ namespace Zapper.Core.WebOs
         public const string Yellow = "Yellow";
         public const string Blue = "Blue";
         public const string VolumeUp = "Volume Up";
-        public const string VolumeDown = "VolumeD own";
+        public const string VolumeDown = "Volume Down";
         public const string ChannelUp = "Channel Up";
         public const string ChannelDown = "Channel Down";
         public const string Play = "Play";

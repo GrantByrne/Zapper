@@ -35,7 +35,7 @@ namespace WebOsTv.Net.Commands.Tv
         public static readonly ButtonType Yellow = new ButtonType("YELLOW", "Yellow");
         public static readonly ButtonType Blue = new ButtonType("BLUE", "Blue");
         public static readonly ButtonType VolumeUp = new ButtonType("VOLUMEUP", "Volume Up");
-        public static readonly ButtonType VolumeDown = new ButtonType("VOLUMEDOWN", "VolumeD own");
+        public static readonly ButtonType VolumeDown = new ButtonType("VOLUMEDOWN", "Volume Down");
         public static readonly ButtonType ChannelUp = new ButtonType("CHANNELUP", "Channel Up");
         public static readonly ButtonType ChannelDown = new ButtonType("CHANNELDOWN", "Channel Down");
         public static readonly ButtonType Play = new ButtonType("PLAY", "Play");
