@@ -1,0 +1,56 @@
+@using Microsoft.Extensions.Logging
+@using HashtagChris.DotNetBlueZ
+@using HashtagChris.DotNetBlueZ.Extensions
+@using Zapper.Core.Bluetooth
+@inject ILogger<ConfigureBluetoothDevice> _logger;
+@inject IBluetoothConnection _bluetoothConnection;
+
+<h3>Configure Bluetooth</h3>
+<div class="row">
+    <div class="col-12">
+        <button @onclick="Scan" class="btn btn-primary">Scan for Bluetooth Devices</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <ul>
+            @foreach (var device in _devices)
+            {
+                <li>@device.Name</li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+
+    private List<BluetoothDeviceFoundEvent> _devices = new();
+
+    private async Task Scan()
+    {
+        try
+        {
+            _bluetoothConnection.OnBluetoothDeviceFound += FoundBluetoothDevice;
+            await _bluetoothConnection.Start();
+            await _bluetoothConnection.ScanForDevices();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while scanning for bluetooth devices");
+        }
+    }
+
+    private void FoundBluetoothDevice(BluetoothDeviceFoundEvent e)
+    {
+        try
+        {
+            _devices.Add(e);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred when processing found bluetooth device event");
+        }
+    }
+
+}

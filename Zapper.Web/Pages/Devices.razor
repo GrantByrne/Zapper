@@ -57,6 +57,10 @@
     {
         <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
     }
+    else if(_selectedDeviceType == SupportedDevice.Bluetooth)
+    {
+        <ConfigureBluetoothDevice/>
+    }
     </Body>
     <Footer>
         @if (_showSaveChanges)

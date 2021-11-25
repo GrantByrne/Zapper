@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebOsTv.Net;
 using Zapper.Core;
+using Zapper.Core.Bluetooth;
 using Zapper.Core.Devices;
 using Zapper.Core.Devices.Abstract;
 using Zapper.Core.KeyboardMouse;
@@ -44,6 +45,7 @@ namespace Zapper.Web
             services.AddSingleton<IWebOsStatusManager, WebOsStatusManager>();
             services.AddSingleton<IWakeOnLanManager, WakeOnLanManager>();
             services.AddSingleton<IWebOsActionFactory, WebOsActionFactory>();
+            services.AddSingleton<IBluetoothConnection, BluetoothConnection>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

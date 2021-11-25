@@ -10,7 +10,8 @@ namespace Zapper.Core.Devices
         {
             return new[]
             {
-                WebOs
+                WebOs,
+                Bluetooth
             };
         }
     }
