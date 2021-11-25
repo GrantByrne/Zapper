@@ -145,6 +145,9 @@ namespace WebOsTv.Net
 
         public async Task SendButtonAsync(ButtonType type)
         {
+            if (_mouseSocket == null)
+                return;
+            
             if (!_mouseSocket.IsAlive)
                 await ConnectAsync(_hostName);
 
