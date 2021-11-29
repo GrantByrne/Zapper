@@ -49,107 +49,107 @@ namespace Zapper.Core.WebOs
                     MakeAction(WebOsActionKey.TurnOff3d, device, (s, _) => s.Tv.TurnOff3dAsync()),
                 WebOsActionKey.Home =>
                     MakeAction(WebOsActionKey.Home, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Home)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Home)),
                 WebOsActionKey.Back =>
                     MakeAction(WebOsActionKey.Back, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Back)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Back)),
                 WebOsActionKey.Up =>
                     MakeAction(WebOsActionKey.Up, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Up)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Up)),
                 WebOsActionKey.Down =>
                     MakeAction(WebOsActionKey.Down, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Down)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Down)),
                 WebOsActionKey.Left =>
                     MakeAction(WebOsActionKey.Left, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Left)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Left)),
                 WebOsActionKey.Right =>
                     MakeAction(WebOsActionKey.Right, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Right)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Right)),
                 WebOsActionKey.Red =>
                     MakeAction(WebOsActionKey.Red, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Red)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Red)),
                 WebOsActionKey.Blue =>
                     MakeAction(WebOsActionKey.Blue, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Blue)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Blue)),
                 WebOsActionKey.Yellow =>
                     MakeAction(WebOsActionKey.Yellow, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Yellow)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Yellow)),
                 WebOsActionKey.Green =>
                     MakeAction(WebOsActionKey.Green, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Green)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Green)),
                 WebOsActionKey.FastForward =>
                     MakeAction(WebOsActionKey.FastForward, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.FastForward)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.FastForward)),
                 WebOsActionKey.Pause =>
                     MakeAction(WebOsActionKey.Pause, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Pause)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Pause)),
                 WebOsActionKey.Play =>
                     MakeAction(WebOsActionKey.Play, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Play)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Play)),
                 WebOsActionKey.Rewind =>
                     MakeAction(WebOsActionKey.Rewind, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Rewind)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Rewind)),
                 WebOsActionKey.Stop =>
                     MakeAction(WebOsActionKey.Stop, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Stop)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Stop)),
                 WebOsActionKey.PowerOff =>
                     MakeAction(WebOsActionKey.PowerOff, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.PowerOff)),
                 WebOsActionKey.PowerOn =>
                     MakeAction(WebOsActionKey.PowerOn, device, WakeOnLan),
                 WebOsActionKey.ToggleOnOff =>
                     MakeAction(WebOsActionKey.ToggleOnOff, device, ToggleOnOff),
                 WebOsActionKey.Enter =>
                     MakeAction(WebOsActionKey.Enter, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Enter)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Enter)),
                 WebOsActionKey.Dash =>
                     MakeAction(WebOsActionKey.Dash, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Dash)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Dash)),
                 WebOsActionKey.Info =>
                     MakeAction(WebOsActionKey.Info, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Info)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Info)),
                 WebOsActionKey.One =>
                     MakeAction(WebOsActionKey.One, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.One)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.One)),
                 WebOsActionKey.Two =>
                     MakeAction(WebOsActionKey.Two, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Two)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Two)),
                 WebOsActionKey.Three =>
                     MakeAction(WebOsActionKey.Three, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Three)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Three)),
                 WebOsActionKey.Four =>
                     MakeAction(WebOsActionKey.Four, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Four)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Four)),
                 WebOsActionKey.Five =>
                     MakeAction(WebOsActionKey.Five, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Five)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Five)),
                 WebOsActionKey.Six =>
                     MakeAction(WebOsActionKey.Six, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Six)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Six)),
                 WebOsActionKey.Seven =>
                     MakeAction(WebOsActionKey.Seven, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Seven)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Seven)),
                 WebOsActionKey.Eight =>
                     MakeAction(WebOsActionKey.Eight, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Eight)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Eight)),
                 WebOsActionKey.Nine =>
                     MakeAction(WebOsActionKey.Nine, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Nine)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Nine)),
                 WebOsActionKey.Zero =>
                     MakeAction(WebOsActionKey.Zero, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Zero)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Zero)),
                 WebOsActionKey.Asterisk =>
                     MakeAction(WebOsActionKey.Asterisk, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Asterisk)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Asterisk)),
                 WebOsActionKey.Cc =>
                     MakeAction(WebOsActionKey.Cc, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Cc)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Cc)),
                 WebOsActionKey.Exit =>
                     MakeAction(WebOsActionKey.Exit, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Exit)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Exit)),
                 WebOsActionKey.Menu =>
                     MakeAction(WebOsActionKey.Menu, device,
-                        (s, _) => s.Control.SendIntentAsync(ControlService.ControlIntent.Menu)),
+                        (s, _) => s?.Control.SendIntentAsync(ControlService.ControlIntent.Menu)),
                 _ => throw new ArgumentException("Unsupported Web OS Action")
             };
 
