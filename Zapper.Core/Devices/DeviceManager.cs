@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Zapper.Core.Devices.Abstract;
 using Zapper.Core.Repository;
 using Zapper.Core.WebOs;
@@ -10,19 +12,25 @@ namespace Zapper.Core.Devices
 {
     public class DeviceManager : IDeviceManager
     {
-        private const string Path = "devices.json";
+        private const string Filename = "devices.json";
         
         private readonly IFileSerializerConnection _fileSerializerConnection;
         private readonly IWebOsStatusManager _webOsStatusManager;
+        private readonly IConfiguration _configuration;
+        private readonly string _path;
         private List<Device> _devices;
 
         public DeviceManager(
             IFileSerializerConnection fileSerializerConnection,
-            IWebOsStatusManager webOsStatusManager)
+            IWebOsStatusManager webOsStatusManager,
+            IConfiguration configuration)
         {
             _fileSerializerConnection = fileSerializerConnection;
             _webOsStatusManager = webOsStatusManager;
+            _configuration = configuration;
 
+            _path = GetPath();
+            
             Initialize();
         }
 
@@ -44,7 +52,7 @@ namespace Zapper.Core.Devices
                 return;
             
             _devices.Remove(device);  
-            _fileSerializerConnection.Write(_devices, Path);
+            _fileSerializerConnection.Write(_devices, _path);
 
             if (device.SupportDeviceType == SupportedDevice.WebOs)
             {
@@ -63,7 +71,7 @@ namespace Zapper.Core.Devices
             
             _devices.Add(device);
             
-            _fileSerializerConnection.Write(_devices, Path);
+            _fileSerializerConnection.Write(_devices, _path);
         }
 
         public void CreateWebOsDevice(string name, string ipAddress, string macAddress)
@@ -86,13 +94,13 @@ namespace Zapper.Core.Devices
 
             _devices.Add(device);
             
-            _fileSerializerConnection.Write(_devices, Path);
+            _fileSerializerConnection.Write(_devices, _path);
             _webOsStatusManager.Register(device.Id, ipAddress);
         }
         
         private void Initialize()
         {
-            _devices = _fileSerializerConnection.Read<List<Device>>(Path) ?? new List<Device>();
+            _devices = _fileSerializerConnection.Read<List<Device>>(_path) ?? new List<Device>();
 
             foreach (var device in _devices.Where(d => d.SupportDeviceType == SupportedDevice.WebOs))
             {
@@ -102,6 +110,13 @@ namespace Zapper.Core.Devices
                 
                 _webOsStatusManager.Register(device.Id, device.IpAddress);
             }
+        }
+
+        private string GetPath()
+        {
+            var dir = _configuration["SettingsPath"];
+            var p = Path.Combine(dir, Filename);
+            return p;
         }
     }
 }

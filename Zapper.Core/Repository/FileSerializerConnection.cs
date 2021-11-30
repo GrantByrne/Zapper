@@ -20,6 +20,13 @@ namespace Zapper.Core.Repository
         public void Write<T>(T data, string path)
         {
             var json = JsonSerializer.Serialize(data);
+
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir) && dir != null)
+            {
+                Directory.CreateDirectory(dir);
+            }
+            
             File.WriteAllText(path, json);
         }
     }

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using Zapper.Core;
 using Zapper.Core.Devices;
 using Zapper.Core.Devices.Abstract;
@@ -13,12 +15,13 @@ namespace Zapper.Web.Data
 {
     public class RemoteManager : IRemoteManager
     {
-        private const string Path = "remotes.json";
+        private const string Filename = "remotes.json";
         
         private readonly IRemoteEventHandler _remoteEventHandler;
         private readonly IFileSerializerConnection _fileSerializerConnection;
         private readonly IWebOsActionFactory _webOsActionFactory;
         private readonly IDeviceManager _deviceManager;
+        private readonly IConfiguration _configuration;
 
         private List<RemoteButton> _cache;
 
@@ -26,17 +29,20 @@ namespace Zapper.Web.Data
             IRemoteEventHandler remoteEventHandler,
             IFileSerializerConnection fileSerializerConnection,
             IWebOsActionFactory webOsActionFactory,
-            IDeviceManager deviceManager)
+            IDeviceManager deviceManager,
+            IConfiguration configuration)
         {
             _remoteEventHandler = remoteEventHandler;
             _fileSerializerConnection = fileSerializerConnection;
             _webOsActionFactory = webOsActionFactory;
             _deviceManager = deviceManager;
+            _configuration = configuration;
         }
 
         public void Initialize()
         {
-            _cache = _fileSerializerConnection.Read<List<RemoteButton>>(Path) ?? new List<RemoteButton>();
+            var path = GetPath();
+            _cache = _fileSerializerConnection.Read<List<RemoteButton>>(path) ?? new List<RemoteButton>();
             
             var validButtons = _cache.Where(b => !string.IsNullOrEmpty(b.Action));
             foreach (var remote in validButtons)
@@ -65,8 +71,16 @@ namespace Zapper.Web.Data
             }
             
             _cache = remoteButtons.ToList();
-            
-            _fileSerializerConnection.Write(_cache, Path);
+
+            var path = GetPath();
+            _fileSerializerConnection.Write(_cache, path);
+        }
+
+        private string GetPath()
+        {
+            var dir = _configuration.GetValue<string>("SettingsPath");
+            var path = Path.Combine(dir, Filename);
+            return path;
         }
     }
 }
