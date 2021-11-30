@@ -41,7 +41,7 @@ namespace Zapper.Core.Devices
 
         public Device Get(Guid id)
         {
-            return _devices.First(d => d.Id == id);
+            return _devices.FirstOrDefault(d => d.Id == id);
         }
 
         public void Delete(Guid id)
