@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Logging;
 using Zapper.Core.KeyboardMouse.Abstract;
 
 namespace Zapper.Core.KeyboardMouse
@@ -11,13 +12,13 @@ namespace Zapper.Core.KeyboardMouse
         
         public event InputReader.RaiseKeyPress OnKeyPress;
 
-        public AggregateInputReader()
+        public AggregateInputReader(ILogger<InputReader> inputReaderLogger)
         {
             var files = Directory.GetFiles("/dev/input/", "event*");
 
             foreach (var file in files)
             {
-                var reader = new InputReader(file);
+                var reader = new InputReader(file, inputReaderLogger);
                 
                 reader.OnKeyPress += ReaderOnOnKeyPress;
 

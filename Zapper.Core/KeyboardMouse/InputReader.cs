@@ -2,11 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Zapper.Core.KeyboardMouse
 {
     public class InputReader : IDisposable
     {
+        private readonly ILogger<InputReader> _logger;
         private const int BufferLength = 24;
         
         private static readonly int PiOffset;
@@ -23,6 +25,10 @@ namespace Zapper.Core.KeyboardMouse
         public event RaiseKeyPress OnKeyPress;
 
         public event RaiseMouseMove OnMouseMove;
+        
+        public string Path { get; }
+        
+        public bool Faulted { get; private set; }
 
         static InputReader()
         {
@@ -32,9 +38,23 @@ namespace Zapper.Core.KeyboardMouse
             }
         }
 
-        public InputReader(string path)
+        public InputReader(
+            string path,
+            ILogger<InputReader> logger)
         {
-            _stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            _logger = logger;
+            
+            Path = path;
+
+            try
+            {
+                _stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogWarning(ex, $"Error occurred while trying to build stream for {path}");
+                Faulted = true;
+            }
 
             Task.Run(Run);
         }
@@ -46,7 +66,15 @@ namespace Zapper.Core.KeyboardMouse
                 if (_disposing)
                     break;
 
-                _stream.Read(_buffer, 0, BufferLength);
+                try
+                {
+                    _stream.Read(_buffer, 0, BufferLength);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, $"Error occured while trying to read from the stream for {Path}");
+                    Faulted = true;
+                }
 
                 var type = GetEventType();
                 var code = GetCode();
