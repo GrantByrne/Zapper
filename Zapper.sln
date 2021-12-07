@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Core", "Zapper.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Core.Test", "Zapper.Core.Test\Zapper.Core.Test.csproj", "{5A422D65-CB64-4C0A-BCDB-F8D4D07F2A12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebOsTv.Net", "WebOsTv.Net\WebOsTv.Net.csproj", "{1DA2976B-8F74-4E9B-9CD8-3B1439C50B09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.WebOs", "Zapper.WebOs\Zapper.WebOs.csproj", "{1DA2976B-8F74-4E9B-9CD8-3B1439C50B09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
-using WebOsTv.Net;
-using WebOsTv.Net.Services;
 using Zapper.Core.Devices;
 using Zapper.Core.WebOs;
 using Zapper.Core.WebOs.Abstract;
+using Zapper.WebOs;
+using Zapper.WebOs.Services;
 
 namespace Zapper.Core.Test.WebOs
 {

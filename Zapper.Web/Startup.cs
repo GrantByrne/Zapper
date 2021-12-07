@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebOsTv.Net;
 using Zapper.Core;
 using Zapper.Core.Bluetooth;
 using Zapper.Core.Devices;
@@ -16,6 +15,7 @@ using Zapper.Core.WebOs;
 using Zapper.Core.WebOs.Abstract;
 using Zapper.Web.Data;
 using Zapper.Web.Data.Abstract;
+using Zapper.WebOs;
 
 namespace Zapper.Web
 {

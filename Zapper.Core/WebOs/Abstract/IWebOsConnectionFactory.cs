@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using WebOsTv.Net;
+using Zapper.WebOs;
 
 namespace Zapper.Core.WebOs.Abstract
 {

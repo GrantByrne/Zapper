@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using WebOsTv.Net;
 using Zapper.Core.WebOs.Abstract;
+using Zapper.WebOs;
 
 namespace Zapper.Core.WebOs
 {
