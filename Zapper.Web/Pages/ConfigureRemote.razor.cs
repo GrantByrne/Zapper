@@ -7,6 +7,7 @@ using Zapper.Core.Devices;
 using Zapper.Core.Devices.Abstract;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Core.KeyboardMouse.Abstract;
+using Zapper.Core.Remote;
 using Zapper.Web.Data;
 using Zapper.Web.Data.Abstract;
 using Zapper.Web.Shared;

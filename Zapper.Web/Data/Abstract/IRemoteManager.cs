@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Zapper.Core.Remote;
 
 namespace Zapper.Web.Data.Abstract
 {

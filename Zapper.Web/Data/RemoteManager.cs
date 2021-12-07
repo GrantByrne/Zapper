@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Zapper.Core;
 using Zapper.Core.Devices;
 using Zapper.Core.Devices.Abstract;
@@ -15,35 +16,32 @@ namespace Zapper.Web.Data
 {
     public class RemoteManager : IRemoteManager
     {
-        private const string Filename = "remotes.json";
-        
         private readonly IRemoteEventHandler _remoteEventHandler;
-        private readonly IFileSerializerConnection _fileSerializerConnection;
         private readonly IWebOsActionFactory _webOsActionFactory;
         private readonly IDeviceManager _deviceManager;
-        private readonly IConfiguration _configuration;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         private List<RemoteButton> _cache;
 
         public RemoteManager(
             IRemoteEventHandler remoteEventHandler,
-            IFileSerializerConnection fileSerializerConnection,
             IWebOsActionFactory webOsActionFactory,
             IDeviceManager deviceManager,
-            IConfiguration configuration)
+            IServiceScopeFactory serviceScopeFactory)
         {
             _remoteEventHandler = remoteEventHandler;
-            _fileSerializerConnection = fileSerializerConnection;
             _webOsActionFactory = webOsActionFactory;
             _deviceManager = deviceManager;
-            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public void Initialize()
         {
-            var path = GetPath();
-            _cache = _fileSerializerConnection.Read<List<RemoteButton>>(path) ?? new List<RemoteButton>();
-            
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ZapperDbContext>();
+
+            _cache = db.RemoteButtons.ToList();
+
             var validButtons = _cache.Where(b => !string.IsNullOrEmpty(b.Action));
             foreach (var remote in validButtons)
             {
@@ -71,16 +69,11 @@ namespace Zapper.Web.Data
             }
             
             _cache = remoteButtons.ToList();
-
-            var path = GetPath();
-            _fileSerializerConnection.Write(_cache, path);
-        }
-
-        private string GetPath()
-        {
-            var dir = _configuration.GetValue<string>("SettingsPath");
-            var path = Path.Combine(dir, Filename);
-            return path;
+            
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ZapperDbContext>();
+            db.RemoteButtons.RemoveRange(db.RemoteButtons);
+            db.RemoteButtons.AddRange(_cache);
         }
     }
 }

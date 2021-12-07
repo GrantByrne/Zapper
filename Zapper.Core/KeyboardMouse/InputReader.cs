@@ -70,9 +70,9 @@ namespace Zapper.Core.KeyboardMouse
                 {
                     _stream.Read(_buffer, 0, BufferLength);
                 }
-                catch (Exception ex)
+                catch (IOException ex)
                 {
-                    _logger.LogWarning(ex, $"Error occured while trying to read from the stream for {Path}");
+                    _logger.LogInformation(ex, $"Error occured while trying to read from the stream for {Path}");
                     Faulted = true;
                 }
 
