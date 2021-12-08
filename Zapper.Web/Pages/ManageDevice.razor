@@ -1,0 +1,26 @@
+@page "/ManageDevice"
+@using Zapper.Core.Devices
+
+<h3>Device Name</h3>
+<ul>
+    <li><strong>IP Address</strong> 192.168.1.1</li>
+    <li><strong>Hostname</strong> 192.168.1.1</li>
+    <li><strong>Device Type</strong> WebOS</li>
+    <li><strong>Id</strong> some id</li>
+    <li><strong>Currently On?</strong> No</li>
+    <li><strong>Model Number</strong> Yes it has one</li>
+    <li><strong>Apps Installed</strong> Yes there are apps installed</li>
+    <li><strong>Current Volume</strong> ???</li>
+</ul>
+<h4>Actions</h4>
+<ul>
+    <li>Remove Device</li>
+    <li>Change Device Name</li>
+    <li>Change Device MacAddress</li>
+    <li>Manually Trigger Device Actions</li>
+    <li>Test Device Connection</li>
+</ul>
+
+@code {
+    private Device _device;
+}
