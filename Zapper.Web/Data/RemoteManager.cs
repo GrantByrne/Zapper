@@ -74,6 +74,7 @@ namespace Zapper.Web.Data
             var db = scope.ServiceProvider.GetRequiredService<ZapperDbContext>();
             db.RemoteButtons.RemoveRange(db.RemoteButtons);
             db.RemoteButtons.AddRange(_cache);
+            db.SaveChanges();
         }
     }
 }
