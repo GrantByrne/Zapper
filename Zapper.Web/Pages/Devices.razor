@@ -13,6 +13,15 @@
 
 <div class="row" style="margin-bottom:7px">
     <div class="col-12">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add Device
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Bluetooth</a>
+                <a class="dropdown-item" href="#">WebOS</a>
+            </div>
+        </div>
         <button class="btn btn-primary pull-right" style="float:right" @onclick="AddDevice">Add Device</button>
     </div>
 </div>
@@ -31,7 +40,9 @@
             @foreach (var device in _devices)
             {
                 <tr>
-                    <td><a href="/ManageDevice">@device.Name</a></td>
+                    <td>
+                        <a href="/ManageDevice">@device.Name</a>
+                    </td>
                     <td>@device.DeviceType</td>
                     <td>@device.Status</td>
                     <td>
@@ -58,7 +69,7 @@
     {
         <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
     }
-    else if(_selectedDeviceType == SupportedDevice.Bluetooth)
+    else if (_selectedDeviceType == SupportedDevice.Bluetooth)
     {
         <ConfigureBluetoothDevice/>
     }
@@ -81,7 +92,7 @@
 
     private string _selectedDeviceType;
     private bool _showSaveChanges;
-    
+
     protected override void OnInitialized()
     {
         var devices = _deviceManager.Get();
@@ -162,9 +173,9 @@
         try
         {
             _logger.LogInformation("Attempting to delete device: {device}", device);
-            
+
             _deviceManager.Delete(device.Id);
-            
+
             _logger.LogInformation("Finished deleting device");
         }
         catch (Exception ex)
