@@ -1,6 +1,76 @@
 @page "/AddBluetoothDevice"
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Bluetooth
+@inject ILogger<AddBluetoothDevice> _logger
+@inject IBluetoothConnection _bluetoothConnection;
 
 <h3>Add Bluetooth Device</h3>
+<div class="row">
+    <div class="col-12">
+        <ScannerButton OnScanStartAsync="StartScanning" OnScanStop="StopScanning" ScanText="Scan for Bluetooth Devices"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <ButtonList Items="_devices.OrderByDescending(d => d.Name?.Length)">
+            <ButtonTemplate Context="device">
+                @device.Name
+                @device.Address
+                @device.Alias
+                @device.Icon
+                @device.Modalias
+                @device.AddressType
+            </ButtonTemplate>
+        </ButtonList>
+    </div>
+</div>
+
+@code {
+
+    private List<BluetoothDeviceFoundEvent> _devices = new();
+    private BluetoothDeviceFoundEvent _selectedDevice;
+
+    private async Task StartScanning()
+    {
+        try
+        {
+            _bluetoothConnection.OnBluetoothDeviceFound += FoundBluetoothDevice;
+            await _bluetoothConnection.Start();
+            await _bluetoothConnection.ScanForDevices();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while scanning for bluetooth devices");
+        }
+    }
+
+    private void StopScanning()
+    {
+        try
+        {
+            _bluetoothConnection.OnBluetoothDeviceFound -= FoundBluetoothDevice;
+            _bluetoothConnection.Stop();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while stopping the scan of bluetooth devices");
+        }
+    }
+
+    private void FoundBluetoothDevice(BluetoothDeviceFoundEvent e)
+    {
+        try
+        {
+            _devices.Add(e);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred when processing found bluetooth device event");
+        }
+    }
+
+}
 
 @code {
     

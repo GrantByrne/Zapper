@@ -48,26 +48,7 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
 
                 foreach (var device in devices)
                 {
-                    var properties = await device.GetAllAsync();
-
-                    (string, string) key = new (properties.Name, properties.Address);
-                    if (_foundDevices.Contains(key))
-                    {
-                        continue;
-                    }
-
-                    _foundDevices.Add(key);
-
-                    var e = new BluetoothDeviceFoundEvent();
-                    
-                    e.Name = properties.Name;
-                    e.Address = properties.Address;
-                    e.Alias = properties.Alias;
-                    e.Icon = properties.Icon;
-                    e.Modalias = properties.Modalias;
-                    e.AddressType = properties.AddressType;
-
-                    OnBluetoothDeviceFound?.Invoke(e);
+                    await PublishDeviceDetails(device);
                 }
             }
         }
@@ -76,6 +57,44 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
         {
             await a.StopDiscoveryAsync();
         }
+    }
+
+    private async Task PublishDeviceDetails(Device device)
+    {
+        try
+        {
+            var properties = await device.GetAllAsync();
+
+            (string, string) key = new(properties.Name, properties.Address);
+            if (_foundDevices.Contains(key))
+            {
+                return;
+            }
+
+            _foundDevices.Add(key);
+
+            var e = MapToEvent(properties);
+
+            OnBluetoothDeviceFound?.Invoke(e);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while pulling back bluetooth device properties");
+        }
+    }
+
+    private static BluetoothDeviceFoundEvent MapToEvent(Device1Properties properties)
+    {
+        var e = new BluetoothDeviceFoundEvent();
+
+        e.Name = properties.Name;
+        e.Address = properties.Address;
+        e.Alias = properties.Alias;
+        e.Icon = properties.Icon;
+        e.Modalias = properties.Modalias;
+        e.AddressType = properties.AddressType;
+        
+        return e;
     }
 
     public void Stop()
