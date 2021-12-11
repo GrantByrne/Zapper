@@ -1,0 +1,105 @@
+@using Zapper.Web.Pages
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@using Zapper.WebOs
+@inject ILogger<Devices> _logger;
+@inject IDeviceManager _deviceManager
+
+<Modal @ref="_model">
+    <Title>Add WebOS Device</Title>
+    <Body>
+        <h3>Configure WebOS</h3>
+        <div>
+            <div class="form-group row">
+                <label for="deviceName" class="col-2 col-form-label">Name</label>
+                <div class="col-10">
+                    <input type="text" class="form-control" id="deviceName" placeholder="LG WebOS TV" @bind="Name"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="ipAddress" class="col-2 col-form-label">IP Address</label>
+                <div class="col-10">
+                    <input type="text" class="form-control" id="ipAddress" placeholder="192.168.1.1" @bind="IpAddress"/>
+                    <div class="@(_connectTestSuccess ? "valid-feedback" : "invalid-feedback") d-block">
+                        @_connectionTestSummary
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="macAddress" class="col-2 col-form-label">Mac Address</label>
+                <div class="col-7">
+                    <input type="text" class="form-control" id="macAddress" placeholder="00:11:22:33:44:55" @bind="MacAddress"/>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-primary w-100" @onclick="TestConnection">Test Connection</button>
+                </div>
+            </div>
+        </div>
+    </Body>
+    <Footer>
+        <button class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
+    </Footer>
+</Modal>
+
+@code {
+
+    public string Name { get; set; }
+    public string IpAddress { get; set; }
+    public string MacAddress { get; set; }
+
+    private string _connectionTestSummary;
+    private bool _connectTestSuccess;
+    private Modal _model;
+
+    private async Task TestConnection()
+    {
+        try
+        {
+            _logger.LogInformation("Testing out the WebOS Connection");
+
+            var service = new Service();
+            await service.ConnectAsync(IpAddress);
+
+            _connectionTestSummary = $"Successfully connected to {IpAddress}";
+            _connectTestSuccess = true;
+
+            _logger.LogInformation("Finished testing the WebOS Connection");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while testing the WebOS Connection");
+            _connectTestSuccess = false;
+            _connectionTestSummary = ex.Message;
+        }
+    }
+
+    private void SaveChanges()
+    {
+        try
+        {
+            _logger.LogInformation("Attempting to save changes");
+            
+            _deviceManager.CreateWebOsDevice(Name, IpAddress, MacAddress);
+
+            Name = "";
+            IpAddress = "";
+            MacAddress = "";
+
+            _model.Close();
+            
+            OnInitialized();
+
+            _logger.LogInformation("Finished saving changes");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save changes");
+        }
+    }
+
+    public void Open()
+    {
+        _model.Open();
+    }
+
+}

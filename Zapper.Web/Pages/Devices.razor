@@ -51,13 +51,4 @@
         </table>
     </div>
 </div>
-
-<Modal @ref="Modal">
-    <Title>Add WebOS Device</Title>
-    <Body>
-        <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
-    </Body>
-    <Footer>
-        <button class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
-    </Footer>
-</Modal>
+<CreateWebOsDeviceModal @ref="CreateWebOsDeviceModel"/>

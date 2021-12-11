@@ -23,6 +23,7 @@
 }
 
 @code {
+    
     [Parameter]
     public RenderFragment Title { get; set; }
 
@@ -41,6 +42,8 @@
         _modalDisplay = "block;";
         _modalClass = "show";
         _showBackdrop = true;
+        
+        StateHasChanged();
     }
 
     public void Close()
@@ -48,5 +51,7 @@
         _modalDisplay = "none";
         _modalClass = "";
         _showBackdrop = false;
+        
+        StateHasChanged();
     }
 }

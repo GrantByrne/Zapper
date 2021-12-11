@@ -10,8 +10,7 @@ public partial class Devices
 {
     private readonly List<DeviceModel> _devices = new();
     
-    private Modal Modal { get; set; }
-    private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
+    private CreateWebOsDeviceModal CreateWebOsDeviceModel { get; set; }
 
     protected override void OnInitialized()
     {
@@ -36,35 +35,12 @@ public partial class Devices
         try
         {
             _logger.LogInformation("Bring up the modal to add a new device");
-            Modal.Open();
+            CreateWebOsDeviceModel.Open();
             _logger.LogInformation("Brought up the modal to add a new device");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to bring up the modal for a new device");
-        }
-    }
-
-    private void SaveChanges()
-    {
-        try
-        {
-            _logger.LogInformation("Attempting to save changes");
-
-            var webOsName = ConfigureWebOsDevice.Name;
-            var ipAddress = ConfigureWebOsDevice.IpAddress;
-            var macAddress = ConfigureWebOsDevice.MacAddress;
-            _deviceManager.CreateWebOsDevice(webOsName, ipAddress, macAddress);
-
-            Modal.Close();
-            
-            OnInitialized();
-
-            _logger.LogInformation("Finished saving changes");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to save changes");
         }
     }
 
