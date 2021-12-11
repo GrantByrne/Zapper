@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Zapper.Core.Devices;
 using Zapper.Web.Data;
 using Zapper.Web.Shared;
 
@@ -9,10 +8,10 @@ namespace Zapper.Web.Pages;
 
 public partial class Devices
 {
-    private List<DeviceModel> _devices = new();
+    private readonly List<DeviceModel> _devices = new();
+    
     private Modal Modal { get; set; }
     private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
-    private ConfigureIrDevice ConfigureIrDevice { get; set; }
 
     protected override void OnInitialized()
     {
@@ -58,6 +57,8 @@ public partial class Devices
             _deviceManager.CreateWebOsDevice(webOsName, ipAddress, macAddress);
 
             Modal.Close();
+            
+            OnInitialized();
 
             _logger.LogInformation("Finished saving changes");
         }
