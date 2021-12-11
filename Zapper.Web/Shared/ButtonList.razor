@@ -3,7 +3,8 @@
 <div class="list-of-buttons btn-group-vertical">
     @foreach (var item in Items)
     {
-        <button class="btn btn-outline-secondary" @onclick="() => { SelectedItem = item; }">
+        <button class="btn btn-outline-secondary @(item.Equals(SelectedItem) ? "active" : "")" 
+                @onclick="() => { SelectedItem = item; }">
             @ButtonTemplate(item)
         </button>
     }
