@@ -16,6 +16,7 @@ public partial class Devices
 
     protected override void OnInitialized()
     {
+        _devices.Clear();
         var devices = _deviceManager.Get();
 
         foreach (var device in devices)
@@ -73,6 +74,7 @@ public partial class Devices
             _logger.LogInformation("Attempting to delete device: {device}", device);
 
             _deviceManager.Delete(device.Id);
+            OnInitialized();
 
             _logger.LogInformation("Finished deleting device");
         }
