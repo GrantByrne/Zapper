@@ -13,12 +13,14 @@
 </div>
 <div class="row">
     <div class="col-12">
-        <ul>
+        <div class="list-of-buttons btn-group-vertical">
             @foreach (var device in _devices)
             {
-                <li>@device.Name</li>
+                <button class="btn btn-outline-secondary">
+                    @device.Name
+                </button>
             }
-        </ul>
+        </div>
     </div>
 </div>
 
