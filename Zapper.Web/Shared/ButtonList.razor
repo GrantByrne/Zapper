@@ -1,0 +1,22 @@
+@typeparam T
+
+<div class="list-of-buttons btn-group-vertical">
+    @foreach (var item in Items)
+    {
+        <button class="btn btn-outline-secondary" @onclick="() => { SelectedItem = item; }">
+            @ButtonTemplate(item)
+        </button>
+    }
+</div>
+
+@code {
+    
+    [Parameter]
+    public IEnumerable<T> Items { get; set; }
+    
+    [Parameter]
+    public RenderFragment<T> ButtonTemplate { get; set; }
+
+    public T SelectedItem { get; set; }
+
+}
