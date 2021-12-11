@@ -16,7 +16,7 @@
         <div class="list-of-buttons btn-group-vertical">
             @foreach (var device in _devices.OrderByDescending(d => d.Name?.Length))
             {
-                <button class="btn btn-outline-secondary">
+                <button class="btn btn-outline-secondary" @onclick="() => { _selectedDevice = device; }">
                     @device.Name
                     @device.Address
                     @device.Alias
@@ -32,6 +32,7 @@
 @code {
 
     private List<BluetoothDeviceFoundEvent> _devices = new();
+    private BluetoothDeviceFoundEvent _selectedDevice;
 
     private async Task StartScanning()
     {
