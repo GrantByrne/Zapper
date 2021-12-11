@@ -1,0 +1,87 @@
+<button @onclick="Clicked" class="btn btn-primary">
+    @if (_scanning)
+    {
+        @ScanningText
+        <span class="oi oi-aperture" aria-hidden="true"></span>
+    }
+    else
+    {
+        @ScanText
+    }
+</button>
+
+@code {
+
+    [Parameter]
+    public string ScanText { get; set; } = "Scan";
+
+    [Parameter]
+    public string ScanningText { get; set; } = "Scanning";
+    
+    [Parameter]
+    public Action OnClick { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnClickAsync { get; set; }
+    
+    [Parameter]
+    public Action OnScanStart { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnScanStartAsync { get; set; }
+    
+    [Parameter]
+    public Action OnScanStop { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnScanStopAsync { get; set; }
+
+    private bool _scanning;
+
+    private async Task Clicked()
+    {
+        _scanning = !_scanning;
+
+        await HandleOnClickActions();
+
+        if (_scanning)
+        {
+            await HandleScanStartActions();
+        }
+        else
+        {
+            await HandleScanStopActions();
+        }
+    }
+
+    private async Task HandleScanStopActions()
+    {
+        OnScanStop?.Invoke();
+
+        if (OnScanStopAsync != null)
+        {
+            await OnScanStartAsync();
+        }
+    }
+
+    private async Task HandleScanStartActions()
+    {
+        OnScanStart?.Invoke();
+
+        if (OnScanStartAsync != null)
+        {
+            await OnScanStartAsync();
+        }
+    }
+
+    private async Task HandleOnClickActions()
+    {
+        OnClick?.Invoke();
+
+        if (OnClickAsync != null)
+        {
+            await OnClickAsync();
+        }
+    }
+
+}
