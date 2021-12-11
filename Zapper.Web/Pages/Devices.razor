@@ -19,7 +19,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Bluetooth</a>
-                <a class="dropdown-item" href="#">WebOS</a>
+                <a class="dropdown-item" @onclick="AddDevice">WebOS</a>
             </div>
         </div>
         <button class="btn btn-primary pull-right" style="float:right" @onclick="AddDevice">Add Device</button>
@@ -56,28 +56,11 @@
 </div>
 
 <Modal @ref="Modal">
-    <Title>Add a Device</Title>
+    <Title>Add WebOS Device</Title>
     <Body>
-    <h3>Device Type</h3>
-    <div class="list-of-buttons btn-group-vertical">
-        @foreach (var d in _supportedDeviceTypes.OrderBy(d => d))
-        {
-            <button class="btn btn-outline-secondary" @onclick="() => SelectDeviceType(d)">@d</button>
-        }
-    </div>
-    @if (_selectedDeviceType == SupportedDevice.WebOs)
-    {
         <ConfigureWebOsDevice @ref="ConfigureWebOsDevice"/>
-    }
-    else if (_selectedDeviceType == SupportedDevice.Bluetooth)
-    {
-        <ConfigureBluetoothDevice/>
-    }
     </Body>
     <Footer>
-        @if (_showSaveChanges)
-        {
-            <button class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
-        }
+        <button class="btn btn-primary" @onclick="SaveChanges">Save Changes</button>
     </Footer>
 </Modal>

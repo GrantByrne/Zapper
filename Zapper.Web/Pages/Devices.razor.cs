@@ -13,10 +13,6 @@ public partial class Devices
     private Modal Modal { get; set; }
     private ConfigureWebOsDevice ConfigureWebOsDevice { get; set; }
     private ConfigureIrDevice ConfigureIrDevice { get; set; }
-    private readonly string[] _supportedDeviceTypes = SupportedDevice.All();
-
-    private string _selectedDeviceType;
-    private bool _showSaveChanges;
 
     protected override void OnInitialized()
     {
@@ -49,39 +45,16 @@ public partial class Devices
         }
     }
 
-    private void SelectDeviceType(string deviceType)
-    {
-        try
-        {
-            _logger.LogInformation($"Selected the {deviceType} device type");
-            _selectedDeviceType = deviceType;
-            _showSaveChanges = true;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while selecting device type");
-        }
-    }
-
     private void SaveChanges()
     {
         try
         {
             _logger.LogInformation("Attempting to save changes");
 
-            switch (_selectedDeviceType)
-            {
-                case SupportedDevice.WebOs:
-                    var webOsName = ConfigureWebOsDevice.Name;
-                    var ipAddress = ConfigureWebOsDevice.IpAddress;
-                    var macAddress = ConfigureWebOsDevice.MacAddress;
-                    _deviceManager.CreateWebOsDevice(webOsName, ipAddress, macAddress);
-                    break;
-                case SupportedDevice.Ir:
-                    var irName = ConfigureIrDevice.Name;
-                    _deviceManager.CreateIrDevice(irName);
-                    break;
-            }
+            var webOsName = ConfigureWebOsDevice.Name;
+            var ipAddress = ConfigureWebOsDevice.IpAddress;
+            var macAddress = ConfigureWebOsDevice.MacAddress;
+            _deviceManager.CreateWebOsDevice(webOsName, ipAddress, macAddress);
 
             Modal.Close();
 
