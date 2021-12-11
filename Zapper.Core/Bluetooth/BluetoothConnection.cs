@@ -59,8 +59,14 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
                     _foundDevices.Add(key);
 
                     var e = new BluetoothDeviceFoundEvent();
-                    e.Name = properties.Name;
                     
+                    e.Name = properties.Name;
+                    e.Address = properties.Address;
+                    e.Alias = properties.Alias;
+                    e.Icon = properties.Icon;
+                    e.Modalias = properties.Modalias;
+                    e.AddressType = properties.AddressType;
+
                     OnBluetoothDeviceFound?.Invoke(e);
                 }
             }
