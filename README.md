@@ -1,5 +1,6 @@
 # :zap: Zapper
 
+[![.NET](https://github.com/GrantByrne/Zapper/actions/workflows/dotnet.yml/badge.svg)](https://github.com/GrantByrne/Zapper/actions/workflows/dotnet.yml)
 
 **Important** - This project is currently a work in progress. Please don't try to use it. I'm certain you will be quite disapointed.
 
