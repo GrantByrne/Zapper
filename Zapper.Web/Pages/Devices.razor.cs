@@ -28,6 +28,8 @@ public partial class Devices
 
             _devices.Add(d);
         }
+        
+        StateHasChanged();
     }
 
     private void AddDevice()
