@@ -3,21 +3,30 @@
 <div class="list-of-buttons btn-group-vertical">
     @foreach (var item in Items)
     {
-        <button class="btn btn-outline-secondary @(item.Equals(SelectedItem) ? "active" : "")" 
-                @onclick="() => { SelectedItem = item; }">
+        <button class="btn btn-outline-secondary @(item.Equals(SelectedItem) ? "active" : "")"
+                @onclick="() => OnButtonClick(item)">
             @ButtonTemplate(item)
         </button>
     }
 </div>
 
 @code {
-    
+
+    [Parameter]
+    public T SelectedItem { get; set; }
+
     [Parameter]
     public IEnumerable<T> Items { get; set; }
     
     [Parameter]
+    public EventCallback<T> SelectedItemChanged { get; set; }
+    
+    [Parameter]
     public RenderFragment<T> ButtonTemplate { get; set; }
 
-    public T SelectedItem { get; set; }
+    private async Task OnButtonClick(T item)
+    {
+        await SelectedItemChanged.InvokeAsync(item);
+    }
 
 }

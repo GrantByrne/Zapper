@@ -10,9 +10,10 @@
         <ScannerButton OnScanStartAsync="StartScanning" OnScanStop="StopScanning" ScanText="Scan for Bluetooth Devices"/>
     </div>
 </div>
+<br/>
 <div class="row">
-    <div class="col-12">
-        <ButtonList Items="_devices.OrderByDescending(d => d.Name?.Length)">
+    <div class="col-12 pre-scrollable">
+        <ButtonList @bind-SelectedItem="_selectedDevice" Items="_devices.OrderByDescending(d => d.Name?.Length)">
             <ButtonTemplate Context="device">
                 @device.Name
                 @device.Address
@@ -24,10 +25,19 @@
         </ButtonList>
     </div>
 </div>
+<br/>
+<div class="row">
+    <div class="col-12">
+        @if (_selectedDevice != null)
+        {
+            <button class="btn btn-primary">Connect to Device</button>   
+        }
+    </div>
+</div>
 
 @code {
 
-    private List<BluetoothDeviceFoundEvent> _devices = new();
+    private readonly List<BluetoothDeviceFoundEvent> _devices = new();
     private BluetoothDeviceFoundEvent _selectedDevice;
 
     private async Task StartScanning()
@@ -69,9 +79,4 @@
             _logger.LogError(ex, "Error occurred when processing found bluetooth device event");
         }
     }
-
-}
-
-@code {
-    
 }

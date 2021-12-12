@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HashtagChris.DotNetBlueZ;
 using HashtagChris.DotNetBlueZ.Extensions;
 using Microsoft.Extensions.Logging;
+using WebSocketSharp;
 
 namespace Zapper.Core.Bluetooth;
 
@@ -14,7 +15,7 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
     
     private List<Adapter> _adapters = new();
     private bool _running;
-    private HashSet<(string, string)> _foundDevices = new();
+    private readonly HashSet<(string, string)> _foundDevices = new();
 
     public delegate void RaiseBluetoothDeviceFound(BluetoothDeviceFoundEvent e);
 
@@ -75,7 +76,10 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
 
             var e = MapToEvent(properties);
 
-            OnBluetoothDeviceFound?.Invoke(e);
+            if (!e.Name.IsNullOrEmpty())
+            {
+                OnBluetoothDeviceFound?.Invoke(e);
+            }
         }
         catch (Exception ex)
         {
