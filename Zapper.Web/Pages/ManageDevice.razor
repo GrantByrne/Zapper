@@ -1,13 +1,15 @@
-@page "/ManageDevice"
+@page "/ManageDevice/{DeviceId:guid}"
 @using Zapper.Core.Devices
+@using Zapper.Core.Devices.Abstract
+@inject IDeviceManager _deviceManager
 
 <h3>Device Name</h3>
 <ul>
-    <li><strong>IP Address</strong> 192.168.1.1</li>
-    <li><strong>Hostname</strong> 192.168.1.1</li>
-    <li><strong>Device Type</strong> WebOS</li>
-    <li><strong>Id</strong> some id</li>
-    <li><strong>Currently On?</strong> No</li>
+    <li><strong>IP Address</strong> @_device.IpAddress</li>
+    <li><strong>Mac Address</strong> @_device.MacAddress</li>
+    <li><strong>Device Type</strong> @_device.SupportDeviceType</li>
+    <li><strong>Id</strong> @_device.Id</li>
+    <li><strong>Currently On?</strong> ???</li>
     <li><strong>Model Number</strong> Yes it has one</li>
     <li><strong>Apps Installed</strong> Yes there are apps installed</li>
     <li><strong>Current Volume</strong> ???</li>
@@ -22,5 +24,16 @@
 </ul>
 
 @code {
+
+    [Parameter]
+    public Guid DeviceId { get; set; }
+    
     private Device _device;
+
+    protected override void OnInitialized()
+    {
+        var device = _deviceManager.Get(DeviceId);
+        _device = device;
+    }
+
 }
