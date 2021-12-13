@@ -37,18 +37,7 @@
     <li>Manually Trigger Device Actions</li>
     <li>Test Device Connection</li>
 </ul>
-<Modal @ref="_model">
-    <Title>
-        Are you sure?
-    </Title>
-    <Body>
-        Are you sure you want to remove the device?
-    </Body>
-    <Footer>
-        <button class="btn btn-danger" @onclick="RemoveDevice">Yes</button>
-        <button class="btn btn-primary" @onclick="CloseConfirmationDialog">Cancel</button>
-    </Footer>
-</Modal>
+<ConfirmationModal @ref="_confirmationModal" OnConfirmYes="RemoveDevice"/>
 
 @code {
 
@@ -56,7 +45,7 @@
     public Guid DeviceId { get; set; }
 
     private Device _device;
-    private Modal _model;
+    private ConfirmationModal _confirmationModal;
 
     protected override void OnInitialized()
     {
@@ -66,12 +55,7 @@
 
     private void DisplayConfirmationDialog()
     {
-        _model.Open();
-    }
-
-    private void CloseConfirmationDialog()
-    {
-        _model.Close();
+        _confirmationModal.Open();
     }
 
     private void RemoveDevice()
@@ -90,5 +74,4 @@
             _logger.LogError(ex, "Error occurred while trying to remove device");
         }
     }
-
 }

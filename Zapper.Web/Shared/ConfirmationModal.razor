@@ -1,0 +1,37 @@
+<Modal @ref="_modal">
+    <Title>
+        Are you sure?
+    </Title>
+    <Body>
+        Are you sure you want to remove the device?
+    </Body>
+    <Footer>
+        <button class="btn btn-danger" @onclick="ConfirmYes">Yes</button>
+        <button class="btn btn-primary" @onclick="CloseConfirmationDialog">Cancel</button>
+    </Footer>
+</Modal>
+
+
+@code {
+
+    private Modal _modal;
+
+    [Parameter]
+    public Action OnConfirmYes { get; set; }
+
+    private void ConfirmYes()
+    {
+        OnConfirmYes?.Invoke();
+    }
+
+    private void CloseConfirmationDialog()
+    {
+        _modal.Close();
+    }
+
+    public void Open()
+    {
+        _modal.Open();
+    }
+
+}
