@@ -22,6 +22,7 @@
     private void ConfirmYes()
     {
         OnConfirmYes?.Invoke();
+        _modal.Close();
     }
 
     private void CloseConfirmationDialog()

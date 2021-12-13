@@ -9,7 +9,9 @@ namespace Zapper.Web.Pages;
 public partial class Devices
 {
     private readonly List<DeviceModel> _devices = new();
-    
+    private ConfirmationModal _confirmationModal;
+    private DeviceModel _forDelete;
+
     private CreateWebOsDeviceModal CreateWebOsDeviceModel { get; set; }
 
     protected override void OnInitialized()
@@ -46,13 +48,19 @@ public partial class Devices
         }
     }
 
-    private void Delete(DeviceModel device)
+    private void ConfirmDelete(DeviceModel device)
+    {
+        _forDelete = device;
+        _confirmationModal.Open();
+    }
+
+    private void Delete()
     {
         try
         {
-            _logger.LogInformation("Attempting to delete device: {device}", device);
+            _logger.LogInformation("Attempting to delete device: {device}", _forDelete);
 
-            _deviceManager.Delete(device.Id);
+            _deviceManager.Delete(_forDelete.Id);
             OnInitialized();
 
             _logger.LogInformation("Finished deleting device");

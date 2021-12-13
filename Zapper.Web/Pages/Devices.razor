@@ -43,7 +43,7 @@
                     <td>@device.DeviceType</td>
                     <td>@device.Status</td>
                     <td>
-                        <button @onclick="() => Delete(device)" class="btn btn-primary">Delete</button>
+                        <button @onclick="() => ConfirmDelete(device)" class="btn btn-primary">Delete</button>
                     </td>
                 </tr>
             }
@@ -52,3 +52,4 @@
     </div>
 </div>
 <CreateWebOsDeviceModal @ref="CreateWebOsDeviceModel" OnSaveChanges="OnInitialized"/>
+<ConfirmationModal @ref="_confirmationModal" OnConfirmYes="Delete"/>
