@@ -1,7 +1,10 @@
 @page "/ManageDevice/{DeviceId:guid}"
 @using Zapper.Core.Devices
 @using Zapper.Core.Devices.Abstract
+@using Microsoft.Extensions.Logging
 @inject IDeviceManager _deviceManager
+@inject ILogger<ManageDevice> _logger
+@inject NavigationManager _navigationManager
 
 <h3>Device Name</h3>
 <ul>
@@ -16,7 +19,11 @@
 </ul>
 <h4>Actions</h4>
 <ul>
-    <li>Remove Device</li>
+    <li>
+        <button class="btn btn-primary" @onclick="RemoveDevice">
+            Remove Device
+        </button>
+    </li>
     <li>Change Device Name</li>
     <li>Change Device MacAddress</li>
     <li>Manually Trigger Device Actions</li>
@@ -34,6 +41,23 @@
     {
         var device = _deviceManager.Get(DeviceId);
         _device = device;
+    }
+
+    private void RemoveDevice()
+    {
+        try
+        {
+            _logger.LogInformation($"Attempting to remove device: {_device.Id}");
+            
+            _deviceManager.Delete(_device.Id);
+            _navigationManager.NavigateTo("/Devices");
+            
+            _logger.LogInformation("Successfully removed device");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while trying to remove device");
+        }
     }
 
 }
