@@ -59,6 +59,21 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
             await a.StopDiscoveryAsync();
         }
     }
+    
+    public async Task Connect(Device device)
+    {
+        await device.ConnectAsync();
+    }
+    
+    public void Stop()
+    {
+        _running = false;
+    }
+
+    public void Dispose()
+    {
+        Stop();
+    }
 
     private async Task PublishDeviceDetails(Device device)
     {
@@ -74,7 +89,7 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
 
             _foundDevices.Add(key);
 
-            var e = MapToEvent(properties);
+            var e = MapToEvent(properties, device);
 
             if (!e.Name.IsNullOrEmpty())
             {
@@ -87,7 +102,7 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
         }
     }
 
-    private static BluetoothDeviceFoundEvent MapToEvent(Device1Properties properties)
+    private static BluetoothDeviceFoundEvent MapToEvent(Device1Properties properties, Device device)
     {
         var e = new BluetoothDeviceFoundEvent();
 
@@ -97,17 +112,8 @@ public class BluetoothConnection : IDisposable, IBluetoothConnection
         e.Icon = properties.Icon;
         e.Modalias = properties.Modalias;
         e.AddressType = properties.AddressType;
+        e.Device = device;
         
         return e;
-    }
-
-    public void Stop()
-    {
-        _running = false;
-    }
-
-    public void Dispose()
-    {
-        Stop();
     }
 }

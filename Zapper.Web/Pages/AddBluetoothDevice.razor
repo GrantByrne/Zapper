@@ -30,53 +30,7 @@
     <div class="col-12">
         @if (_selectedDevice != null)
         {
-            <button class="btn btn-primary">Connect to Device</button>   
+            <button class="btn btn-primary" @onclick="Connect">Connect to Device</button>   
         }
     </div>
 </div>
-
-@code {
-
-    private readonly List<BluetoothDeviceFoundEvent> _devices = new();
-    private BluetoothDeviceFoundEvent _selectedDevice;
-
-    private async Task StartScanning()
-    {
-        try
-        {
-            _bluetoothConnection.OnBluetoothDeviceFound += FoundBluetoothDevice;
-            await _bluetoothConnection.Start();
-            await _bluetoothConnection.ScanForDevices();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while scanning for bluetooth devices");
-        }
-    }
-
-    private void StopScanning()
-    {
-        try
-        {
-            _bluetoothConnection.OnBluetoothDeviceFound -= FoundBluetoothDevice;
-            _bluetoothConnection.Stop();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while stopping the scan of bluetooth devices");
-        }
-    }
-
-    private void FoundBluetoothDevice(BluetoothDeviceFoundEvent e)
-    {
-        try
-        {
-            _devices.Add(e);
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred when processing found bluetooth device event");
-        }
-    }
-}
