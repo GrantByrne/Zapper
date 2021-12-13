@@ -8,10 +8,18 @@
 
 <h3>Device Name</h3>
 <ul>
-    <li><strong>IP Address</strong> @_device.IpAddress</li>
-    <li><strong>Mac Address</strong> @_device.MacAddress</li>
-    <li><strong>Device Type</strong> @_device.SupportDeviceType</li>
-    <li><strong>Id</strong> @_device.Id</li>
+    <li>
+        <strong>IP Address</strong> @_device.IpAddress
+    </li>
+    <li>
+        <strong>Mac Address</strong> @_device.MacAddress
+    </li>
+    <li>
+        <strong>Device Type</strong> @_device.SupportDeviceType
+    </li>
+    <li>
+        <strong>Id</strong> @_device.Id
+    </li>
     <li><strong>Currently On?</strong> ???</li>
     <li><strong>Model Number</strong> Yes it has one</li>
     <li><strong>Apps Installed</strong> Yes there are apps installed</li>
@@ -20,7 +28,7 @@
 <h4>Actions</h4>
 <ul>
     <li>
-        <button class="btn btn-primary" @onclick="RemoveDevice">
+        <button class="btn btn-primary" @onclick="DisplayConfirmationDialog">
             Remove Device
         </button>
     </li>
@@ -29,13 +37,26 @@
     <li>Manually Trigger Device Actions</li>
     <li>Test Device Connection</li>
 </ul>
+<Modal @ref="_model">
+    <Title>
+        Are you sure?
+    </Title>
+    <Body>
+        Are you sure you want to remove the device?
+    </Body>
+    <Footer>
+        <button class="btn btn-danger" @onclick="RemoveDevice">Yes</button>
+        <button class="btn btn-primary" @onclick="CloseConfirmationDialog">Cancel</button>
+    </Footer>
+</Modal>
 
 @code {
 
     [Parameter]
     public Guid DeviceId { get; set; }
-    
+
     private Device _device;
+    private Modal _model;
 
     protected override void OnInitialized()
     {
@@ -43,15 +64,25 @@
         _device = device;
     }
 
+    private void DisplayConfirmationDialog()
+    {
+        _model.Open();
+    }
+
+    private void CloseConfirmationDialog()
+    {
+        _model.Close();
+    }
+
     private void RemoveDevice()
     {
         try
         {
             _logger.LogInformation($"Attempting to remove device: {_device.Id}");
-            
+
             _deviceManager.Delete(_device.Id);
             _navigationManager.NavigateTo("/Devices");
-            
+
             _logger.LogInformation("Successfully removed device");
         }
         catch (Exception ex)
