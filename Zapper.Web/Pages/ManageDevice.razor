@@ -28,17 +28,17 @@
 <h4>Actions</h4>
 <ul>
     <li>
-        <button class="btn btn-primary" @onclick="DisplayConfirmationDialog">
-            Remove Device
-        </button>
-    </li>
-    <li>
         <button class="btn btn-primary">
             Edit
         </button>
     </li>
     <li>Manually Trigger Device Actions</li>
     <li>Test Device Connection</li>
+    <li>
+        <button class="btn btn-danger" @onclick="DisplayConfirmationDialog">
+            Remove Device
+        </button>
+    </li>
 </ul>
 <ConfirmationModal @ref="_confirmationModal" OnConfirmYes="RemoveDevice"/>
 
@@ -77,4 +77,5 @@
             _logger.LogError(ex, "Error occurred while trying to remove device");
         }
     }
+
 }
