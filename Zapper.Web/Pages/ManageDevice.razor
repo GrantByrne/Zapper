@@ -1,5 +1,4 @@
 @page "/ManageDevice/{DeviceId:guid}"
-@using Zapper.Core.Devices
 @using Zapper.Core.Devices.Abstract
 @using Microsoft.Extensions.Logging
 @inject IDeviceManager _deviceManager
@@ -20,10 +19,6 @@
     <li>
         <strong>Id</strong> @_device.Id
     </li>
-    <li><strong>Currently On?</strong> ???</li>
-    <li><strong>Model Number</strong> Yes it has one</li>
-    <li><strong>Apps Installed</strong> Yes there are apps installed</li>
-    <li><strong>Current Volume</strong> ???</li>
 </ul>
 <h4>Actions</h4>
 <ul>
@@ -41,41 +36,3 @@
     </li>
 </ul>
 <ConfirmationModal @ref="_confirmationModal" OnConfirmYes="RemoveDevice"/>
-
-@code {
-
-    [Parameter]
-    public Guid DeviceId { get; set; }
-
-    private Device _device;
-    private ConfirmationModal _confirmationModal;
-
-    protected override void OnInitialized()
-    {
-        var device = _deviceManager.Get(DeviceId);
-        _device = device;
-    }
-
-    private void DisplayConfirmationDialog()
-    {
-        _confirmationModal.Open();
-    }
-
-    private void RemoveDevice()
-    {
-        try
-        {
-            _logger.LogInformation($"Attempting to remove device: {_device.Id}");
-
-            _deviceManager.Delete(_device.Id);
-            _navigationManager.NavigateTo("/Devices");
-
-            _logger.LogInformation("Successfully removed device");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while trying to remove device");
-        }
-    }
-
-}
