@@ -44,3 +44,11 @@ Desktop.ini
 .DS_Store
 
 **/lgkeys.json
+
+Zapper.Web/zapper.log
+
+Zapper.Web/zapper.db
+
+Zapper.Web/zapper.db-shm
+
+Zapper.Web/zapper.db-wal
