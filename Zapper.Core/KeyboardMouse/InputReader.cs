@@ -50,6 +50,11 @@ namespace Zapper.Core.KeyboardMouse
             {
                 _stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogError(ex, "Current user doesn't have permissions to access input data. Add user to input group to correct this error");
+                Faulted = true;
+            }
             catch (IOException ex)
             {
                 _logger.LogWarning(ex, $"Error occurred while trying to build stream for {path}");
@@ -68,7 +73,10 @@ namespace Zapper.Core.KeyboardMouse
 
                 try
                 {
-                    _stream.Read(_buffer, 0, BufferLength);
+                    if (!Faulted)
+                    {
+                        _stream.Read(_buffer, 0, BufferLength);   
+                    }
                 }
                 catch (IOException ex)
                 {
@@ -148,7 +156,7 @@ namespace Zapper.Core.KeyboardMouse
         public void Dispose()
         {
             _disposing = true;
-            _stream.Dispose();
+            _stream?.Dispose();
             _stream = null;
         }
 
