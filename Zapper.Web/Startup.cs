@@ -9,6 +9,7 @@ using Zapper.Core.Devices;
 using Zapper.Core.Devices.Abstract;
 using Zapper.Core.KeyboardMouse;
 using Zapper.Core.KeyboardMouse.Abstract;
+using Zapper.Core.Linux;
 using Zapper.Core.Remote;
 using Zapper.Core.Repository;
 using Zapper.Core.WebOs;
@@ -45,6 +46,7 @@ namespace Zapper.Web
             services.AddSingleton<IWakeOnLanManager, WakeOnLanManager>();
             services.AddSingleton<IWebOsActionFactory, WebOsActionFactory>();
             services.AddSingleton<IBluetoothConnection, BluetoothConnection>();
+            services.AddSingleton<ILinuxGroupManager, LinuxGroupManager>();
             services.AddDbContext<ZapperDbContext>();
         }
 

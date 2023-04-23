@@ -1,7 +1,49 @@
 @page "/Settings"
+@using Zapper.Core.Linux
+@inject ILinuxGroupManager LinuxGroupManager
 
 <h3>Settings</h3>
+<h4>User Input Group</h4>
+<p>
+    To read input data from the remote, the user that zapper is
+    running as needs to input group.
+</p>
+<p>
+    <i><b>Note</b> - This may require a reboot for changes to take effect</i>
+</p>
+<div>
+    @if (_inUserInputGroup)
+    {
+        <span class="badge badge-success">Current user is in input group</span>
+    }
+    else
+    {
+        <span class="badge badge-danger">Current user not in input group</span>
+    }
+</div>
+<button class="btn btn-primary" @onclick="AddUserToInputGroup">Add User to Input Group</button>
+<h4>Reboot System</h4>
+<button class="btn btn-primary" @onclick="RebootSystem">Reboot System</button>
+
 
 @code {
-    
+
+    private bool _inUserInputGroup;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _inUserInputGroup = await LinuxGroupManager.IsInInputGroup();
+    }
+
+    private void AddUserToInputGroup()
+    {
+        var password = "";
+        LinuxGroupManager.AddUserToInputGroup(password);
+    }
+
+    private void RebootSystem()
+    {
+        var password = "durango13";
+        LinuxGroupManager.RebootSystem(password);
+    }
 }
