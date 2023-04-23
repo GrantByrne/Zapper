@@ -31,31 +31,19 @@ public class LinuxGroupManager : ILinuxGroupManager
     {
         using var cts = new CancellationTokenSource();
         cts.CancelAfter(TimeSpan.FromSeconds(10));
-        
-        var result = await Cli.Wrap("echo")
-            .WithArguments($" \"{password}\" | sudo -S gpasswd -a $USER input")
-            .ExecuteAsync(cts.Token);
+
+        await Cli.Wrap("bash")
+            .WithArguments($"-c \"echo '{password}' | sudo -S gpasswd -a $USER input")
+            .ExecuteBufferedAsync(cts.Token);
     }
 
     public async Task RebootSystem(string password)
     {
-        // Process process = new Process();
-        //
-        // process.StartInfo.FileName = "bash";
-        // process.StartInfo.Arguments = $"-c \"echo '{password}' | sudo -S reboot\"";
-        //
-        // process.Start();
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(TimeSpan.FromSeconds(10));
         
-        
-        // using var cts = new CancellationTokenSource();
-        // cts.CancelAfter(TimeSpan.FromSeconds(10));
-        //
-        // var result = await Cli.Wrap("bash")
-        //     .WithArguments($"-c \"echo '{password}' | sudo -S reboot\"")
-        //     .ExecuteBufferedAsync(cts.Token);
-        
-        var cmd = password | Cli.Wrap("bash").WithArguments(new[] { "-c", "sudo -S reboot" });
-
-        await cmd.ExecuteAsync();
+        await Cli.Wrap("bash")
+            .WithArguments($"-c \"echo '{password}' | sudo -S reboot\"")
+            .ExecuteBufferedAsync(cts.Token);
     }
 }
