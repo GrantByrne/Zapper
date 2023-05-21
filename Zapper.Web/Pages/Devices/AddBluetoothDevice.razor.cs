@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Bluetooth;
 
-namespace Zapper.Web.Pages;
+namespace Zapper.Web.Pages.Devices;
 
 public partial class AddBluetoothDevice
 {

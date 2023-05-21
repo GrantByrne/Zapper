@@ -4,7 +4,9 @@
         <p class="card-text">
             @Description
         </p>
-        <a href="@Href" class="btn btn-primary">Add</a>
+    </div>
+    <div class="card-footer">
+        <a href="@Href" style="width: 100%" class="btn btn-primary">Add</a>
     </div>
 </div>
 
@@ -18,4 +20,5 @@
 
     [Parameter]
     public string Href { get; set; } = string.Empty;
+
 }
