@@ -1,0 +1,21 @@
+<div class="card" style="height: 100%">
+    <div class="card-body">
+        <h5 class="card-title">@DeviceType</h5>
+        <p class="card-text">
+            @Description
+        </p>
+        <a href="@Href" class="btn btn-primary">Add</a>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string DeviceType { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Description { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Href { get; set; } = string.Empty;
+}

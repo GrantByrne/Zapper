@@ -1,6 +1,40 @@
 @page "/AddDevice"
-<h3>AddDevice</h3>
+@using Zapper.Web.Shared.Devices
+
+<h3>Add Device</h3>
+<h4>Infrared Device</h4>
+<h4>Bluetooth Device</h4>
+<h4>WebOS TV</h4>
+
+<div class="row">
+    <div class="col" style="height: 100%">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Bluetooth</h5>
+                <p class="card-text">
+                    The emulates a bluetooth keyboard and mouse to devices like bluetooth support, like the
+                    Nvidia Shield
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <AddDeviceCard DeviceType="Infrared"
+                       Description="This is the most common type of device"
+                       Href="AddInfraredDevice"/>
+    </div>
+    <div class="col">
+        <AddDeviceCard DeviceType="Bluetooth"
+                       Description="The emulates a bluetooth keyboard and mouse to devices like bluetooth support, like the Nvidia Shield"
+                       Href="AddInfraredDevice"/>
+    </div>
+    <div class="col">
+        <AddDeviceCard DeviceType="Infrared"
+                       Description="This is the most common type of device"
+                       Href="AddInfraredDevice"/>
+    </div>
+</div>
 
 @code {
-    
+
 }
