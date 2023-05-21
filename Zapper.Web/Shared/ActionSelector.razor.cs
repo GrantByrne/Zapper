@@ -10,7 +10,7 @@ namespace Zapper.Web.Shared;
 public partial class ActionSelector
 {
     [Parameter]
-    public Device SelectedDevice { get; set; }
+    public Core.Devices.Device SelectedDevice { get; set; }
     
     public DeviceAction SelectedAction { get; set; }
 
