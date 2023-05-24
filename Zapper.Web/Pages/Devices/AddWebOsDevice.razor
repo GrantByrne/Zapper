@@ -1,6 +1,21 @@
 @page "/AddWebOsDevice"
-<h3>AddWebOsDevice</h3>
+<h3>Add WebOS TV</h3>
+
+<button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
 
 @code {
-    
+
+    private bool _scanning;
+
+    private void Scan()
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            // ignore
+        }
+    }
 }
