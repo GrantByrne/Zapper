@@ -1,4 +1,8 @@
 @page "/AddWebOsDevice"
+@using System.Net
+@using System.Net.NetworkInformation
+@using System.Net.Sockets
+@using System.Diagnostics
 <h3>Add WebOS TV</h3>
 
 <button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
@@ -11,11 +15,55 @@
     {
         try
         {
+            _scanning = true;
 
+            var ipAddresses = GetLocalNetworkIpAddresses();
+
+            var x = 0;
         }
-        catch (Exception ex)
+        finally
         {
-            // ignore
+            _scanning = false;
         }
     }
+    
+    static List<string> GetLocalNetworkIpAddresses()
+    {
+        var ipAddresses = new List<string>();
+
+        var localIpAddress = GetLocalIpAddress();
+        var localNetworkPrefix = GetNetworkPrefix(localIpAddress);
+
+        for (var i = 1; i < 255; i++)
+        {
+            ipAddresses.Add($"{localNetworkPrefix}.{i}");
+        }
+
+        return ipAddresses;
+    }
+    
+    static string GetLocalIpAddress()
+    {
+        var hostName = Dns.GetHostName();
+        var addresses = Dns.GetHostAddresses(hostName);
+
+        foreach (var address in addresses)
+        {
+            if (address.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return address.ToString();
+            }
+        }
+
+        return null;
+    }
+    
+    static string GetNetworkPrefix(string ipAddress)
+    {
+        var ipParts = ipAddress.Split('.');
+        var networkPrefix = $"{ipParts[0]}.{ipParts[1]}.{ipParts[2]}";
+
+        return networkPrefix;
+    }
+
 }
