@@ -47,6 +47,7 @@ namespace Zapper.Web
             services.AddSingleton<IWebOsActionFactory, WebOsActionFactory>();
             services.AddSingleton<IBluetoothConnection, BluetoothConnection>();
             services.AddSingleton<ILinuxGroupManager, LinuxGroupManager>();
+            services.AddSingleton<IIpAddressManager, IpAddressManager>();
             services.AddDbContext<ZapperDbContext>();
         }
 

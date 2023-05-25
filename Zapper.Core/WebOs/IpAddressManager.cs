@@ -1,31 +1,13 @@
-@page "/AddWebOsDevice"
-@using System.Net
-@using System.Net.Sockets
-<h3>Add WebOS TV</h3>
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using Zapper.Core.WebOs.Abstract;
 
-<button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
+namespace Zapper.Core.WebOs;
 
-@code {
-
-    private bool _scanning;
-
-    private void Scan()
-    {
-        try
-        {
-            _scanning = true;
-
-            var ipAddresses = GetLocalNetworkIpAddresses();
-
-            var x = 0;
-        }
-        finally
-        {
-            _scanning = false;
-        }
-    }
-    
-    static List<string> GetLocalNetworkIpAddresses()
+public class IpAddressManager : IIpAddressManager
+{
+    public List<string> GetLocalNetworkIpAddresses()
     {
         var ipAddresses = new List<string>();
 
@@ -40,7 +22,7 @@
         return ipAddresses;
     }
     
-    static string GetLocalIpAddress()
+    private static string GetLocalIpAddress()
     {
         var hostName = Dns.GetHostName();
         var addresses = Dns.GetHostAddresses(hostName);
@@ -56,12 +38,11 @@
         return null;
     }
     
-    static string GetNetworkPrefix(string ipAddress)
+    private static string GetNetworkPrefix(string ipAddress)
     {
         var ipParts = ipAddress.Split('.');
         var networkPrefix = $"{ipParts[0]}.{ipParts[1]}.{ipParts[2]}";
 
         return networkPrefix;
     }
-
 }
