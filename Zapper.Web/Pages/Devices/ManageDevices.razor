@@ -1,0 +1,63 @@
+@page "/Devices"
+@page "/"
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@using Zapper.Core.WebOs.Abstract
+@using Zapper.Web.Shared.Devices
+@inject IDeviceManager _deviceManager;
+@inject ILogger<ManageDevices> _logger;
+@inject IWebOsStatusManager _webOsStatusManager;
+
+<h1>Devices</h1>
+
+@if (!_devices.Any())
+{
+    <NoDevices />   
+}
+else
+{
+    <div class="row" style="margin-bottom:7px">
+        <div class="col-12">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add Device
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <NavLink class="dropdown-item" href="AddBluetoothDevice">Bluetooth</NavLink>
+                    <a class="dropdown-item" @onclick="AddDevice">WebOS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Device Type</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var device in _devices)
+                {
+                    <tr>
+                        <td>
+                            <a href="/ManageDevice/@device.Id">@device.Name</a>
+                        </td>
+                        <td>@device.DeviceType</td>
+                        <td>@device.Status</td>
+                        <td>
+                            <button @onclick="() => ConfirmDelete(device)" class="btn btn-primary">Delete</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <CreateWebOsDeviceModal @ref="CreateWebOsDeviceModel" OnSaveChanges="OnInitialized"/>
+    <ConfirmationModal @ref="_confirmationModal" OnConfirmYes="Delete"/>   
+}

@@ -1,0 +1,26 @@
+@page "/AddDevice"
+@using Zapper.Web.Shared.Devices
+
+<h3>Add Device</h3>
+
+<div class="row">
+    <div class="col">
+        <AddDeviceCard DeviceType="Infrared"
+                       Description="This is the most common type of device"
+                       Href="AddInfraredDevice"/>
+    </div>
+    <div class="col">
+        <AddDeviceCard DeviceType="Bluetooth"
+                       Description="The emulates a bluetooth keyboard and mouse to devices like bluetooth support, like the Nvidia Shield"
+                       Href="AddBluetoothDevice"/>
+    </div>
+    <div class="col">
+        <AddDeviceCard DeviceType="WebOS TV"
+                       Description="Interacts with LG WebOS TVs via the network greater and faster control"
+                       Href="AddWebOsDevice"/>
+    </div>
+</div>
+
+@code {
+
+}

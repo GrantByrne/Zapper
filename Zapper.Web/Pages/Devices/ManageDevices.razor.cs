@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging;
 using Zapper.Web.Data;
 using Zapper.Web.Shared;
 
-namespace Zapper.Web.Pages;
+namespace Zapper.Web.Pages.Devices;
 
-public partial class Devices
+public partial class ManageDevices
 {
     private readonly List<DeviceModel> _devices = new();
     private ConfirmationModal _confirmationModal;
