@@ -18,6 +18,25 @@ else
     }
 }
 
+@if (_scanned)
+{
+    <div class="row py-2">
+        <div class="container">
+            @if (_tvs.Any())
+            {
+                @foreach (var tv in _tvs)
+                {
+                    tv.ToString();
+                }
+            }
+            else
+            {
+                <span>No TVs found</span>
+            }
+        </div>
+    </div>
+}
+
 @code {
 
     private bool _scanning;
@@ -28,13 +47,13 @@ else
     {
         if (_scanning)
             return;
-        
+
         Task.Run(() =>
         {
             try
             {
                 _scanning = true;
-                
+
                 InvokeAsync(StateHasChanged);
 
                 var scanner = new LgTvScanner();
@@ -43,7 +62,7 @@ else
             }
             catch
             {
-                // ignored
+    // ignored
             }
             finally
             {
@@ -54,4 +73,6 @@ else
             }
         });
     }
+
 }
+
