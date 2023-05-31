@@ -26,7 +26,17 @@ else
             {
                 @foreach (var tv in _tvs)
                 {
-                    tv.ToString();
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <ul>
+                                    <li>@tv.TvName</li>
+                                    <li>@tv.Uuid</li>
+                                    <li>@tv.Address</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 }
             }
             else
@@ -75,4 +85,3 @@ else
     }
 
 }
-
