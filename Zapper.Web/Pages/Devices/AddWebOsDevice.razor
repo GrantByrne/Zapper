@@ -2,29 +2,56 @@
 @using Zapper.Core.WebOs
 <h3>Add WebOS TV</h3>
 
-<button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
+@if (_scanning)
+{
+    <span>Scanning...</span>
+}
+else
+{
+    @if (_scanned)
+    {
+        <button class="btn btn-primary" @onclick="Scan">Scan again</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
+    }
+}
 
 @code {
 
     private bool _scanning;
+    private bool _scanned;
+    List<LgTvScanner.TvData> _tvs = new();
 
     private void Scan()
     {
-        try
+        if (_scanning)
+            return;
+        
+        Task.Run(() =>
         {
-            _scanning = true;
+            try
+            {
+                _scanning = true;
+                
+                InvokeAsync(StateHasChanged);
 
-            var scanner = new LgTvScanner();
+                var scanner = new LgTvScanner();
 
-            var result = scanner.LgTvScan();
+                _tvs = scanner.LgTvScan();
+            }
+            catch
+            {
+                // ignored
+            }
+            finally
+            {
+                _scanning = false;
+                _scanned = true;
 
-            var x = 0;
-    //var ipAddresses = GetLocalNetworkIpAddresses();
-        }
-        finally
-        {
-            _scanning = false;
-        }
+                InvokeAsync(StateHasChanged);
+            }
+        });
     }
-
 }
