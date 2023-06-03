@@ -10,11 +10,15 @@ else
 {
     @if (_scanned)
     {
-        <button class="btn btn-primary" @onclick="Scan">Scan again</button>
+        <button class="btn btn-primary" onclick="@Scan">
+            Scan again
+        </button>
     }
     else
     {
-        <button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
+        <button class="btn btn-primary" onclick="@Scan">
+            Scan for TVs
+        </button>
     }
 }
 
@@ -26,14 +30,15 @@ else
             {
                 @foreach (var tv in _tvs)
                 {
-                    <div class="col">
+                    <div class="col-4">
                         <div class="card">
                             <div class="card-body">
                                 <ul>
-                                    <li>@tv.TvName</li>
-                                    <li>@tv.Uuid</li>
-                                    <li>@tv.Address</li>
+                                    <li><strong>TV Name</strong> @tv.TvName</li>
+                                    <li><strong>UUID</strong> @tv.Uuid</li>
+                                    <li><strong>IP Address</strong> @tv.Address</li>
                                 </ul>
+                                <button class="btn btn-primary float-right">Add Device</button>
                             </div>
                         </div>
                     </div>
@@ -58,30 +63,26 @@ else
         if (_scanning)
             return;
 
-        Task.Run(() =>
+        try
         {
-            try
-            {
-                _scanning = true;
+            _scanning = true;
+            StateHasChanged();
 
-                InvokeAsync(StateHasChanged);
+            var scanner = new LgTvScanner();
 
-                var scanner = new LgTvScanner();
-
-                _tvs = scanner.LgTvScan();
-            }
-            catch
-            {
+            _tvs = scanner.LgTvScan();
+        }
+        catch
+        {
     // ignored
-            }
-            finally
-            {
-                _scanning = false;
-                _scanned = true;
+        }
+        finally
+        {
+            _scanning = false;
+            _scanned = true;
 
-                InvokeAsync(StateHasChanged);
-            }
-        });
+            StateHasChanged();
+        }
     }
 
 }
