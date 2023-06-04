@@ -6,7 +6,7 @@ using Zapper.Web.Shared;
 
 namespace Zapper.Web.Pages.Devices;
 
-public partial class ManageDevices
+public partial class Devices
 {
     private readonly List<DeviceModel> _devices = new();
     private ConfirmationModal _confirmationModal;
