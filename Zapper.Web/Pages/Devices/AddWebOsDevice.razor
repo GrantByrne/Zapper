@@ -66,6 +66,11 @@ else
     private bool _scanned;
     List<LgTvScanner.TvData> _tvs = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await Scan();
+    }
+
     private async Task Scan()
     {
         await Task.Run(async () =>
