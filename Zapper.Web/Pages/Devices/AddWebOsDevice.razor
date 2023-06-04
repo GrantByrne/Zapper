@@ -63,19 +63,4 @@
             }
         });
     }
-
-    private void AddDevice(LgTvScanner.TvData tvData)
-    {
-        try
-        {
-            Logger.LogInformation("Attempting to save changes");
-            DeviceManager.CreateWebOsDevice(tvData.TvName, tvData.Address, tvData.Address);
-            Logger.LogInformation("Finished saving changes");
-            NavigationManager.NavigateTo("/devices");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to save changes");
-        }
-    }
 }

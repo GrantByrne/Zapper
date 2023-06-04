@@ -1,3 +1,11 @@
+@using Zapper.Core.WebOs
+@using Zapper.Core.Devices
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@inject ILogger<WebOsDevices> Logger;
+@inject NavigationManager NavigationManager;
+@inject IDeviceManager DeviceManager;
+
 @* <div class="row py-2"> *@
 @*     <div class="container"> *@
 @*         @if (_tvs.Any()) *@
@@ -35,4 +43,19 @@
 
 @code {
 
+    private void AddDevice(LgTvScanner.TvData tvData)
+    {
+        try
+        {
+            Logger.LogInformation("Attempting to save changes");
+            DeviceManager.CreateWebOsDevice(tvData.TvName, tvData.Address, tvData.Address);
+            Logger.LogInformation("Finished saving changes");
+            NavigationManager.NavigateTo("/devices");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save changes");
+        }
+    }
+    
 }
