@@ -1,21 +1,109 @@
 @page "/AddWebOsDevice"
+@using Zapper.Core.WebOs
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@inject ILogger<AddWebOsDevice> Logger
+@inject IDeviceManager DeviceManager;
+@inject NavigationManager NavigationManager;
 <h3>Add WebOS TV</h3>
 
-<button class="btn btn-primary" @onclick="Scan">Scan for TVs</button>
+@if (_scanning)
+{
+    <span>Scanning...</span>
+}
+else
+{
+    @if (_scanned)
+    {
+        <button class="btn btn-primary" onclick="@Scan">
+            Scan again
+        </button>
+    }
+    else
+    {
+        <button class="btn btn-primary" onclick="@Scan">
+            Scan for TVs
+        </button>
+    }
+}
+
+@if (_scanned)
+{
+    <div class="row py-2">
+        <div class="container">
+            @if (_tvs.Any())
+            {
+                @foreach (var tv in _tvs)
+                {
+                    <div class="col-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <ul>
+                                    <li><strong>TV Name</strong> @tv.TvName</li>
+                                    <li><strong>UUID</strong> @tv.Uuid</li>
+                                    <li><strong>IP Address</strong> @tv.Address</li>
+                                </ul>
+                                <button class="btn btn-primary float-right" onclick="@AddDevice">
+                                    Add Device
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <span>No TVs found</span>
+            }
+        </div>
+    </div>
+}
 
 @code {
 
     private bool _scanning;
+    private bool _scanned;
+    List<LgTvScanner.TvData> _tvs = new();
 
     private void Scan()
     {
+        if (_scanning)
+            return;
+
         try
         {
+            _scanning = true;
+            StateHasChanged();
 
+            var scanner = new LgTvScanner();
+
+            _tvs = scanner.LgTvScan();
+        }
+        catch
+        {
+    // ignored
+        }
+        finally
+        {
+            _scanning = false;
+            _scanned = true;
+
+            StateHasChanged();
+        }
+    }
+
+    private void AddDevice(LgTvScanner.TvData tvData)
+    {
+        try
+        {
+            Logger.LogInformation("Attempting to save changes");
+            DeviceManager.CreateWebOsDevice(tvData.TvName, tvData.Address, tvData.Address);
+            Logger.LogInformation("Finished saving changes");
+            NavigationManager.NavigateTo("/devices");
         }
         catch (Exception ex)
         {
-            // ignore
+            Logger.LogError(ex, "Failed to save changes");
         }
     }
 }
