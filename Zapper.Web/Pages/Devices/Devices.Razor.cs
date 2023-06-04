@@ -17,14 +17,14 @@ public partial class Devices
     protected override void OnInitialized()
     {
         _devices.Clear();
-        var devices = _deviceManager.Get();
+        var devices = DeviceManager.Get();
 
         foreach (var device in devices)
         {
             var d = new DeviceModel();
 
             d.Id = device.Id;
-            d.Status = _webOsStatusManager.GetStatus(d.Id);
+            d.Status = WebOsStatusManager.GetStatus(d.Id);
             d.DeviceType = device.SupportDeviceType;
             d.Name = device.Name;
 
@@ -38,13 +38,13 @@ public partial class Devices
     {
         try
         {
-            _logger.LogInformation("Bring up the modal to add a new device");
+            Logger.LogInformation("Bring up the modal to add a new device");
             CreateWebOsDeviceModel.Open();
-            _logger.LogInformation("Brought up the modal to add a new device");
+            Logger.LogInformation("Brought up the modal to add a new device");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to bring up the modal for a new device");
+            Logger.LogError(ex, "Failed to bring up the modal for a new device");
         }
     }
 
@@ -58,16 +58,16 @@ public partial class Devices
     {
         try
         {
-            _logger.LogInformation("Attempting to delete device: {device}", _forDelete);
+            Logger.LogInformation("Attempting to delete device: {device}", _forDelete);
 
-            _deviceManager.Delete(_forDelete.Id);
+            DeviceManager.Delete(_forDelete.Id);
             OnInitialized();
 
-            _logger.LogInformation("Finished deleting device");
+            Logger.LogInformation("Finished deleting device");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to delete device");
+            Logger.LogError(ex, "Failed to delete device");
         }
     }
 }
