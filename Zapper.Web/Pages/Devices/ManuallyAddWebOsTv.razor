@@ -1,0 +1,55 @@
+@page "/ManuallyAddWebOsTv"
+<h3>Add WebOS TV</h3>
+
+<div class="container d-flex h-100 w-100">
+    <div class="row align-items-center h-100 w-100">
+        <div class="col-8 mx-auto text-center pb-5 mb-5">
+            <h3>Connection Details</h3>
+            <div class="form-group row">
+                <label for="deviceName" class="col-2 col-form-label">Name</label>
+                <div class="col-10">
+                    <input type="text" class="form-control" id="deviceName" placeholder="LG WebOS TV" @bind="_name"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="ipAddress" class="col-2 col-form-label">IP Address</label>
+                <div class="col-10">
+                    <input type="text" class="form-control" id="ipAddress" placeholder="192.168.1.1" @bind="_ipAddress"/>
+                    <div class="@(_connectTestSuccess ? "valid-feedback" : "invalid-feedback") d-block">
+                        @_connectionTestSummary
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="macAddress" class="col-2 col-form-label">Mac Address</label>
+                <div class="col-7">
+                    <input type="text" class="form-control" id="macAddress" placeholder="00:11:22:33:44:55" @bind="_macAddress"/>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-primary w-100" @onclick="TestConnection">Test Connection</button>
+                </div>
+            </div>
+            <button class="btn btn-primary w-100" @onclick="SaveChanges">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private string _name = string.Empty;
+    private string _ipAddress = string.Empty;
+    private string _macAddress = string.Empty;
+    private bool _connectTestSuccess = false;
+    private string _connectionTestSummary = string.Empty;
+
+    private void TestConnection()
+    {
+        
+    }
+
+    private void SaveChanges()
+    {
+        
+    }
+
+}
