@@ -1,4 +1,10 @@
 @page "/ManuallyAddWebOsTv"
+@using Zapper.WebOs
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@inject ILogger<ManuallyAddWebOsTv> Logger
+@inject NavigationManager NavigationManager;
+@inject IDeviceManager DeviceManager;
 <h3>Add WebOS TV</h3>
 
 <div class="container d-flex h-100 w-100">
@@ -39,17 +45,46 @@
     private string _name = string.Empty;
     private string _ipAddress = string.Empty;
     private string _macAddress = string.Empty;
-    private bool _connectTestSuccess = false;
+    private bool _connectTestSuccess;
     private string _connectionTestSummary = string.Empty;
 
-    private void TestConnection()
+    private async Task TestConnection()
     {
-        
+        try
+        {
+            Logger.LogInformation("Testing out the WebOS Connection");
+
+            var service = new Service();
+            await service.ConnectAsync(_ipAddress);
+
+            _connectionTestSummary = $"Successfully connected to {_ipAddress}";
+            _connectTestSuccess = true;
+
+            Logger.LogInformation("Finished testing the WebOS Connection");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while testing the WebOS Connection");
+            _connectTestSuccess = false;
+            _connectionTestSummary = ex.Message;
+        }
     }
 
     private void SaveChanges()
     {
-        
+        try
+        {
+            Logger.LogInformation("Attempting to save changes");
+            
+            DeviceManager.CreateWebOsDevice(_name, _ipAddress, _macAddress);
+            NavigationManager.NavigateTo("/devices");
+            
+            Logger.LogInformation("Finished saving changes");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save changes");
+        }
     }
 
 }
