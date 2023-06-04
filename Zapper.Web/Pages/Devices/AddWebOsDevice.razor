@@ -2,6 +2,7 @@
 @using Zapper.Core.WebOs
 @using Microsoft.Extensions.Logging
 @using Zapper.Core.Devices.Abstract
+@using Zapper.Web.Shared.Devices
 @inject ILogger<AddWebOsDevice> Logger
 @inject IDeviceManager DeviceManager;
 @inject NavigationManager NavigationManager;
@@ -9,7 +10,7 @@
 
 @if (_scanning)
 {
-    <span>Scanning...</span>
+    <ScanningForWebOsDevice/>
 }
 else
 {
@@ -65,31 +66,34 @@ else
     private bool _scanned;
     List<LgTvScanner.TvData> _tvs = new();
 
-    private void Scan()
+    private async Task Scan()
     {
-        if (_scanning)
-            return;
-
-        try
+        await Task.Run(async () =>
         {
-            _scanning = true;
-            StateHasChanged();
+            if (_scanning)
+                return;
 
-            var scanner = new LgTvScanner();
+            try
+            {
+                _scanning = true;
+                await InvokeAsync(StateHasChanged);
 
-            _tvs = scanner.LgTvScan();
-        }
-        catch
-        {
+                var scanner = new LgTvScanner();
+
+                _tvs = scanner.LgTvScan();
+            }
+            catch
+            {
     // ignored
-        }
-        finally
-        {
-            _scanning = false;
-            _scanned = true;
+            }
+            finally
+            {
+                _scanning = false;
+                _scanned = true;
 
-            StateHasChanged();
-        }
+                await InvokeAsync(StateHasChanged);
+            }
+        });
     }
 
     private void AddDevice(LgTvScanner.TvData tvData)
