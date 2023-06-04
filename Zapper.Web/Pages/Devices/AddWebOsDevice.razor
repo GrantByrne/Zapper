@@ -1,5 +1,10 @@
 @page "/AddWebOsDevice"
 @using Zapper.Core.WebOs
+@using Microsoft.Extensions.Logging
+@using Zapper.Core.Devices.Abstract
+@inject ILogger<AddWebOsDevice> Logger
+@inject IDeviceManager DeviceManager;
+@inject NavigationManager NavigationManager;
 <h3>Add WebOS TV</h3>
 
 @if (_scanning)
@@ -38,7 +43,9 @@ else
                                     <li><strong>UUID</strong> @tv.Uuid</li>
                                     <li><strong>IP Address</strong> @tv.Address</li>
                                 </ul>
-                                <button class="btn btn-primary float-right">Add Device</button>
+                                <button class="btn btn-primary float-right" onclick="@AddDevice">
+                                    Add Device
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -85,4 +92,18 @@ else
         }
     }
 
+    private void AddDevice(LgTvScanner.TvData tvData)
+    {
+        try
+        {
+            Logger.LogInformation("Attempting to save changes");
+            DeviceManager.CreateWebOsDevice(tvData.TvName, tvData.Address, tvData.Address);
+            Logger.LogInformation("Finished saving changes");
+            NavigationManager.NavigateTo("/devices");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to save changes");
+        }
+    }
 }
