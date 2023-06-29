@@ -1,23 +1,16 @@
 @page "/AddWebOsDevice"
 @using Zapper.Core.WebOs
-@using Microsoft.Extensions.Logging
-@using Zapper.Core.Devices.Abstract
 @using Zapper.Web.Shared.Devices
-@inject ILogger<AddWebOsDevice> Logger
-@inject IDeviceManager DeviceManager;
-@inject NavigationManager NavigationManager;
-<h3>Add WebOS TV</h3>
 
+<h2>Add WebOS TV</h2>
 @if (_scanning)
 {
-    <ScanningForWebOsDevice/>
+    <ScanningCard Text="Scanning for WebOS Device..."/>
 }
-
 @if(!_scanning && _scanned && !_tvs.Any())
 {
     <NoWebOsDevicesFound ScanCallback="Scan"/>
 }
-
 @if(!_scanning && _scanned && _tvs.Any())
 {
     <WebOsDevices @tvs="_tvs" @AddDevice="AddDevice"/>
