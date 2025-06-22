@@ -2,7 +2,7 @@ using ZapperHub.Models;
 
 namespace ZapperHub.Hardware;
 
-public class AndroidTVBluetoothController : INetworkDeviceController
+public class AndroidTVBluetoothController : IBluetoothDeviceController
 {
     private readonly IBluetoothHIDController _hidController;
     private readonly ILogger<AndroidTVBluetoothController> _logger;
@@ -199,31 +199,9 @@ public class AndroidTVBluetoothController : INetworkDeviceController
         }, cancellationToken);
     }
 
-    public async Task<string> SendCommandAsync(string host, int port, string command, string? payload = null, CancellationToken cancellationToken = default)
-    {
-        // Not applicable for Bluetooth HID
-        await Task.CompletedTask;
-        throw new NotSupportedException("Direct command sending not supported for Bluetooth HID devices");
-    }
-
-    public async Task<bool> SendHttpCommandAsync(string url, string method, string endpoint, string? payload = null, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
-    {
-        // Not applicable for Bluetooth HID
-        await Task.CompletedTask;
-        throw new NotSupportedException("HTTP commands not supported for Bluetooth HID devices");
-    }
-
-    public async Task<bool> SendWebSocketCommandAsync(string url, string message, CancellationToken cancellationToken = default)
-    {
-        // Not applicable for Bluetooth HID
-        await Task.CompletedTask;
-        throw new NotSupportedException("WebSocket commands not supported for Bluetooth HID devices");
-    }
-
-    public async Task<string> DiscoverDevicesAsync(string deviceType, TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> DiscoverPairedDevicesAsync(CancellationToken cancellationToken = default)
     {
         // Return list of paired Bluetooth devices
-        var devices = await _hidController.GetPairedDevicesAsync(cancellationToken);
-        return string.Join(",", devices);
+        return await _hidController.GetPairedDevicesAsync(cancellationToken);
     }
 }

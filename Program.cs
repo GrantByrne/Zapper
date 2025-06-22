@@ -27,7 +27,7 @@ builder.Services.AddScoped<IWebOSClient, WebOSClient>();
 builder.Services.AddScoped<IWebOSDeviceController, WebOSDeviceController>();
 builder.Services.AddScoped<IWebOSDiscovery, WebOSDiscovery>();
 builder.Services.AddSingleton<IBluetoothHIDController, MockBluetoothHIDController>();
-builder.Services.AddScoped<AndroidTVBluetoothController>();
+builder.Services.AddScoped<IBluetoothDeviceController, AndroidTVBluetoothController>();
 
 // Add HttpClient for network operations
 builder.Services.AddHttpClient();

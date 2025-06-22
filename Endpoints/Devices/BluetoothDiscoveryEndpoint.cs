@@ -5,7 +5,7 @@ namespace ZapperHub.Endpoints.Devices;
 
 public class BluetoothDiscoveryEndpoint : EndpointWithoutRequest<IEnumerable<string>>
 {
-    public IBluetoothHIDController BluetoothController { get; set; } = null!;
+    public IBluetoothDeviceController BluetoothController { get; set; } = null!;
 
     public override void Configure()
     {
@@ -20,7 +20,7 @@ public class BluetoothDiscoveryEndpoint : EndpointWithoutRequest<IEnumerable<str
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var devices = await BluetoothController.GetPairedDevicesAsync(ct);
+        var devices = await BluetoothController.DiscoverPairedDevicesAsync(ct);
         await SendOkAsync(devices, ct);
     }
 }
