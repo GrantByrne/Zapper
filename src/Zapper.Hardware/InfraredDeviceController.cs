@@ -1,9 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Interfaces;
 using Zapper.Core.Models;
-using Zapper.Hardware;
 
-namespace Zapper.Protocols;
+namespace Zapper.Hardware;
 
 public class InfraredDeviceController : IDeviceController
 {

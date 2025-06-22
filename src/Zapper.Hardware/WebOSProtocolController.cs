@@ -1,16 +1,15 @@
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Interfaces;
 using Zapper.Core.Models;
-using Zapper.Hardware;
 
-namespace Zapper.Protocols;
+namespace Zapper.Hardware;
 
-public class WebOSDeviceController : IDeviceController
+public class WebOSProtocolController : IDeviceController
 {
     private readonly IWebOSDeviceController _webOSController;
-    private readonly ILogger<WebOSDeviceController> _logger;
+    private readonly ILogger<WebOSProtocolController> _logger;
 
-    public WebOSDeviceController(IWebOSDeviceController webOSController, ILogger<WebOSDeviceController> logger)
+    public WebOSProtocolController(IWebOSDeviceController webOSController, ILogger<WebOSProtocolController> logger)
     {
         _webOSController = webOSController;
         _logger = logger;

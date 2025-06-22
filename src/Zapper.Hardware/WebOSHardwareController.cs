@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Hardware;
 
-public class WebOSDeviceController : IWebOSDeviceController
+public class WebOSHardwareController : IWebOSDeviceController
 {
     private readonly IWebOSClient _webOSClient;
-    private readonly ILogger<WebOSDeviceController> _logger;
+    private readonly ILogger<WebOSHardwareController> _logger;
 
-    public WebOSDeviceController(IWebOSClient webOSClient, ILogger<WebOSDeviceController> logger)
+    public WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHardwareController> logger)
     {
         _webOSClient = webOSClient;
         _logger = logger;

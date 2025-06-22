@@ -15,7 +15,6 @@
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
     <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
     <ProjectReference Include="..\Zapper.Hardware\Zapper.Hardware.csproj" />
-    <ProjectReference Include="..\Zapper.Protocols\Zapper.Protocols.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Zapper.Core.Interfaces;
 using Zapper.Data;
 using Zapper.Hardware;
-using Zapper.Protocols;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,14 +47,14 @@ builder.Services.AddSingleton<IWebOSDiscovery>(provider =>
 
 builder.Services.AddTransient<IWebOSDeviceController>(provider =>
 {
-    var logger = provider.GetRequiredService<ILogger<Zapper.Hardware.WebOSDeviceController>>();
+    var logger = provider.GetRequiredService<ILogger<WebOSHardwareController>>();
     var client = provider.GetRequiredService<IWebOSClient>();
-    return new Zapper.Hardware.WebOSDeviceController(client, logger);
+    return new WebOSHardwareController(client, logger);
 });
 
 // Register protocol implementations
 builder.Services.AddTransient<InfraredDeviceController>();
-builder.Services.AddTransient<Zapper.Protocols.WebOSDeviceController>();
+builder.Services.AddTransient<WebOSProtocolController>();
 
 // Register device controllers with factory pattern
 builder.Services.AddTransient<IDeviceController>(provider =>
