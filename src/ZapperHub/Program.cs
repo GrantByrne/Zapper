@@ -43,6 +43,7 @@ builder.Services.AddLogging();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+app.UseStaticFiles();
 app.UseFastEndpoints();
 
 // Add SignalR hub
