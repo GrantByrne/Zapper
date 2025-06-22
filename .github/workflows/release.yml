@@ -285,22 +285,3 @@ jobs:
         git commit -m "Update install script for release ${{ needs.create-release.outputs.version }}" || exit 0
         git push
 
-  announce-release:
-    name: Announce Release
-    needs: [create-release, build-release-assets]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: Send release notification
-      uses: 8398a7/action-slack@v3
-      if: env.SLACK_WEBHOOK_URL != ''
-      with:
-        status: ${{ job.status }}
-        text: |
-          🎉 Zapper ${{ needs.create-release.outputs.version }} has been released!
-          
-          📦 Download: https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}
-          ⚡ One-line install: `curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash`
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
