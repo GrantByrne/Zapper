@@ -4,10 +4,8 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Activities;
 
-public class GetAllActivitiesEndpoint : EndpointWithoutRequest<IEnumerable<Activity>>
+public class GetAllActivitiesEndpoint(IActivityService activityService) : EndpointWithoutRequest<IEnumerable<Activity>>
 {
-    public IActivityService ActivityService { get; set; } = null!;
-
     public override void Configure()
     {
         Get("/api/activities");
@@ -21,7 +19,7 @@ public class GetAllActivitiesEndpoint : EndpointWithoutRequest<IEnumerable<Activ
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var activities = await ActivityService.GetAllActivitiesAsync();
+        var activities = await activityService.GetAllActivitiesAsync();
         await SendOkAsync(activities, ct);
     }
 }

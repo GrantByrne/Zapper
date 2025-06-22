@@ -3,21 +3,8 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class SendCommandRequest
+public class SendCommandEndpoint(IDeviceService deviceService) : Endpoint<SendCommandRequest, SendCommandResponse>
 {
-    public int Id { get; set; }
-    public string CommandName { get; set; } = string.Empty;
-}
-
-public class SendCommandResponse
-{
-    public string Message { get; set; } = string.Empty;
-}
-
-public class SendCommandEndpoint : Endpoint<SendCommandRequest, SendCommandResponse>
-{
-    public IDeviceService DeviceService { get; set; } = null!;
-
     public override void Configure()
     {
         Post("/api/devices/{id}/commands/{commandName}");
@@ -31,7 +18,7 @@ public class SendCommandEndpoint : Endpoint<SendCommandRequest, SendCommandRespo
 
     public override async Task HandleAsync(SendCommandRequest req, CancellationToken ct)
     {
-        var success = await DeviceService.SendCommandAsync(req.Id, req.CommandName, ct);
+        var success = await deviceService.SendCommandAsync(req.Id, req.CommandName, ct);
         if (!success)
         {
             await SendAsync(new SendCommandResponse 

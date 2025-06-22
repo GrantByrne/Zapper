@@ -3,20 +3,8 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Activities;
 
-public class ExecuteActivityRequest
+public class ExecuteActivityEndpoint(IActivityService activityService) : Endpoint<ExecuteActivityRequest, ExecuteActivityResponse>
 {
-    public int Id { get; set; }
-}
-
-public class ExecuteActivityResponse
-{
-    public string Message { get; set; } = string.Empty;
-}
-
-public class ExecuteActivityEndpoint : Endpoint<ExecuteActivityRequest, ExecuteActivityResponse>
-{
-    public IActivityService ActivityService { get; set; } = null!;
-
     public override void Configure()
     {
         Post("/api/activities/{id}/execute");
@@ -30,7 +18,7 @@ public class ExecuteActivityEndpoint : Endpoint<ExecuteActivityRequest, ExecuteA
 
     public override async Task HandleAsync(ExecuteActivityRequest req, CancellationToken ct)
     {
-        var success = await ActivityService.ExecuteActivityAsync(req.Id, ct);
+        var success = await activityService.ExecuteActivityAsync(req.Id, ct);
         if (!success)
         {
             await SendAsync(new ExecuteActivityResponse 

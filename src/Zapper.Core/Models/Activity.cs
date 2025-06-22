@@ -27,39 +27,3 @@ public class Activity
     
     public ICollection<ActivityStep> Steps { get; set; } = new List<ActivityStep>();
 }
-
-public class ActivityDevice
-{
-    public int Id { get; set; }
-    
-    public int ActivityId { get; set; }
-    
-    public int DeviceId { get; set; }
-    
-    public bool IsPrimaryDevice { get; set; }
-    
-    public Activity Activity { get; set; } = null!;
-    
-    public Device Device { get; set; } = null!;
-}
-
-public class ActivityStep
-{
-    public int Id { get; set; }
-    
-    public int ActivityId { get; set; }
-    
-    public int DeviceCommandId { get; set; }
-    
-    public int StepOrder { get; set; }
-    
-    public int DelayBeforeMs { get; set; } = 0;
-    
-    public int DelayAfterMs { get; set; } = 0;
-    
-    public bool IsRequired { get; set; } = true;
-    
-    public Activity Activity { get; set; } = null!;
-    
-    public DeviceCommand DeviceCommand { get; set; } = null!;
-}
