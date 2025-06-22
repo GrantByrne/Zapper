@@ -1,3 +1,5 @@
+using ZapperHub.Models;
+
 namespace ZapperHub.Hardware;
 
 public class MockInfraredTransmitter : IInfraredTransmitter
@@ -24,6 +26,18 @@ public class MockInfraredTransmitter : IInfraredTransmitter
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
         _logger.LogInformation("Mock transmitting IR code: {IrCode} (repeat {RepeatCount}x)", irCode, repeatCount);
+        
+        // Simulate transmission time
+        await Task.Delay(100 * repeatCount, cancellationToken);
+    }
+
+    public async Task TransmitAsync(IRCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    {
+        if (!IsAvailable)
+            throw new InvalidOperationException("Mock IR transmitter not initialized");
+
+        _logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)", 
+                              irCode.Brand, irCode.Model, irCode.CommandName, irCode.HexCode, repeatCount);
         
         // Simulate transmission time
         await Task.Delay(100 * repeatCount, cancellationToken);

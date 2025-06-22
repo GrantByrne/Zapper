@@ -14,6 +14,8 @@ public class ZapperContext : DbContext
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityDevice> ActivityDevices { get; set; }
     public DbSet<ActivityStep> ActivitySteps { get; set; }
+    public DbSet<IRCode> IRCodes { get; set; }
+    public DbSet<IRCodeSet> IRCodeSets { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,6 +76,26 @@ public class ZapperContext : DbContext
             entity.HasOne(e => e.DeviceCommand)
                 .WithMany(e => e.ActivitySteps)
                 .HasForeignKey(e => e.DeviceCommandId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // IRCode configuration
+        modelBuilder.Entity<IRCode>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.Brand, e.Model, e.CommandName });
+            entity.Property(e => e.DeviceType).HasConversion<string>();
+        });
+        
+        // IRCodeSet configuration
+        modelBuilder.Entity<IRCodeSet>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.Brand, e.Model }).IsUnique();
+            entity.Property(e => e.DeviceType).HasConversion<string>();
+            entity.HasMany(e => e.Codes)
+                .WithOne()
+                .HasForeignKey("IRCodeSetId")
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

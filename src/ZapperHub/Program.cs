@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ZapperContext>(options =>
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IIRCodeService, IRCodeService>();
 
 // Add hardware services
 builder.Services.AddSingleton<IInfraredTransmitter, MockInfraredTransmitter>();
@@ -55,11 +56,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUi();
 }
 
-// Ensure database is created
+// Ensure database is created and seed data
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ZapperContext>();
     context.Database.EnsureCreated();
+    
+    var irCodeService = scope.ServiceProvider.GetRequiredService<IIRCodeService>();
+    await irCodeService.SeedDefaultCodesAsync();
 }
 
 app.Run();
