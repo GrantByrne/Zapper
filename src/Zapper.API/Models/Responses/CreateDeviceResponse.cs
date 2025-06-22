@@ -1,0 +1,19 @@
+using Zapper.Core.Models;
+
+namespace Zapper.API.Models.Responses;
+
+public class CreateDeviceResponse
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Brand { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
+    public DeviceType Type { get; set; }
+    public ConnectionType ConnectionType { get; set; }
+    public string? IpAddress { get; set; }
+    public int? Port { get; set; }
+    public string? MacAddress { get; set; }
+    public string? AuthenticationToken { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime LastSeen { get; set; }
+}

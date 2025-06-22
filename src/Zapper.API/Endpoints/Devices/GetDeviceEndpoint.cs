@@ -1,17 +1,13 @@
 using FastEndpoints;
+using Zapper.API.Models.Requests;
 using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class GetDeviceRequest
+public class GetDeviceEndpoint(IDeviceService deviceService) : Endpoint<GetDeviceRequest, Device>
 {
-    public int Id { get; set; }
-}
-
-public class GetDeviceEndpoint : Endpoint<GetDeviceRequest, Device>
-{
-    public IDeviceService DeviceService { get; set; } = null!;
+    private readonly IDeviceService _deviceService = deviceService;
 
     public override void Configure()
     {
@@ -26,7 +22,7 @@ public class GetDeviceEndpoint : Endpoint<GetDeviceRequest, Device>
 
     public override async Task HandleAsync(GetDeviceRequest req, CancellationToken ct)
     {
-        var device = await DeviceService.GetDeviceAsync(req.Id);
+        var device = await _deviceService.GetDeviceAsync(req.Id);
         if (device == null)
         {
             await SendNotFoundAsync(ct);

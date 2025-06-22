@@ -1,17 +1,13 @@
 using FastEndpoints;
-using Zapper.Integrations;
+using Zapper.API.Models.Requests;
 using Zapper.Core.Models;
+using Zapper.Integrations;
 
 namespace Zapper.Endpoints.Devices;
 
-public class DiscoverWebOSDevicesRequest
+public class DiscoverWebOSDevicesEndpoint(IWebOSDiscovery webOSDiscovery) : Endpoint<DiscoverWebOSDevicesRequest, IEnumerable<Device>>
 {
-    public int TimeoutSeconds { get; set; } = 10;
-}
-
-public class DiscoverWebOSDevicesEndpoint : Endpoint<DiscoverWebOSDevicesRequest, IEnumerable<Device>>
-{
-    public IWebOSDiscovery WebOSDiscovery { get; set; } = null!;
+    private readonly IWebOSDiscovery _webOSDiscovery = webOSDiscovery;
 
     public override void Configure()
     {
@@ -27,7 +23,7 @@ public class DiscoverWebOSDevicesEndpoint : Endpoint<DiscoverWebOSDevicesRequest
     public override async Task HandleAsync(DiscoverWebOSDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await WebOSDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await _webOSDiscovery.DiscoverDevicesAsync(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

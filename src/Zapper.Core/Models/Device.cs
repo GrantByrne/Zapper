@@ -56,27 +56,3 @@ public class Device
     
     public ICollection<ActivityDevice> ActivityDevices { get; set; } = new List<ActivityDevice>();
 }
-
-public enum DeviceType
-{
-    Television,
-    Receiver,
-    CableBox,
-    StreamingDevice,
-    GameConsole,
-    SoundBar,
-    DVDPlayer,
-    BluRayPlayer,
-    SmartTV
-}
-
-public enum ConnectionType
-{
-    InfraredIR,
-    RadioFrequencyRF,
-    NetworkTCP,
-    NetworkWebSocket,
-    Bluetooth,
-    USB,
-    WebOS
-}

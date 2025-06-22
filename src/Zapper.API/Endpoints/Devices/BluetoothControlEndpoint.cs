@@ -1,29 +1,13 @@
 using FastEndpoints;
+using Zapper.API.Models.Requests;
+using Zapper.API.Models.Responses;
 using Zapper.Integrations;
 
 namespace Zapper.Endpoints.Devices;
 
-public class BluetoothControlRequest
+public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothController) : Endpoint<BluetoothControlRequest, BluetoothControlResponse>
 {
-    public string Action { get; set; } = string.Empty;
-    public string? DeviceId { get; set; }
-    public string? KeyCode { get; set; }
-    public string? Text { get; set; }
-    public int? MouseX { get; set; }
-    public int? MouseY { get; set; }
-    public bool? LeftClick { get; set; }
-    public bool? RightClick { get; set; }
-}
-
-public class BluetoothControlResponse
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = string.Empty;
-}
-
-public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, BluetoothControlResponse>
-{
-    public IBluetoothHIDController BluetoothController { get; set; } = null!;
+    private readonly IBluetoothHIDController _bluetoothController = bluetoothController;
 
     public override void Configure()
     {
@@ -43,9 +27,9 @@ public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, Blueto
             bool success = req.Action.ToLower() switch
             {
                 "connect" => await HandleConnect(req, ct),
-                "disconnect" => await BluetoothController.DisconnectAsync(ct),
-                "start_advertising" => await BluetoothController.StartAdvertisingAsync(ct),
-                "stop_advertising" => await BluetoothController.StopAdvertisingAsync(ct),
+                "disconnect" => await _bluetoothController.DisconnectAsync(ct),
+                "start_advertising" => await _bluetoothController.StartAdvertisingAsync(ct),
+                "stop_advertising" => await _bluetoothController.StopAdvertisingAsync(ct),
                 "send_key" => await HandleSendKey(req, ct),
                 "send_mouse" => await HandleSendMouse(req, ct),
                 "send_text" => await HandleSendText(req, ct),
@@ -85,7 +69,7 @@ public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, Blueto
         {
             return false;
         }
-        return await BluetoothController.ConnectToDeviceAsync(req.DeviceId, ct);
+        return await _bluetoothController.ConnectToDeviceAsync(req.DeviceId, ct);
     }
 
     private async Task<bool> HandleSendKey(BluetoothControlRequest req, CancellationToken ct)
@@ -94,7 +78,7 @@ public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, Blueto
         {
             return false;
         }
-        return await BluetoothController.SendKeyEventAsync(keyCode, true, ct);
+        return await _bluetoothController.SendKeyEventAsync(keyCode, true, ct);
     }
 
     private async Task<bool> HandleSendMouse(BluetoothControlRequest req, CancellationToken ct)
@@ -104,7 +88,7 @@ public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, Blueto
         var leftClick = req.LeftClick ?? false;
         var rightClick = req.RightClick ?? false;
         
-        return await BluetoothController.SendMouseEventAsync(deltaX, deltaY, leftClick, rightClick, ct);
+        return await _bluetoothController.SendMouseEventAsync(deltaX, deltaY, leftClick, rightClick, ct);
     }
 
     private async Task<bool> HandleSendText(BluetoothControlRequest req, CancellationToken ct)
@@ -113,6 +97,6 @@ public class BluetoothControlEndpoint : Endpoint<BluetoothControlRequest, Blueto
         {
             return false;
         }
-        return await BluetoothController.SendKeyboardTextAsync(req.Text, ct);
+        return await _bluetoothController.SendKeyboardTextAsync(req.Text, ct);
     }
 }

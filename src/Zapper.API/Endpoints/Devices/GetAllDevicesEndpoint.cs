@@ -4,9 +4,9 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class GetAllDevicesEndpoint : EndpointWithoutRequest<IEnumerable<Device>>
+public class GetAllDevicesEndpoint(IDeviceService deviceService) : EndpointWithoutRequest<IEnumerable<Device>>
 {
-    public IDeviceService DeviceService { get; set; } = null!;
+    private readonly IDeviceService _deviceService = deviceService;
 
     public override void Configure()
     {
@@ -21,7 +21,7 @@ public class GetAllDevicesEndpoint : EndpointWithoutRequest<IEnumerable<Device>>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var devices = await DeviceService.GetAllDevicesAsync();
+        var devices = await _deviceService.GetAllDevicesAsync();
         await SendOkAsync(devices, ct);
     }
 }
