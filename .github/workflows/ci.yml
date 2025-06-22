@@ -8,7 +8,7 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  PROJECT_NAME: 'Zapper'
+  PROJECT_NAME: 'Zapper.Web'
   SOLUTION_PATH: 'src/zapper-next-gen.sln'
 
 jobs:

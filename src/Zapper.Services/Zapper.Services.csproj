@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
+    <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
+    <ProjectReference Include="..\Zapper.Hardware\Zapper.Hardware.csproj" />
+    <ProjectReference Include="..\Zapper.Protocols\Zapper.Protocols.csproj" />
+  </ItemGroup>
+
+</Project>
