@@ -1,10 +1,10 @@
 # Hardware Setup Guide
 
-This guide covers the hardware setup required for ZapperHub, including IR LED circuits, GPIO configuration, and optional components.
+This guide covers the hardware setup required for Zapper, including IR LED circuits, GPIO configuration, and optional components.
 
 ## Overview
 
-ZapperHub requires specific hardware components to control devices via infrared signals. This guide will help you build the necessary circuits and configure your Raspberry Pi.
+Zapper requires specific hardware components to control devices via infrared signals. This guide will help you build the necessary circuits and configure your Raspberry Pi.
 
 ## Required Components
 
@@ -165,7 +165,7 @@ IR LEDs emit light visible to phone cameras:
 
 ### Supported USB Remotes
 
-ZapperHub works with standard USB HID remotes:
+Zapper works with standard USB HID remotes:
 - **Generic USB IR remotes** from Amazon/eBay
 - **Windows Media Center remotes**
 - **Logitech Harmony USB receivers**
@@ -360,4 +360,4 @@ vcgencmd get_throttled
 
 ---
 
-**Hardware setup complete! Your ZapperHub is ready for device control.** ⚡
+**Hardware setup complete! Your Zapper is ready for device control.** ⚡

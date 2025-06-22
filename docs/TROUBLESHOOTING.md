@@ -1,13 +1,13 @@
 # Troubleshooting Guide
 
-This guide helps you diagnose and resolve common issues with ZapperHub.
+This guide helps you diagnose and resolve common issues with Zapper.
 
 ## Common Issues
 
 ### 1. Service Won't Start
 
 #### Symptoms
-- ZapperHub service fails to start
+- Zapper service fails to start
 - Web interface not accessible
 - Service shows "failed" status
 
@@ -15,13 +15,13 @@ This guide helps you diagnose and resolve common issues with ZapperHub.
 
 ```bash
 # Check service status
-sudo systemctl status zapperhub
+sudo systemctl status zapper
 
 # View service logs
-sudo journalctl -u zapperhub -f
+sudo journalctl -u zapper -f
 
 # Check application logs
-sudo journalctl -u zapperhub --since "1 hour ago"
+sudo journalctl -u zapper --since "1 hour ago"
 ```
 
 #### Solutions
@@ -29,8 +29,8 @@ sudo journalctl -u zapperhub --since "1 hour ago"
 **Permission Issues:**
 ```bash
 # Fix file ownership
-sudo chown -R pi:pi /opt/zapperhub
-sudo chmod +x /opt/zapperhub/publish/ZapperHub
+sudo chown -R pi:pi /opt/zapper
+sudo chmod +x /opt/zapper/publish/Zapper
 
 # Fix GPIO permissions
 sudo usermod -a -G gpio pi
@@ -74,7 +74,7 @@ gpio write 1 1
 gpio write 1 0
 
 # Check service logs for IR errors
-sudo journalctl -u zapperhub | grep -i "infrared\|IR"
+sudo journalctl -u zapper | grep -i "infrared\|IR"
 ```
 
 #### Solutions
@@ -101,7 +101,7 @@ sudo reboot
 **Configuration Issues:**
 ```bash
 # Check appsettings.json
-cat /opt/zapperhub/publish/appsettings.json
+cat /opt/zapper/publish/appsettings.json
 
 # Verify GPIO pin configuration
 # Default should be pin 18
@@ -260,13 +260,13 @@ connect [device-mac]
 
 ```bash
 # Check database file
-ls -la /opt/zapperhub/publish/zapper.db
+ls -la /opt/zapper/publish/zapper.db
 
 # Test database connectivity
-sqlite3 /opt/zapperhub/publish/zapper.db ".tables"
+sqlite3 /opt/zapper/publish/zapper.db ".tables"
 
 # Check database logs
-sudo journalctl -u zapperhub | grep -i "database\|sqlite"
+sudo journalctl -u zapper | grep -i "database\|sqlite"
 ```
 
 #### Solutions
@@ -274,18 +274,18 @@ sudo journalctl -u zapperhub | grep -i "database\|sqlite"
 **Permissions:**
 ```bash
 # Fix database permissions
-sudo chown pi:pi /opt/zapperhub/publish/zapper.db
-sudo chmod 664 /opt/zapperhub/publish/zapper.db
+sudo chown pi:pi /opt/zapper/publish/zapper.db
+sudo chmod 664 /opt/zapper/publish/zapper.db
 ```
 
 **Corruption Recovery:**
 ```bash
 # Backup existing database
-cp /opt/zapperhub/publish/zapper.db /opt/zapperhub/zapper.db.backup
+cp /opt/zapper/publish/zapper.db /opt/zapper/zapper.db.backup
 
 # Try to repair
-sqlite3 /opt/zapperhub/publish/zapper.db ".recover" > recovered.sql
-sqlite3 /opt/zapperhub/publish/zapper_new.db < recovered.sql
+sqlite3 /opt/zapper/publish/zapper.db ".recover" > recovered.sql
+sqlite3 /opt/zapper/publish/zapper_new.db < recovered.sql
 
 # Restore from backup if needed
 # (Create new database if all else fails)
@@ -307,7 +307,7 @@ free -h
 df -h
 
 # Check service resource usage
-sudo systemctl status zapperhub
+sudo systemctl status zapper
 
 # Monitor network traffic
 sudo netstat -i
@@ -371,15 +371,15 @@ cat /etc/resolv.conf
 
 ```bash
 # Service status and logs
-sudo systemctl status zapperhub --no-pager -l
-sudo journalctl -u zapperhub --since "1 hour ago" --no-pager
+sudo systemctl status zapper --no-pager -l
+sudo journalctl -u zapper --since "1 hour ago" --no-pager
 
 # Process information
-ps aux | grep ZapperHub
-lsof -p $(pgrep ZapperHub)
+ps aux | grep Zapper
+lsof -p $(pgrep Zapper)
 
 # Network connections
-sudo netstat -tlnp | grep ZapperHub
+sudo netstat -tlnp | grep Zapper
 sudo ss -tlnp | grep :5000
 ```
 
@@ -409,19 +409,19 @@ ls /dev/spi*
 
 **Successful Startup:**
 ```
-info: ZapperHub.Program[0] Starting ZapperHub
+info: Zapper.Program[0] Starting Zapper
 info: Microsoft.Hosting.Lifetime[14] Now listening on: http://0.0.0.0:5000
-info: ZapperHub.Services.IRCodeService[0] Seeded 3 default IR code sets
+info: Zapper.Services.IRCodeService[0] Seeded 3 default IR code sets
 ```
 
 **IR Transmission:**
 ```
-info: ZapperHub.Hardware.MockInfraredTransmitter[0] Mock transmitting IR code: Samsung Generic TV Power - 0xE0E040BF
+info: Zapper.Hardware.MockInfraredTransmitter[0] Mock transmitting IR code: Samsung Generic TV Power - 0xE0E040BF
 ```
 
 **Device Discovery:**
 ```
-info: ZapperHub.Hardware.WebOSDiscovery[0] Discovered WebOS device: LG TV at 192.168.1.100
+info: Zapper.Hardware.WebOSDiscovery[0] Discovered WebOS device: LG TV at 192.168.1.100
 ```
 
 ### Error Patterns
@@ -450,30 +450,30 @@ Solution: Check database file permissions
 
 ```bash
 # Stop service
-sudo systemctl stop zapperhub
+sudo systemctl stop zapper
 
 # Backup current configuration
-sudo cp -r /opt/zapperhub /opt/zapperhub.backup.$(date +%Y%m%d)
+sudo cp -r /opt/zapper /opt/zapper.backup.$(date +%Y%m%d)
 
 # Reset to defaults
-sudo rm /opt/zapperhub/publish/zapper.db
-sudo rm /opt/zapperhub/publish/appsettings.Production.json
+sudo rm /opt/zapper/publish/zapper.db
+sudo rm /opt/zapper/publish/appsettings.Production.json
 
 # Restart service (will recreate database)
-sudo systemctl start zapperhub
+sudo systemctl start zapper
 ```
 
 ### Configuration Backup/Restore
 
 ```bash
 # Backup
-sudo cp /opt/zapperhub/publish/zapper.db ~/zapperhub-backup-$(date +%Y%m%d).db
+sudo cp /opt/zapper/publish/zapper.db ~/zapper-backup-$(date +%Y%m%d).db
 
 # Restore
-sudo systemctl stop zapperhub
-sudo cp ~/zapperhub-backup-YYYYMMDD.db /opt/zapperhub/publish/zapper.db
-sudo chown pi:pi /opt/zapperhub/publish/zapper.db
-sudo systemctl start zapperhub
+sudo systemctl stop zapper
+sudo cp ~/zapper-backup-YYYYMMDD.db /opt/zapper/publish/zapper.db
+sudo chown pi:pi /opt/zapper/publish/zapper.db
+sudo systemctl start zapper
 ```
 
 ## Getting Help
@@ -481,7 +481,7 @@ sudo systemctl start zapperhub
 ### Before Asking for Help
 
 1. **Check this troubleshooting guide**
-2. **Review system logs**: `sudo journalctl -u zapperhub --since "1 hour ago"`
+2. **Review system logs**: `sudo journalctl -u zapper --since "1 hour ago"`
 3. **Test basic functionality**: Can you access the web interface?
 4. **Document your setup**: Hardware, OS version, network configuration
 
@@ -496,10 +496,10 @@ cat /etc/os-release
 dotnet --version
 
 # Service status
-sudo systemctl status zapperhub --no-pager
+sudo systemctl status zapper --no-pager
 
 # Recent logs (last 50 lines)
-sudo journalctl -u zapperhub -n 50 --no-pager
+sudo journalctl -u zapper -n 50 --no-pager
 
 # Hardware configuration
 pinout

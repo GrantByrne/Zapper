@@ -1,10 +1,10 @@
 # Configuration Guide
 
-This guide explains how to configure ZapperHub devices, activities, and system settings for optimal performance.
+This guide explains how to configure Zapper devices, activities, and system settings for optimal performance.
 
 ## Overview
 
-ZapperHub configuration involves:
+Zapper configuration involves:
 - **Device Setup**: Adding and configuring controllable devices
 - **Activity Creation**: Setting up one-touch automation sequences
 - **System Configuration**: Adjusting hardware and software settings
@@ -23,7 +23,7 @@ ZapperHub configuration involves:
    - **Brand**: Manufacturer name (Samsung, LG, Sony, etc.)
    - **Model**: Device model number
    - **Type**: Device category (TV, Receiver, etc.)
-   - **Connection Type**: How ZapperHub communicates with device
+   - **Connection Type**: How Zapper communicates with device
 
 #### Device Types
 
@@ -74,7 +74,7 @@ ZapperHub configuration involves:
 
 **Setup Process:**
 1. Enable "LG Connect Apps" on TV
-2. Connect TV to same network as ZapperHub
+2. Connect TV to same network as Zapper
 3. Use auto-discovery or enter IP manually
 4. Accept pairing request on TV
 
@@ -94,7 +94,7 @@ ZapperHub configuration involves:
 
 **Setup Process:**
 1. Put device in pairing mode
-2. Use ZapperHub discovery
+2. Use Zapper discovery
 3. Complete pairing process
 4. Test basic commands
 
@@ -154,7 +154,7 @@ When automatic discovery fails:
 
 #### Using Built-in Database
 
-ZapperHub includes IR codes for popular devices:
+Zapper includes IR codes for popular devices:
 
 1. **Select Brand and Model** during device setup
 2. **Codes are automatically assigned** from database
@@ -318,7 +318,7 @@ Activities automate multiple device commands in sequence:
   "Logging": {
     "LogLevel": {
       "Default": "Information",
-      "ZapperHub": "Debug",
+      "Zapper": "Debug",
       "Microsoft.AspNetCore": "Warning"
     }
   },
@@ -400,7 +400,7 @@ sudo nano /etc/bluetooth/main.conf
 #### Firewall Rules
 
 ```bash
-# Allow ZapperHub web interface
+# Allow Zapper web interface
 sudo ufw allow 5000/tcp
 
 # Allow WebOS discovery
@@ -585,4 +585,4 @@ sudo ufw allow from 192.168.1.0/24 to any port 5000
 
 ---
 
-**Proper configuration ensures optimal ZapperHub performance and reliability.** ⚙️
+**Proper configuration ensures optimal Zapper performance and reliability.** ⚙️

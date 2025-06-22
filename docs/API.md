@@ -1,6 +1,6 @@
 # API Reference
 
-ZapperHub provides a comprehensive RESTful API for device control, automation, and integration with other systems.
+Zapper provides a comprehensive RESTful API for device control, automation, and integration with other systems.
 
 ## Base URL
 
@@ -10,7 +10,7 @@ http://[raspberry-pi-ip]:5000/api
 
 ## Authentication
 
-Currently, ZapperHub operates without authentication. For production deployments, consider implementing:
+Currently, Zapper operates without authentication. For production deployments, consider implementing:
 - API keys
 - OAuth 2.0
 - JWT tokens
@@ -465,7 +465,7 @@ Current implementation has no rate limiting. For production:
 ### JavaScript/TypeScript
 
 ```javascript
-class ZapperHubClient {
+class ZapperClient {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
     }
@@ -492,7 +492,7 @@ class ZapperHubClient {
 import requests
 import json
 
-class ZapperHubClient:
+class ZapperClient:
     def __init__(self, base_url):
         self.base_url = base_url
     
@@ -512,12 +512,12 @@ class ZapperHubClient:
 ### C#
 
 ```csharp
-public class ZapperHubClient
+public class ZapperClient
 {
     private readonly HttpClient _httpClient;
     private readonly string _baseUrl;
     
-    public ZapperHubClient(string baseUrl)
+    public ZapperClient(string baseUrl)
     {
         _baseUrl = baseUrl;
         _httpClient = new HttpClient();

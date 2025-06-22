@@ -1,7 +1,7 @@
 # Bluetooth Remote Control Support Research
 
 ## Overview
-Research findings for implementing Bluetooth HID (Human Interface Device) support for Android TV and Apple TV remote control functionality in ZapperHub.
+Research findings for implementing Bluetooth HID (Human Interface Device) support for Android TV and Apple TV remote control functionality in Zapper.
 
 ## Android TV Bluetooth HID Implementation
 
@@ -145,7 +145,7 @@ public enum AndroidTVKeys
 - Apple TV: Network protocol preferred over Bluetooth
 - Windows compatibility may require fallback methods
 
-## Integration with ZapperHub
+## Integration with Zapper
 
 ### Device Model Extensions
 ```csharp
@@ -211,5 +211,5 @@ public string? KeyboardText { get; set; }
 1. Implement IBluetoothHIDController interface
 2. Create Android TV HID descriptor and key mappings
 3. Add Bluetooth device discovery and pairing
-4. Integrate with existing ZapperHub device management
+4. Integrate with existing Zapper device management
 5. Create API endpoints for Bluetooth device control

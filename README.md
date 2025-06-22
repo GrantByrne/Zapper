@@ -1,10 +1,10 @@
-# ZapperHub
+# Zapper
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-red.svg)](https://www.raspberrypi.org/)
 
-**ZapperHub** is an open-source universal remote control system designed to replace Logitech Harmony hubs. Built with ASP.NET Core and designed to run on Raspberry Pi, ZapperHub provides a modern web interface for controlling your home theater devices through infrared, network, and Bluetooth connections.
+**Zapper** is an open-source universal remote control system designed to replace Logitech Harmony hubs. Built with ASP.NET Core and designed to run on Raspberry Pi, Zapper provides a modern web interface for controlling your home theater devices through infrared, network, and Bluetooth connections.
 
 ## ✨ Features
 
@@ -60,7 +60,7 @@ echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### 2. Clone and Build ZapperHub
+### 2. Clone and Build Zapper
 
 ```bash
 # Clone the repository
@@ -72,20 +72,20 @@ cd src
 dotnet build --configuration Release
 
 # Publish for Raspberry Pi
-dotnet publish ZapperHub/ZapperHub.csproj -c Release -r linux-arm64 --self-contained
+dotnet publish Zapper/Zapper.csproj -c Release -r linux-arm64 --self-contained
 ```
 
-### 3. Run ZapperHub
+### 3. Run Zapper
 
 ```bash
 # Navigate to published output
-cd ZapperHub/bin/Release/net9.0/linux-arm64/publish
+cd Zapper/bin/Release/net9.0/linux-arm64/publish
 
 # Make executable
-chmod +x ZapperHub
+chmod +x Zapper
 
 # Run the application
-sudo ./ZapperHub
+sudo ./Zapper
 ```
 
 ### 4. Access the Web Interface
@@ -213,7 +213,7 @@ cd src
 dotnet restore
 
 # Run in development mode
-dotnet run --project ZapperHub
+dotnet run --project Zapper
 ```
 
 ## 📝 License

@@ -1,7 +1,7 @@
 # LG webOS TV Control Protocol Research
 
 ## Overview
-LG webOS TVs can be controlled remotely using a WebSocket-based protocol. This document outlines the key findings for implementing webOS TV support in ZapperHub.
+LG webOS TVs can be controlled remotely using a WebSocket-based protocol. This document outlines the key findings for implementing webOS TV support in Zapper.
 
 ## Connection Protocol
 
@@ -105,7 +105,7 @@ All commands use the format: `ssap://[service]/[method]`
 2. **WebOSDiscovery** - SSDP-based TV discovery
 3. **WebOSAuthentication** - Pairing and key management
 4. **WebOSCommands** - Typed command builders
-5. **WebOSDevice** - Device abstraction for ZapperHub
+5. **WebOSDevice** - Device abstraction for Zapper
 
 ### Integration Points
 - Implement `INetworkDeviceController` interface
@@ -117,5 +117,5 @@ All commands use the format: `ssap://[service]/[method]`
 1. Implement WebOSClient class with WebSocket communication
 2. Add SSDP discovery for automatic TV detection
 3. Create command builders for common operations
-4. Integrate with existing ZapperHub device management
+4. Integrate with existing Zapper device management
 5. Add webOS device type to database models

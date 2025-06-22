@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide provides detailed instructions for installing ZapperHub on your Raspberry Pi.
+This guide provides detailed instructions for installing Zapper on your Raspberry Pi.
 
 ## Prerequisites
 
@@ -76,15 +76,15 @@ sudo apt update
 sudo apt install -y dotnet-runtime-9.0
 ```
 
-## Step 3: Install ZapperHub
+## Step 3: Install Zapper
 
 ### 3.1 Clone Repository
 
 ```bash
 # Create application directory
-sudo mkdir -p /opt/zapperhub
-sudo chown $USER:$USER /opt/zapperhub
-cd /opt/zapperhub
+sudo mkdir -p /opt/zapper
+sudo chown $USER:$USER /opt/zapper
+cd /opt/zapper
 
 # Clone the repository
 git clone https://github.com/yourusername/zapper-next-gen.git .
@@ -103,11 +103,11 @@ dotnet restore
 dotnet build --configuration Release
 
 # Publish self-contained for Raspberry Pi
-dotnet publish ZapperHub/ZapperHub.csproj \
+dotnet publish Zapper/Zapper.csproj \
   --configuration Release \
   --runtime linux-arm64 \
   --self-contained true \
-  --output /opt/zapperhub/publish
+  --output /opt/zapper/publish
 ```
 
 ## Step 4: Configure System Service
@@ -116,21 +116,21 @@ dotnet publish ZapperHub/ZapperHub.csproj \
 
 ```bash
 # Create systemd service file
-sudo tee /etc/systemd/system/zapperhub.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/zapper.service > /dev/null <<'EOF'
 [Unit]
-Description=ZapperHub Universal Remote Control
+Description=Zapper Universal Remote Control
 After=network.target
 
 [Service]
 Type=notify
 User=pi
 Group=pi
-WorkingDirectory=/opt/zapperhub/publish
-ExecStart=/opt/zapperhub/publish/ZapperHub
+WorkingDirectory=/opt/zapper/publish
+ExecStart=/opt/zapper/publish/Zapper
 Restart=always
 RestartSec=10
 KillSignal=SIGINT
-SyslogIdentifier=zapperhub
+SyslogIdentifier=zapper
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=ASPNETCORE_URLS=http://0.0.0.0:5000
 
@@ -146,13 +146,13 @@ EOF
 sudo systemctl daemon-reload
 
 # Enable service to start on boot
-sudo systemctl enable zapperhub
+sudo systemctl enable zapper
 
 # Start the service
-sudo systemctl start zapperhub
+sudo systemctl start zapper
 
 # Check service status
-sudo systemctl status zapperhub
+sudo systemctl status zapper
 ```
 
 ## Step 5: Configure Firewall (Optional)
@@ -161,7 +161,7 @@ sudo systemctl status zapperhub
 # Install UFW (if not already installed)
 sudo apt install -y ufw
 
-# Allow ZapperHub port
+# Allow Zapper port
 sudo ufw allow 5000/tcp
 
 # Allow SSH (if using)
@@ -241,18 +241,18 @@ ip addr show wlan0 | grep 'inet '
 
 ```bash
 # Check service logs
-sudo journalctl -u zapperhub -f
+sudo journalctl -u zapper -f
 
 # Check application logs
-sudo journalctl -u zapperhub --since "1 hour ago"
+sudo journalctl -u zapper --since "1 hour ago"
 ```
 
 ### Permission Issues
 
 ```bash
 # Fix file permissions
-sudo chown -R pi:pi /opt/zapperhub
-sudo chmod +x /opt/zapperhub/publish/ZapperHub
+sudo chown -R pi:pi /opt/zapper
+sudo chmod +x /opt/zapper/publish/Zapper
 
 # Fix GPIO permissions
 sudo usermod -a -G gpio pi
@@ -282,12 +282,12 @@ cat /proc/device-tree/soc/gpio*/status
 
 ### Environment Variables
 
-Create `/opt/zapperhub/publish/appsettings.Production.json`:
+Create `/opt/zapper/publish/appsettings.Production.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=/opt/zapperhub/data/zapper.db"
+    "DefaultConnection": "Data Source=/opt/zapper/data/zapper.db"
   },
   "Hardware": {
     "IRTransmitter": {
@@ -302,7 +302,7 @@ Create `/opt/zapperhub/publish/appsettings.Production.json`:
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning",
-      "ZapperHub": "Debug"
+      "Zapper": "Debug"
     }
   },
   "AllowedHosts": "*"
@@ -311,27 +311,27 @@ Create `/opt/zapperhub/publish/appsettings.Production.json`:
 
 ### Auto-Updates
 
-Create update script `/opt/zapperhub/update.sh`:
+Create update script `/opt/zapper/update.sh`:
 
 ```bash
 #!/bin/bash
-cd /opt/zapperhub
+cd /opt/zapper
 git pull origin main
 cd src
-dotnet publish ZapperHub/ZapperHub.csproj \
+dotnet publish Zapper/Zapper.csproj \
   --configuration Release \
   --runtime linux-arm64 \
   --self-contained true \
-  --output /opt/zapperhub/publish
-sudo systemctl restart zapperhub
+  --output /opt/zapper/publish
+sudo systemctl restart zapper
 ```
 
 ### Backup Configuration
 
 ```bash
 # Backup database and configuration
-sudo cp /opt/zapperhub/publish/zapper.db /opt/zapperhub/backup/
-sudo cp /opt/zapperhub/publish/appsettings.Production.json /opt/zapperhub/backup/
+sudo cp /opt/zapper/publish/zapper.db /opt/zapper/backup/
+sudo cp /opt/zapper/publish/appsettings.Production.json /opt/zapper/backup/
 ```
 
 ## Next Steps
@@ -346,9 +346,9 @@ sudo cp /opt/zapperhub/publish/appsettings.Production.json /opt/zapperhub/backup
 If you encounter issues during installation:
 
 1. Check the [Troubleshooting Guide](TROUBLESHOOTING.md)
-2. Review service logs: `sudo journalctl -u zapperhub -f`
+2. Review service logs: `sudo journalctl -u zapper -f`
 3. Open an issue on [GitHub](https://github.com/yourusername/zapper-next-gen/issues)
 
 ---
 
-**Installation complete! Your ZapperHub is ready to use.** 🎉
+**Installation complete! Your Zapper is ready to use.** 🎉

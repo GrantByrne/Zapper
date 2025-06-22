@@ -1,6 +1,6 @@
-# Contributing to ZapperHub
+# Contributing to Zapper
 
-Thank you for your interest in contributing to ZapperHub! This guide will help you get started with contributing to this open-source universal remote control project.
+Thank you for your interest in contributing to Zapper! This guide will help you get started with contributing to this open-source universal remote control project.
 
 ## Table of Contents
 
@@ -75,7 +75,7 @@ dotnet build
 dotnet test
 
 # Run the application
-dotnet run --project ZapperHub
+dotnet run --project Zapper
 ```
 
 ### Development Environment
@@ -85,7 +85,7 @@ dotnet run --project ZapperHub
 ```json
 // .vscode/settings.json
 {
-  "dotnet.defaultSolution": "src/ZapperHub.sln",
+  "dotnet.defaultSolution": "src/Zapper.sln",
   "files.exclude": {
     "**/bin": true,
     "**/obj": true
@@ -108,14 +108,14 @@ dotnet run --project ZapperHub
 ```
 zapper-next-gen/
 ├── src/
-│   ├── ZapperHub/               # Main application
+│   ├── Zapper/               # Main application
 │   │   ├── Controllers/         # API controllers
 │   │   ├── Services/            # Business logic
 │   │   ├── Models/              # Data models
 │   │   ├── Hardware/            # Hardware abstraction
 │   │   ├── Endpoints/           # FastEndpoints
 │   │   └── wwwroot/             # Web interface
-│   └── ZapperHub.Tests/         # Unit tests
+│   └── Zapper.Tests/         # Unit tests
 ├── docs/                        # Documentation
 ├── examples/                    # Integration examples
 └── tools/                       # Development tools
@@ -248,7 +248,7 @@ If applicable, add screenshots to help explain your problem.
 **Environment:**
 - OS: [e.g. Raspberry Pi OS Bullseye]
 - .NET Version: [e.g. 9.0.0]
-- ZapperHub Version: [e.g. 1.0.0]
+- Zapper Version: [e.g. 1.0.0]
 - Hardware: [e.g. Raspberry Pi 4B 4GB]
 
 **Additional Context**
@@ -547,4 +547,4 @@ Contributors will be recognized in:
 
 ---
 
-**Thank you for contributing to ZapperHub! Together, we're building the best open-source universal remote control system.** 🚀
+**Thank you for contributing to Zapper! Together, we're building the best open-source universal remote control system.** 🚀
