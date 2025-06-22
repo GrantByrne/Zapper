@@ -8,15 +8,18 @@ public class ActivityService : IActivityService
 {
     private readonly ZapperContext _context;
     private readonly IDeviceService _deviceService;
+    private readonly INotificationService _notificationService;
     private readonly ILogger<ActivityService> _logger;
 
     public ActivityService(
         ZapperContext context,
         IDeviceService deviceService,
+        INotificationService notificationService,
         ILogger<ActivityService> logger)
     {
         _context = context;
         _deviceService = deviceService;
+        _notificationService = notificationService;
         _logger = logger;
     }
 
@@ -104,6 +107,9 @@ public class ActivityService : IActivityService
         }
 
         _logger.LogInformation("Executing activity: {ActivityName}", activity.Name);
+        
+        // Notify clients that activity has started
+        await _notificationService.NotifyActivityStartedAsync(activity.Id, activity.Name);
 
         try
         {
@@ -127,10 +133,18 @@ public class ActivityService : IActivityService
                     step.DeviceCommand.Name, 
                     cancellationToken);
 
+                // Notify clients of step execution
+                await _notificationService.NotifyActivityStepExecutedAsync(
+                    activity.Id, activity.Name, step.StepOrder, 
+                    $"{step.DeviceCommand.Device.Name} - {step.DeviceCommand.Name}", success);
+
                 if (!success && step.IsRequired)
                 {
                     _logger.LogError("Required step failed in activity {ActivityName}: {DeviceName} - {CommandName}", 
                                    activity.Name, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
+                    
+                    // Notify clients of activity failure
+                    await _notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
                     return false;
                 }
 
@@ -160,16 +174,21 @@ public class ActivityService : IActivityService
 
             _logger.LogInformation("Activity {ActivityName} completed successfully. Executed {ExecutedSteps}/{TotalSteps} steps", 
                                  activity.Name, executedSteps, steps.Count);
+            
+            // Notify clients of successful activity completion
+            await _notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, true);
             return true;
         }
         catch (OperationCanceledException)
         {
             _logger.LogInformation("Activity execution cancelled: {ActivityName}", activity.Name);
+            await _notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
             return false;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to execute activity: {ActivityName}", activity.Name);
+            await _notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
             return false;
         }
     }

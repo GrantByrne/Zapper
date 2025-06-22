@@ -11,6 +11,7 @@ public class DeviceService : IDeviceService
     private readonly IInfraredTransmitter _irTransmitter;
     private readonly INetworkDeviceController _networkController;
     private readonly IWebOSDeviceController _webOSController;
+    private readonly INotificationService _notificationService;
     private readonly ILogger<DeviceService> _logger;
 
     public DeviceService(
@@ -18,12 +19,14 @@ public class DeviceService : IDeviceService
         IInfraredTransmitter irTransmitter,
         INetworkDeviceController networkController,
         IWebOSDeviceController webOSController,
+        INotificationService notificationService,
         ILogger<DeviceService> logger)
     {
         _context = context;
         _irTransmitter = irTransmitter;
         _networkController = networkController;
         _webOSController = webOSController;
+        _notificationService = notificationService;
         _logger = logger;
     }
 
@@ -122,6 +125,14 @@ public class DeviceService : IDeviceService
                 device.LastSeen = DateTime.UtcNow;
                 device.IsOnline = true;
                 await _context.SaveChangesAsync();
+                
+                // Notify clients of successful command execution
+                await _notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, true);
+            }
+            else
+            {
+                // Notify clients of failed command execution
+                await _notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, false);
             }
 
             return success;
@@ -157,6 +168,9 @@ public class DeviceService : IDeviceService
             device.IsOnline = isOnline;
             device.LastSeen = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+            
+            // Notify clients of device status change
+            await _notificationService.NotifyDeviceStatusChangedAsync(device.Id, device.Name, isOnline);
 
             return isOnline;
         }
