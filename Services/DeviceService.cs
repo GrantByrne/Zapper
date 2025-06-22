@@ -10,14 +10,14 @@ public class DeviceService : IDeviceService
     private readonly ZapperContext _context;
     private readonly IInfraredTransmitter _irTransmitter;
     private readonly INetworkDeviceController _networkController;
-    private readonly WebOSDeviceController _webOSController;
+    private readonly IWebOSDeviceController _webOSController;
     private readonly ILogger<DeviceService> _logger;
 
     public DeviceService(
         ZapperContext context,
         IInfraredTransmitter irTransmitter,
         INetworkDeviceController networkController,
-        WebOSDeviceController webOSController,
+        IWebOSDeviceController webOSController,
         ILogger<DeviceService> logger)
     {
         _context = context;

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -11,7 +12,7 @@ public class WebOSClient : IWebOSClient, IDisposable
     private int _messageId = 1;
     private string? _clientKey;
     private bool _isAuthenticated;
-    private readonly Dictionary<string, TaskCompletionSource<string?>> _pendingRequests = new();
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<string?>> _pendingRequests = new();
 
     public string? ClientKey => _clientKey;
     public bool IsConnected => _webSocket?.State == WebSocketState.Open;

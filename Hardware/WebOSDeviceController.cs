@@ -2,7 +2,7 @@ using ZapperHub.Models;
 
 namespace ZapperHub.Hardware;
 
-public class WebOSDeviceController : INetworkDeviceController
+public class WebOSDeviceController : IWebOSDeviceController
 {
     private readonly IWebOSClient _webOSClient;
     private readonly ILogger<WebOSDeviceController> _logger;
@@ -15,7 +15,7 @@ public class WebOSDeviceController : INetworkDeviceController
 
     public async Task<bool> SendCommandAsync(Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
-        if (device.ConnectionType != "WebOS")
+        if (device.ConnectionType != ConnectionType.WebOS)
         {
             _logger.LogWarning("Device {DeviceName} is not a WebOS device", device.Name);
             return false;
@@ -49,55 +49,43 @@ public class WebOSDeviceController : INetworkDeviceController
             }
 
             // Execute the command based on type
-            return command.CommandType switch
+            return command.Type switch
             {
-                "power_off" => await _webOSClient.PowerOffAsync(cancellationToken),
-                "volume_up" => await _webOSClient.VolumeUpAsync(cancellationToken),
-                "volume_down" => await _webOSClient.VolumeDownAsync(cancellationToken),
-                "volume_set" => await HandleVolumeSet(command, cancellationToken),
-                "mute" => await HandleMute(command, cancellationToken),
-                "channel_up" => await _webOSClient.ChannelUpAsync(cancellationToken),
-                "channel_down" => await _webOSClient.ChannelDownAsync(cancellationToken),
-                "launch_app" => await HandleLaunchApp(command, cancellationToken),
-                "switch_input" => await HandleSwitchInput(command, cancellationToken),
-                "toast" => await HandleToast(command, cancellationToken),
-                "custom" => await HandleCustomCommand(command, cancellationToken),
+                CommandType.Power => await _webOSClient.PowerOffAsync(cancellationToken),
+                CommandType.VolumeUp => await _webOSClient.VolumeUpAsync(cancellationToken),
+                CommandType.VolumeDown => await _webOSClient.VolumeDownAsync(cancellationToken),
+                CommandType.Mute => await HandleMute(command, cancellationToken),
+                CommandType.ChannelUp => await _webOSClient.ChannelUpAsync(cancellationToken),
+                CommandType.ChannelDown => await _webOSClient.ChannelDownAsync(cancellationToken),
+                CommandType.AppLaunch => await HandleLaunchApp(command, cancellationToken),
+                CommandType.Input => await HandleSwitchInput(command, cancellationToken),
+                CommandType.Custom => await HandleCustomCommand(command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send WebOS command {CommandType} to device {DeviceName}", 
-                command.CommandType, device.Name);
+                command.Type, device.Name);
             return false;
         }
     }
 
-    private async Task<bool> HandleVolumeSet(DeviceCommand command, CancellationToken cancellationToken)
-    {
-        if (int.TryParse(command.Parameters, out var volume))
-        {
-            return await _webOSClient.SetVolumeAsync(volume, cancellationToken);
-        }
-        _logger.LogWarning("Invalid volume parameter: {Parameters}", command.Parameters);
-        return false;
-    }
-
     private async Task<bool> HandleMute(DeviceCommand command, CancellationToken cancellationToken)
     {
-        if (bool.TryParse(command.Parameters, out var muted))
+        if (bool.TryParse(command.NetworkPayload, out var muted))
         {
             return await _webOSClient.SetMuteAsync(muted, cancellationToken);
         }
-        _logger.LogWarning("Invalid mute parameter: {Parameters}", command.Parameters);
+        _logger.LogWarning("Invalid mute parameter: {Parameters}", command.NetworkPayload);
         return false;
     }
 
     private async Task<bool> HandleLaunchApp(DeviceCommand command, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrEmpty(command.Parameters))
+        if (!string.IsNullOrEmpty(command.NetworkPayload))
         {
-            return await _webOSClient.LaunchAppAsync(command.Parameters, cancellationToken);
+            return await _webOSClient.LaunchAppAsync(command.NetworkPayload, cancellationToken);
         }
         _logger.LogWarning("App ID parameter is required for launch_app command");
         return false;
@@ -105,42 +93,36 @@ public class WebOSDeviceController : INetworkDeviceController
 
     private async Task<bool> HandleSwitchInput(DeviceCommand command, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrEmpty(command.Parameters))
+        if (!string.IsNullOrEmpty(command.NetworkPayload))
         {
-            return await _webOSClient.SwitchInputAsync(command.Parameters, cancellationToken);
+            return await _webOSClient.SwitchInputAsync(command.NetworkPayload, cancellationToken);
         }
         _logger.LogWarning("Input ID parameter is required for switch_input command");
         return false;
     }
 
-    private async Task<bool> HandleToast(DeviceCommand command, CancellationToken cancellationToken)
-    {
-        var message = command.Parameters ?? "Message from ZapperHub";
-        return await _webOSClient.ShowToastAsync(message, cancellationToken);
-    }
-
     private async Task<bool> HandleCustomCommand(DeviceCommand command, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrEmpty(command.Command))
+        if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
-            // For custom commands, use the Command field as the SSAP URI
-            var response = await _webOSClient.SendCommandAsync(command.Command, 
-                string.IsNullOrEmpty(command.Parameters) ? null : command.Parameters, cancellationToken);
+            // For custom commands, use the HttpEndpoint field as the SSAP URI
+            var response = await _webOSClient.SendCommandAsync(command.HttpEndpoint, 
+                string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }
-        _logger.LogWarning("Custom command requires Command field to be set");
+        _logger.LogWarning("Custom command requires HttpEndpoint field to be set");
         return false;
     }
 
     private async Task<bool> HandleUnknownCommand(DeviceCommand command, CancellationToken cancellationToken)
     {
-        _logger.LogWarning("Unknown WebOS command type: {CommandType}", command.CommandType);
+        _logger.LogWarning("Unknown WebOS command type: {CommandType}", command.Type);
         
-        // Try to execute as a direct SSAP URI if Command field is set
-        if (!string.IsNullOrEmpty(command.Command))
+        // Try to execute as a direct SSAP URI if HttpEndpoint field is set
+        if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
-            var response = await _webOSClient.SendCommandAsync(command.Command, 
-                string.IsNullOrEmpty(command.Parameters) ? null : command.Parameters, cancellationToken);
+            var response = await _webOSClient.SendCommandAsync(command.HttpEndpoint, 
+                string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }
         
@@ -152,8 +134,9 @@ public class WebOSDeviceController : INetworkDeviceController
         // For WebOS devices, testing connection means trying to connect and authenticate
         return SendCommandAsync(device, new DeviceCommand 
         { 
-            CommandType = "toast", 
-            Parameters = "Connection test from ZapperHub" 
+            Type = CommandType.Custom, 
+            NetworkPayload = "Connection test from ZapperHub",
+            HttpEndpoint = "ssap://system.notifications/createToast"
         }, cancellationToken);
     }
 }
