@@ -1,0 +1,111 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_NAME: 'Zapper'
+  SOLUTION_PATH: 'src/zapper-next-gen.sln'
+
+jobs:
+  validate:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+          
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+      
+    - name: Check code formatting
+      run: dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
+      
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+      
+    - name: Run tests
+      run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal
+      
+    - name: Check for breaking changes
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { context } = require('@actions/github');
+          const title = context.payload.pull_request.title.toLowerCase();
+          
+          // Check for breaking change indicators
+          const breakingChanges = [
+            'breaking change',
+            'breaking:',
+            'major:',
+            '!:'
+          ];
+          
+          const hasBreakingChange = breakingChanges.some(indicator => 
+            title.includes(indicator)
+          );
+          
+          if (hasBreakingChange) {
+            core.warning('This PR may contain breaking changes. Please ensure proper versioning and documentation.');
+          }
+          
+    - name: Comment build status
+      uses: actions/github-script@v7
+      if: always()
+      with:
+        script: |
+          const { context } = require('@actions/github');
+          const status = '${{ job.status }}' === 'success' ? '✅ Build successful' : '❌ Build failed';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## Build Status: ${status}
+            
+            **Commit:** \`${context.sha.substring(0, 7)}\`
+            **Workflow:** [${context.workflow}](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            
+            ${status.includes('✅') ? 'All checks passed! 🎉' : 'Please fix the build errors before merging.'}`
+          });
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run security audit
+      run: |
+        # Check for potential security issues in dependencies
+        dotnet list package --vulnerable --include-transitive || true
+        
+    - name: Scan for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified
+

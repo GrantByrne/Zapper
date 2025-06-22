@@ -1,0 +1,30 @@
+# Global code owners
+* @yourusername
+
+# Documentation
+docs/ @yourusername
+*.md @yourusername
+
+# CI/CD and Infrastructure
+.github/ @yourusername
+Dockerfile @yourusername
+docker-compose.yml @yourusername
+
+# Core application
+src/Zapper/ @yourusername
+
+# Hardware abstraction layer
+src/Zapper/Hardware/ @yourusername
+
+# API endpoints
+src/Zapper/Endpoints/ @yourusername
+
+# Database and models
+src/Zapper/Data/ @yourusername
+src/Zapper/Models/ @yourusername
+
+# Frontend
+src/Zapper/wwwroot/ @yourusername
+
+# Configuration
+src/Zapper/appsettings*.json @yourusername

@@ -1,0 +1,306 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_NAME: 'Zapper'
+  SOLUTION_PATH: 'src/zapper-next-gen.sln'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+    - name: Generate changelog
+      id: changelog
+      run: |
+        if [ $(git tag --list | wc -l) -eq 1 ]; then
+          echo "This is the first release!" > CHANGELOG.md
+        else
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          echo "# Changelog" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "## Changes since $PREVIOUS_TAG" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          git log --pretty=format:"- %s (%h)" $PREVIOUS_TAG..HEAD >> CHANGELOG.md
+        fi
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.version }}
+        release_name: Zapper ${{ steps.get_version.outputs.version }}
+        body_path: CHANGELOG.md
+        draft: false
+        prerelease: ${{ contains(steps.get_version.outputs.version, '-') }}
+
+  build-release-assets:
+    name: Build Release Assets
+    needs: create-release
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        include:
+          - runtime: linux-x64
+            name: Linux x64
+            archive: tar.gz
+          - runtime: linux-arm64
+            name: Linux ARM64 (Raspberry Pi)
+            archive: tar.gz
+          - runtime: win-x64
+            name: Windows x64
+            archive: zip
+          - runtime: osx-x64
+            name: macOS x64
+            archive: tar.gz
+          - runtime: osx-arm64
+            name: macOS ARM64 (Apple Silicon)
+            archive: tar.gz
+            
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+      
+    - name: Build and Publish
+      run: |
+        dotnet publish src/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj \
+          --configuration Release \
+          --runtime ${{ matrix.runtime }} \
+          --self-contained true \
+          --output release/${{ matrix.runtime }} \
+          -p:PublishSingleFile=true \
+          -p:IncludeNativeLibrariesForSelfExtract=true \
+          -p:DebugType=None \
+          -p:DebugSymbols=false
+          
+    - name: Create installation script for Linux/macOS
+      if: matrix.runtime != 'win-x64'
+      run: |
+        cat > release/${{ matrix.runtime }}/install.sh << 'EOF'
+        #!/bin/bash
+        set -e
+        
+        echo "Installing Zapper Universal Remote Control..."
+        
+        # Check if running on Raspberry Pi
+        if [[ $(uname -m) == "aarch64" && -f /proc/device-tree/model ]] && grep -q "Raspberry Pi" /proc/device-tree/model; then
+          INSTALL_DIR="/opt/zapper"
+        else
+          INSTALL_DIR="$HOME/.local/share/zapper"
+        fi
+        
+        # Create directories
+        sudo mkdir -p "$INSTALL_DIR"
+        sudo cp -r * "$INSTALL_DIR/"
+        sudo chmod +x "$INSTALL_DIR/Zapper"
+        
+        # Create systemd service for Raspberry Pi
+        if [[ $INSTALL_DIR == "/opt/zapper" ]]; then
+          sudo tee /etc/systemd/system/zapper.service > /dev/null << SERVICEEOF
+        [Unit]
+        Description=Zapper Universal Remote Control
+        After=network.target
+        
+        [Service]
+        Type=notify
+        User=pi
+        Group=pi
+        WorkingDirectory=$INSTALL_DIR
+        ExecStart=$INSTALL_DIR/Zapper
+        Restart=always
+        RestartSec=10
+        KillSignal=SIGINT
+        SyslogIdentifier=zapper
+        Environment=ASPNETCORE_ENVIRONMENT=Production
+        Environment=ASPNETCORE_URLS=http://0.0.0.0:5000
+        
+        [Install]
+        WantedBy=multi-user.target
+        SERVICEEOF
+        
+          sudo systemctl daemon-reload
+          sudo systemctl enable zapper
+          
+          echo "Zapper installed to $INSTALL_DIR"
+          echo "Start with: sudo systemctl start zapper"
+          echo "Access web interface at: http://localhost:5000"
+        else
+          echo "Zapper installed to $INSTALL_DIR"
+          echo "Start with: $INSTALL_DIR/Zapper"
+          echo "Access web interface at: http://localhost:5000"
+        fi
+        EOF
+        chmod +x release/${{ matrix.runtime }}/install.sh
+        
+    - name: Create installation script for Windows
+      if: matrix.runtime == 'win-x64'
+      run: |
+        cat > release/${{ matrix.runtime }}/install.bat << 'EOF'
+        @echo off
+        echo Installing Zapper Universal Remote Control...
+        
+        set INSTALL_DIR=%PROGRAMFILES%\Zapper
+        
+        mkdir "%INSTALL_DIR%" 2>nul
+        copy /Y * "%INSTALL_DIR%\"
+        
+        echo Zapper installed to %INSTALL_DIR%
+        echo Start by running: "%INSTALL_DIR%\Zapper.exe"
+        echo Access web interface at: http://localhost:5000
+        pause
+        EOF
+        
+    - name: Create README for release
+      run: |
+        cat > release/${{ matrix.runtime }}/README.txt << EOF
+        Zapper Universal Remote Control ${{ needs.create-release.outputs.version }}
+        ==============================================================
+        
+        Platform: ${{ matrix.name }}
+        
+        Quick Start:
+        1. Extract this archive to your desired location
+        2. Run the installation script:
+           - Linux/macOS: ./install.sh
+           - Windows: install.bat (as Administrator)
+        3. Access the web interface at http://localhost:5000
+        
+        For detailed installation instructions, visit:
+        https://github.com/yourusername/zapper-next-gen/blob/main/docs/INSTALLATION.md
+        
+        Hardware Requirements (for Raspberry Pi):
+        - Raspberry Pi 4B (2GB+ RAM recommended)
+        - IR LED circuit on GPIO 18
+        - MicroSD card (16GB+)
+        
+        Support:
+        - Documentation: https://github.com/yourusername/zapper-next-gen/tree/main/docs
+        - Issues: https://github.com/yourusername/zapper-next-gen/issues
+        
+        Built with ❤️ for the home automation community
+        EOF
+        
+    - name: Create archive
+      run: |
+        cd release/${{ matrix.runtime }}
+        if [ "${{ matrix.archive }}" = "zip" ]; then
+          zip -r ../../zapper-${{ needs.create-release.outputs.version }}-${{ matrix.runtime }}.zip .
+        else
+          tar -czf ../../zapper-${{ needs.create-release.outputs.version }}-${{ matrix.runtime }}.tar.gz .
+        fi
+        cd ../..
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./zapper-${{ needs.create-release.outputs.version }}-${{ matrix.runtime }}.${{ matrix.archive }}
+        asset_name: zapper-${{ needs.create-release.outputs.version }}-${{ matrix.runtime }}.${{ matrix.archive }}
+        asset_content_type: application/octet-stream
+
+  update-installation-script:
+    name: Update Installation Script
+    needs: [create-release, build-release-assets]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update install script with latest version
+      run: |
+        VERSION=${{ needs.create-release.outputs.version }}
+        
+        # Create or update the one-line installation script
+        cat > install.sh << EOF
+        #!/bin/bash
+        set -e
+        
+        VERSION="$VERSION"
+        REPO="yourusername/zapper-next-gen"
+        
+        echo "🔌 Installing Zapper Universal Remote Control \$VERSION..."
+        
+        # Detect architecture
+        ARCH=\$(uname -m)
+        case \$ARCH in
+          x86_64) RUNTIME="linux-x64" ;;
+          aarch64) RUNTIME="linux-arm64" ;;
+          *) echo "Unsupported architecture: \$ARCH"; exit 1 ;;
+        esac
+        
+        # Download and extract
+        DOWNLOAD_URL="https://github.com/\$REPO/releases/download/\$VERSION/zapper-\$VERSION-\$RUNTIME.tar.gz"
+        
+        echo "📦 Downloading \$DOWNLOAD_URL..."
+        curl -sL "\$DOWNLOAD_URL" | tar -xz -C /tmp/
+        
+        echo "🚀 Installing..."
+        cd /tmp && sudo ./install.sh
+        
+        echo "✅ Zapper installed successfully!"
+        echo "🌐 Access the web interface at: http://localhost:5000"
+        EOF
+        
+        chmod +x install.sh
+        
+    - name: Commit updated install script
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add install.sh
+        git commit -m "Update install script for release ${{ needs.create-release.outputs.version }}" || exit 0
+        git push
+
+  announce-release:
+    name: Announce Release
+    needs: [create-release, build-release-assets]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Send release notification
+      uses: 8398a7/action-slack@v3
+      if: env.SLACK_WEBHOOK_URL != ''
+      with:
+        status: ${{ job.status }}
+        text: |
+          🎉 Zapper ${{ needs.create-release.outputs.version }} has been released!
+          
+          📦 Download: https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}
+          ⚡ One-line install: `curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash`
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

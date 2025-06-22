@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-red.svg)](https://www.raspberrypi.org/)
+[![CI/CD](https://github.com/yourusername/zapper-next-gen/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/zapper-next-gen/actions)
+[![Release](https://img.shields.io/github/v/release/yourusername/zapper-next-gen)](https://github.com/yourusername/zapper-next-gen/releases)
 
 **Zapper** is an open-source universal remote control system designed to replace Logitech Harmony hubs. Built with ASP.NET Core and designed to run on Raspberry Pi, Zapper provides a modern web interface for controlling your home theater devices through infrared, network, and Bluetooth connections.
 
@@ -50,45 +52,26 @@ GPIO 18 ────┬─── 330Ω Resistor ─── Transistor Base
 
 ## 🚀 Quick Start
 
-### 1. Install .NET 9.0 on Raspberry Pi
+### One-Line Installation
 
 ```bash
-# Download and install .NET 9.0
-curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 9.0
-echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
-echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
-source ~/.bashrc
+curl -sSL https://raw.githubusercontent.com/yourusername/zapper-next-gen/main/install.sh | bash
 ```
 
-### 2. Clone and Build Zapper
+This will:
+- Install .NET runtime if needed
+- Download the latest release
+- Set up as a systemd service
+- Configure permissions
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/zapper-next-gen.git
-cd zapper-next-gen
+### Manual Installation
 
-# Build the application
-cd src
-dotnet build --configuration Release
+1. **Download the latest release** from [Releases](https://github.com/yourusername/zapper-next-gen/releases)
+2. **Extract** to `/opt/zapper`
+3. **Run** `sudo ./install.sh`
+4. **Start** with `sudo systemctl start zapper`
 
-# Publish for Raspberry Pi
-dotnet publish Zapper/Zapper.csproj -c Release -r linux-arm64 --self-contained
-```
-
-### 3. Run Zapper
-
-```bash
-# Navigate to published output
-cd Zapper/bin/Release/net9.0/linux-arm64/publish
-
-# Make executable
-chmod +x Zapper
-
-# Run the application
-sudo ./Zapper
-```
-
-### 4. Access the Web Interface
+### Access the Web Interface
 
 Open your web browser and navigate to:
 - **Local**: http://localhost:5000
