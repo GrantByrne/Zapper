@@ -19,11 +19,15 @@ Zapper is an open-source replacement for Logitech Harmony universal remotes buil
    ```csharp
    public class DeviceService(IDeviceRepository repository, ILogger<DeviceService> logger)
    {
-       // Use repository and logger directly
+       // Use repository and logger directly - no need for readonly fields
    }
    ```
 
-5. **FastEndpoints**: Use FastEndpoints instead of traditional ASP.NET controllers
+5. **No redundant readonly fields**: When using primary constructors, don't create redundant readonly fields for injected dependencies - use the parameters directly
+
+6. **Pascal case naming**: Follow strict Pascal case conventions (e.g., `IBluetoothHidController` not `IBluetoothHIDController`)
+
+7. **FastEndpoints**: Use FastEndpoints instead of traditional ASP.NET controllers
 
 ### General Conventions
 - No Docker deployment - the app runs directly on the host

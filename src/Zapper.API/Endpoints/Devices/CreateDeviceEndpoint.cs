@@ -8,7 +8,6 @@ namespace Zapper.Endpoints.Devices;
 
 public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<CreateDeviceRequest, CreateDeviceResponse>
 {
-    private readonly IDeviceService _deviceService = deviceService;
 
     public override void Configure()
     {
@@ -36,7 +35,7 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
             AuthenticationToken = req.AuthenticationToken
         };
 
-        var createdDevice = await _deviceService.CreateDeviceAsync(device);
+        var createdDevice = await deviceService.CreateDeviceAsync(device);
         
         var response = new CreateDeviceResponse
         {

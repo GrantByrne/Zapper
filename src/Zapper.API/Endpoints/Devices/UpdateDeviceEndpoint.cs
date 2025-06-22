@@ -6,7 +6,6 @@ namespace Zapper.Endpoints.Devices;
 
 public class UpdateDeviceEndpoint(IDeviceService deviceService) : Endpoint<UpdateDeviceRequest>
 {
-    private readonly IDeviceService _deviceService = deviceService;
 
     public override void Configure()
     {
@@ -21,7 +20,7 @@ public class UpdateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Updat
 
     public override async Task HandleAsync(UpdateDeviceRequest req, CancellationToken ct)
     {
-        var updatedDevice = await _deviceService.UpdateDeviceAsync(req.Id, req.Device);
+        var updatedDevice = await deviceService.UpdateDeviceAsync(req.Id, req.Device);
         if (updatedDevice == null)
         {
             await SendNotFoundAsync(ct);

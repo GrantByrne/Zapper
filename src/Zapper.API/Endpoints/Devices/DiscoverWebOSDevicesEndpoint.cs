@@ -7,7 +7,6 @@ namespace Zapper.Endpoints.Devices;
 
 public class DiscoverWebOSDevicesEndpoint(IWebOSDiscovery webOSDiscovery) : Endpoint<DiscoverWebOSDevicesRequest, IEnumerable<Device>>
 {
-    private readonly IWebOSDiscovery _webOSDiscovery = webOSDiscovery;
 
     public override void Configure()
     {
@@ -23,7 +22,7 @@ public class DiscoverWebOSDevicesEndpoint(IWebOSDiscovery webOSDiscovery) : Endp
     public override async Task HandleAsync(DiscoverWebOSDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await _webOSDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await webOSDiscovery.DiscoverDevicesAsync(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

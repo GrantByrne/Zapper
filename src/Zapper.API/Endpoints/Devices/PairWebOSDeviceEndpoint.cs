@@ -9,8 +9,6 @@ namespace Zapper.Endpoints.Devices;
 
 public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscovery webOSDiscovery) : Endpoint<PairWebOSDeviceRequest, PairWebOSDeviceResponse>
 {
-    private readonly IDeviceService _deviceService = deviceService;
-    private readonly IWebOSDiscovery _webOSDiscovery = webOSDiscovery;
 
     public override void Configure()
     {
@@ -25,7 +23,7 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
 
     public override async Task HandleAsync(PairWebOSDeviceRequest req, CancellationToken ct)
     {
-        var device = await _deviceService.GetDeviceAsync(req.DeviceId);
+        var device = await deviceService.GetDeviceAsync(req.DeviceId);
         if (device == null)
         {
             await SendAsync(new PairWebOSDeviceResponse
@@ -46,11 +44,11 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
             return;
         }
 
-        var success = await _webOSDiscovery.PairWithDeviceAsync(device, ct);
+        var success = await webOSDiscovery.PairWithDeviceAsync(device, ct);
         if (success)
         {
             // Update the device with the new authentication token
-            await _deviceService.UpdateDeviceAsync(device.Id, device);
+            await deviceService.UpdateDeviceAsync(device.Id, device);
 
             await SendOkAsync(new PairWebOSDeviceResponse
             {

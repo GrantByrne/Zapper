@@ -6,7 +6,6 @@ namespace Zapper.Endpoints.Devices;
 
 public class DeleteDeviceEndpoint(IDeviceService deviceService) : Endpoint<DeleteDeviceRequest>
 {
-    private readonly IDeviceService _deviceService = deviceService;
 
     public override void Configure()
     {
@@ -21,7 +20,7 @@ public class DeleteDeviceEndpoint(IDeviceService deviceService) : Endpoint<Delet
 
     public override async Task HandleAsync(DeleteDeviceRequest req, CancellationToken ct)
     {
-        var success = await _deviceService.DeleteDeviceAsync(req.Id);
+        var success = await deviceService.DeleteDeviceAsync(req.Id);
         if (!success)
         {
             await SendNotFoundAsync(ct);
