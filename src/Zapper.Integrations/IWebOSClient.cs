@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public interface IWebOSClient
 {

@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Zapper.Core.Models;
-using Zapper.Hardware;
+using Zapper.Integrations;
 using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;

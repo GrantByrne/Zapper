@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public class NetworkDeviceController : INetworkDeviceController
 {

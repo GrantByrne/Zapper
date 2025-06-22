@@ -1,4 +1,4 @@
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public interface INetworkDeviceController
 {

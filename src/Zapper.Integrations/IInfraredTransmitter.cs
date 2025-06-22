@@ -1,6 +1,6 @@
 using Zapper.Core.Models;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public interface IInfraredTransmitter
 {

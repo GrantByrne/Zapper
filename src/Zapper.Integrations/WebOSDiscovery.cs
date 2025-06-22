@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Zapper.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public class WebOSDiscovery : IWebOSDiscovery, IDisposable
 {

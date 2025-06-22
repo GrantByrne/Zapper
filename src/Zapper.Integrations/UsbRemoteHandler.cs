@@ -2,7 +2,7 @@ using HidSharp;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
 {

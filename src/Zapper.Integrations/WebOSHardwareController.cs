@@ -1,7 +1,7 @@
 using Zapper.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public class WebOSHardwareController : IWebOSDeviceController
 {

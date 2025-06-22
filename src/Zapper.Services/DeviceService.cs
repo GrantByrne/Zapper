@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zapper.Data;
-using Zapper.Hardware;
+using Zapper.Integrations;
 using Zapper.Core.Models;
 
 namespace Zapper.Services;

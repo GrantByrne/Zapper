@@ -3,7 +3,7 @@ using System.Device.Pwm;
 using Zapper.Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Zapper.Hardware;
+namespace Zapper.Integrations;
 
 public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 {

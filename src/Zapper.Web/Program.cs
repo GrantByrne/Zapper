@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zapper.Core.Interfaces;
 using Zapper.Data;
-using Zapper.Hardware;
+using Zapper.Integrations;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
