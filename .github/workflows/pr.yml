@@ -44,48 +44,5 @@ jobs:
       
     - name: Run tests
       run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal
-      
-    - name: Check for breaking changes
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { context } = require('@actions/github');
-          const title = context.payload.pull_request.title.toLowerCase();
-          
-          // Check for breaking change indicators
-          const breakingChanges = [
-            'breaking change',
-            'breaking:',
-            'major:',
-            '!:'
-          ];
-          
-          const hasBreakingChange = breakingChanges.some(indicator => 
-            title.includes(indicator)
-          );
-          
-          if (hasBreakingChange) {
-            core.warning('This PR may contain breaking changes. Please ensure proper versioning and documentation.');
-          }
-          
-    - name: Comment build status
-      uses: actions/github-script@v7
-      if: always()
-      with:
-        script: |
-          const { context } = require('@actions/github');
-          const status = '${{ job.status }}' === 'success' ? '✅ Build successful' : '❌ Build failed';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `## Build Status: ${status}
-            
-            **Commit:** \`${context.sha.substring(0, 7)}\`
-            **Workflow:** [${context.workflow}](${context.payload.repository.html_url}/actions/runs/${context.runId})
-            
-            ${status.includes('✅') ? 'All checks passed! 🎉' : 'Please fix the build errors before merging.'}`
-          });
 
 
