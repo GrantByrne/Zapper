@@ -3,7 +3,6 @@ namespace ZapperHub.Hardware;
 public class MockUsbRemoteHandler : IUsbRemoteHandler
 {
     private readonly ILogger<MockUsbRemoteHandler> _logger;
-    private readonly Timer? _simulationTimer;
     private bool _isListening;
     private readonly Random _random = new();
 

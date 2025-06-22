@@ -31,7 +31,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         try
         {
             // Discover HID devices that look like remotes
-            await DiscoverRemoteDevicesAsync();
+            DiscoverRemoteDevices();
 
             _isListening = true;
             
@@ -39,6 +39,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             _ = Task.Run(() => MonitorDevicesAsync(_cancellationTokenSource.Token), cancellationToken);
             
             _logger.LogInformation("USB remote listener started. Monitoring {DeviceCount} devices", _connectedDevices.Count);
+            await Task.CompletedTask;
         }
         catch (Exception ex)
         {
@@ -81,7 +82,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         return _connectedDevices.Keys.ToList();
     }
 
-    private async Task DiscoverRemoteDevicesAsync()
+    private void DiscoverRemoteDevices()
     {
         var deviceList = DeviceList.Local;
         var hidDevices = deviceList.GetHidDevices();
@@ -120,7 +121,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             try
             {
                 await Task.Delay(5000, cancellationToken); // Check every 5 seconds
-                await DiscoverRemoteDevicesAsync();
+                DiscoverRemoteDevices();
             }
             catch (OperationCanceledException)
             {
@@ -191,25 +192,25 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
     {
         try
         {
-            // Check if device looks like a remote control
-            var usagePage = device.GetUsage().UsagePage;
-            var usage = device.GetUsage().Usage;
+            // Check if device looks like a remote control based on product name and vendor
             var productName = device.GetProductName()?.ToLowerInvariant() ?? "";
+            var vendorId = device.VendorID;
+            var productId = device.ProductID;
 
-            // Consumer Control devices (remote controls, media keys)
-            if (usagePage == 0x0C && (usage == 0x01 || usage == 0x80))
-                return true;
-
-            // Keyboard devices that might be remotes
-            if (usagePage == 0x01 && usage == 0x06)
+            // Check product name for remote-like keywords
+            if (productName.Contains("remote") || 
+                productName.Contains("media") || 
+                productName.Contains("control") ||
+                productName.Contains("receiver"))
             {
-                // Check product name for remote-like keywords
-                return productName.Contains("remote") || 
-                       productName.Contains("media") || 
-                       productName.Contains("control");
+                return true;
             }
 
-            return false;
+            // Known remote control vendor/product IDs (examples)
+            // This would be expanded with real device IDs
+            var knownRemoteVendors = new[] { 0x046D, 0x054C, 0x05AC }; // Logitech, Sony, Apple examples
+            
+            return knownRemoteVendors.Contains(vendorId);
         }
         catch
         {
