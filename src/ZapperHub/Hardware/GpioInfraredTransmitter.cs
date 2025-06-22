@@ -1,5 +1,6 @@
 using System.Device.Gpio;
 using System.Device.Pwm;
+using ZapperHub.Models;
 
 namespace ZapperHub.Hardware;
 
@@ -59,6 +60,36 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         for (int i = 0; i < repeatCount; i++)
         {
             await TransmitRawAsync(pulses, cancellationToken: cancellationToken);
+            if (i < repeatCount - 1)
+            {
+                await Task.Delay(100, cancellationToken); // Gap between repeats
+            }
+        }
+    }
+
+    public async Task TransmitAsync(IRCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    {
+        if (!IsAvailable)
+            throw new InvalidOperationException("IR transmitter not initialized");
+
+        _logger.LogInformation("Transmitting IR code for {Brand} {Model} command {Command}", 
+                              irCode.Brand, irCode.Model, irCode.CommandName);
+
+        int[] pulses;
+        
+        // Use raw data if available, otherwise convert hex code
+        if (!string.IsNullOrEmpty(irCode.RawData))
+        {
+            pulses = ParseIrCode(irCode.RawData);
+        }
+        else
+        {
+            pulses = ConvertHexToPulses(irCode.HexCode, irCode.Protocol);
+        }
+        
+        for (int i = 0; i < repeatCount; i++)
+        {
+            await TransmitRawAsync(pulses, irCode.Frequency, cancellationToken);
             if (i < repeatCount - 1)
             {
                 await Task.Delay(100, cancellationToken); // Gap between repeats
@@ -141,6 +172,130 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             _logger.LogError(ex, "Failed to parse IR code: {IrCode}", irCode);
             throw new ArgumentException("Invalid IR code format", nameof(irCode));
         }
+    }
+
+    private int[] ConvertHexToPulses(string hexCode, string protocol)
+    {
+        // Convert hex codes to pulse arrays based on protocol
+        // This is a simplified implementation - real IR libraries would be more comprehensive
+        try
+        {
+            var code = Convert.ToUInt32(hexCode.Replace("0x", ""), 16);
+            
+            return protocol.ToUpper() switch
+            {
+                "NEC" => ConvertNecToPulses(code),
+                "SONY" => ConvertSonyToPulses(code),
+                "RC5" => ConvertRc5ToPulses(code),
+                "RC6" => ConvertRc6ToPulses(code),
+                _ => throw new NotSupportedException($"Protocol {protocol} not supported")
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to convert hex code to pulses: {HexCode} ({Protocol})", hexCode, protocol);
+            throw;
+        }
+    }
+
+    private int[] ConvertNecToPulses(uint code)
+    {
+        // Basic NEC protocol timing (simplified)
+        var pulses = new List<int>();
+        
+        // Start burst
+        pulses.Add(9000); // Header mark
+        pulses.Add(4500); // Header space
+        
+        // Data bits (32 bits for NEC)
+        for (int i = 31; i >= 0; i--)
+        {
+            pulses.Add(560); // Mark
+            if ((code >> i & 1) == 1)
+            {
+                pulses.Add(1690); // '1' space
+            }
+            else
+            {
+                pulses.Add(560); // '0' space
+            }
+        }
+        
+        // Stop bit
+        pulses.Add(560);
+        
+        return pulses.ToArray();
+    }
+
+    private int[] ConvertSonyToPulses(uint code)
+    {
+        // Basic Sony SIRC protocol timing (simplified)
+        var pulses = new List<int>();
+        
+        // Start burst
+        pulses.Add(2400); // Header mark
+        pulses.Add(600);  // Header space
+        
+        // Data bits (12 bits for basic Sony)
+        for (int i = 11; i >= 0; i--)
+        {
+            if ((code >> i & 1) == 1)
+            {
+                pulses.Add(1200); // '1' mark
+            }
+            else
+            {
+                pulses.Add(600);  // '0' mark
+            }
+            pulses.Add(600); // Space
+        }
+        
+        return pulses.ToArray();
+    }
+
+    private int[] ConvertRc5ToPulses(uint code)
+    {
+        // RC5 protocol is more complex with Manchester encoding
+        // This is a very simplified version
+        var pulses = new List<int> { 889, 889 }; // Start bits
+        
+        for (int i = 12; i >= 0; i--)
+        {
+            if ((code >> i & 1) == 1)
+            {
+                pulses.Add(889);
+                pulses.Add(889);
+            }
+            else
+            {
+                pulses.Add(889);
+                pulses.Add(889);
+            }
+        }
+        
+        return pulses.ToArray();
+    }
+
+    private int[] ConvertRc6ToPulses(uint code)
+    {
+        // RC6 protocol timing (simplified)
+        var pulses = new List<int> { 2666, 889 }; // Header
+        
+        for (int i = 15; i >= 0; i--)
+        {
+            if ((code >> i & 1) == 1)
+            {
+                pulses.Add(444);
+                pulses.Add(444);
+            }
+            else
+            {
+                pulses.Add(444);
+                pulses.Add(444);
+            }
+        }
+        
+        return pulses.ToArray();
     }
 
     public void Dispose()

@@ -167,7 +167,8 @@ public class AddIRCodeEndpoint : Endpoint<AddIRCodeRequest, IRCode>
         }
         catch (ArgumentException ex)
         {
-            await SendAsync(new { Error = ex.Message }, 400, ct);
+            AddError(ex.Message);
+            await SendErrorsAsync(cancellation: ct);
         }
     }
 }
@@ -215,14 +216,15 @@ public class ExportIRCodeSetEndpoint : Endpoint<ExportIRCodeSetRequest, string>
         {
             var json = await IRCodeService.ExportCodeSetAsync(req.Id);
             
-            Response.ContentType = "application/json";
-            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"ir-codes-{req.Id}.json\"");
+            HttpContext.Response.ContentType = "application/json";
+            HttpContext.Response.Headers["Content-Disposition"] = $"attachment; filename=\"ir-codes-{req.Id}.json\"";
             
             await SendStringAsync(json, cancellation: ct);
         }
         catch (ArgumentException ex)
         {
-            await SendAsync(new { Error = ex.Message }, 404, ct);
+            AddError(ex.Message);
+            await SendErrorsAsync(cancellation: ct);
         }
     }
 }
