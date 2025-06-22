@@ -38,6 +38,12 @@ public class Device
     
     public bool UseSecureConnection { get; set; }
     
+    public string? BluetoothAddress { get; set; }
+    
+    public bool SupportsMouseInput { get; set; }
+    
+    public bool SupportsKeyboardInput { get; set; }
+    
     public string? IrCodeSet { get; set; }
     
     public bool IsOnline { get; set; }

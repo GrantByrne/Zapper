@@ -27,6 +27,12 @@ public class DeviceCommand
     
     public bool IsRepeatable { get; set; } = false;
     
+    public int? MouseDeltaX { get; set; }
+    
+    public int? MouseDeltaY { get; set; }
+    
+    public string? KeyboardText { get; set; }
+    
     public Device Device { get; set; } = null!;
     
     public ICollection<ActivityStep> ActivitySteps { get; set; } = new List<ActivityStep>();
@@ -56,5 +62,8 @@ public enum CommandType
     Rewind,
     Record,
     AppLaunch,
-    Custom
+    Custom,
+    MouseMove,
+    MouseClick,
+    KeyboardInput
 }
