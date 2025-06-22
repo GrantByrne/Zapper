@@ -23,6 +23,8 @@ builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddSingleton<IInfraredTransmitter, MockInfraredTransmitter>();
 builder.Services.AddSingleton<INetworkDeviceController, NetworkDeviceController>();
 builder.Services.AddSingleton<IUsbRemoteHandler, MockUsbRemoteHandler>();
+builder.Services.AddScoped<IWebOSClient, WebOSClient>();
+builder.Services.AddScoped<WebOSDeviceController>();
 
 // Add HttpClient for network operations
 builder.Services.AddHttpClient();

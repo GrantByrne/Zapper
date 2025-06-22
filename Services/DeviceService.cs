@@ -10,17 +10,20 @@ public class DeviceService : IDeviceService
     private readonly ZapperContext _context;
     private readonly IInfraredTransmitter _irTransmitter;
     private readonly INetworkDeviceController _networkController;
+    private readonly WebOSDeviceController _webOSController;
     private readonly ILogger<DeviceService> _logger;
 
     public DeviceService(
         ZapperContext context,
         IInfraredTransmitter irTransmitter,
         INetworkDeviceController networkController,
+        WebOSDeviceController webOSController,
         ILogger<DeviceService> logger)
     {
         _context = context;
         _irTransmitter = irTransmitter;
         _networkController = networkController;
+        _webOSController = webOSController;
         _logger = logger;
     }
 
@@ -66,6 +69,9 @@ public class DeviceService : IDeviceService
         existingDevice.MacAddress = device.MacAddress;
         existingDevice.Port = device.Port;
         existingDevice.AuthToken = device.AuthToken;
+        existingDevice.NetworkAddress = device.NetworkAddress;
+        existingDevice.AuthenticationToken = device.AuthenticationToken;
+        existingDevice.UseSecureConnection = device.UseSecureConnection;
         existingDevice.IrCodeSet = device.IrCodeSet;
         existingDevice.IsOnline = device.IsOnline;
 
@@ -143,6 +149,8 @@ public class DeviceService : IDeviceService
                     await TestNetworkDeviceAsync(device),
                 ConnectionType.InfraredIR => 
                     _irTransmitter.IsAvailable,
+                ConnectionType.WebOS =>
+                    await _webOSController.TestConnectionAsync(device),
                 _ => false
             };
 
@@ -191,6 +199,7 @@ public class DeviceService : IDeviceService
             ConnectionType.InfraredIR => await ExecuteIrCommandAsync(command, cancellationToken),
             ConnectionType.NetworkTCP => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
             ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommandAsync(device, command, cancellationToken),
+            ConnectionType.WebOS => await _webOSController.SendCommandAsync(device, command, cancellationToken),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };
     }

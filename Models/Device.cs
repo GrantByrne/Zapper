@@ -32,6 +32,12 @@ public class Device
     
     public string? AuthToken { get; set; }
     
+    public string? NetworkAddress { get; set; }
+    
+    public string? AuthenticationToken { get; set; }
+    
+    public bool UseSecureConnection { get; set; }
+    
     public string? IrCodeSet { get; set; }
     
     public bool IsOnline { get; set; }
@@ -65,5 +71,6 @@ public enum ConnectionType
     NetworkTCP,
     NetworkWebSocket,
     Bluetooth,
-    USB
+    USB,
+    WebOS
 }
