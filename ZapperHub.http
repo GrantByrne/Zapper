@@ -1,0 +1,6 @@
+@ZapperHub_HostAddress = http://localhost:5145
+
+GET {{ZapperHub_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
