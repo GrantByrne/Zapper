@@ -4,17 +4,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class BlueZAdapter : IDisposable
+public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 {
-    private readonly ILogger<BlueZAdapter> _logger;
     private IAdapter1? _adapter;
     private readonly Dictionary<string, IDevice1> _devices = new();
     private bool _disposed;
-
-    public BlueZAdapter(ILogger<BlueZAdapter> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public event EventHandler<BluetoothDeviceEventArgs>? DeviceFound;
     public event EventHandler<BluetoothDeviceEventArgs>? DeviceConnected;
@@ -28,7 +22,7 @@ public class BlueZAdapter : IDisposable
     {
         try
         {
-            _logger.LogInformation("Initializing BlueZ adapter...");
+            logger.LogInformation("Initializing BlueZ adapter...");
             
             var adapters = await BlueZManager.GetAdaptersAsync();
             _adapter = adapters.FirstOrDefault();
@@ -38,22 +32,22 @@ public class BlueZAdapter : IDisposable
                 throw new InvalidOperationException("No Bluetooth adapters found on the system");
             }
 
-            _logger.LogInformation("Found Bluetooth adapter: {Address}", await _adapter.GetAddressAsync());
+            logger.LogInformation("Found Bluetooth adapter: {Address}", await _adapter.GetAddressAsync());
 
             // Note: DeviceFound event not available in this version, using polling approach
             
             // Ensure adapter is powered on
             if (!await _adapter.GetAsync<bool>("Powered"))
             {
-                _logger.LogInformation("Powering on Bluetooth adapter...");
+                logger.LogInformation("Powering on Bluetooth adapter...");
                 await _adapter.SetAsync("Powered", true);
             }
 
-            _logger.LogInformation("BlueZ adapter initialized successfully");
+            logger.LogInformation("BlueZ adapter initialized successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to initialize BlueZ adapter");
+            logger.LogError(ex, "Failed to initialize BlueZ adapter");
             throw;
         }
     }
@@ -66,12 +60,12 @@ public class BlueZAdapter : IDisposable
         try
         {
             await _adapter.SetAsync("Powered", powered);
-            _logger.LogInformation("Bluetooth adapter power set to: {Powered}", powered);
+            logger.LogInformation("Bluetooth adapter power set to: {Powered}", powered);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to set adapter power state to {Powered}", powered);
+            logger.LogError(ex, "Failed to set adapter power state to {Powered}", powered);
             return false;
         }
     }
@@ -85,18 +79,18 @@ public class BlueZAdapter : IDisposable
         {
             if (IsDiscovering)
             {
-                _logger.LogWarning("Discovery is already running");
+                logger.LogWarning("Discovery is already running");
                 return true;
             }
 
             await _adapter.StartDiscoveryAsync();
             IsDiscovering = true;
-            _logger.LogInformation("Started Bluetooth device discovery");
+            logger.LogInformation("Started Bluetooth device discovery");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to start discovery");
+            logger.LogError(ex, "Failed to start discovery");
             return false;
         }
     }
@@ -110,18 +104,18 @@ public class BlueZAdapter : IDisposable
         {
             if (!IsDiscovering)
             {
-                _logger.LogWarning("Discovery is not running");
+                logger.LogWarning("Discovery is not running");
                 return true;
             }
 
             await _adapter.StopDiscoveryAsync();
             IsDiscovering = false;
-            _logger.LogInformation("Stopped Bluetooth device discovery");
+            logger.LogInformation("Stopped Bluetooth device discovery");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to stop discovery");
+            logger.LogError(ex, "Failed to stop discovery");
             return false;
         }
     }
@@ -146,7 +140,7 @@ public class BlueZAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get devices");
+            logger.LogError(ex, "Failed to get devices");
             return [];
         }
     }
@@ -168,7 +162,7 @@ public class BlueZAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get device {Address}", address);
+            logger.LogError(ex, "Failed to get device {Address}", address);
             return null;
         }
     }
@@ -185,27 +179,27 @@ public class BlueZAdapter : IDisposable
             
             if (device == null)
             {
-                _logger.LogWarning("Device {Address} not found for pairing", address);
+                logger.LogWarning("Device {Address} not found for pairing", address);
                 return false;
             }
 
             if (await device.GetAsync<bool>("Paired"))
             {
-                _logger.LogInformation("Device {Address} is already paired", address);
+                logger.LogInformation("Device {Address} is already paired", address);
                 return true;
             }
 
-            _logger.LogInformation("Pairing with device {Address}...", address);
+            logger.LogInformation("Pairing with device {Address}...", address);
             await device.PairAsync();
             
             var isPaired = await device.GetAsync<bool>("Paired");
-            _logger.LogInformation("Pairing with device {Address} {Result}", address, isPaired ? "succeeded" : "failed");
+            logger.LogInformation("Pairing with device {Address} {Result}", address, isPaired ? "succeeded" : "failed");
             
             return isPaired;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to pair with device {Address}", address);
+            logger.LogError(ex, "Failed to pair with device {Address}", address);
             return false;
         }
     }
@@ -222,21 +216,21 @@ public class BlueZAdapter : IDisposable
             
             if (device == null)
             {
-                _logger.LogWarning("Device {Address} not found for connection", address);
+                logger.LogWarning("Device {Address} not found for connection", address);
                 return false;
             }
 
             if (await device.GetAsync<bool>("Connected"))
             {
-                _logger.LogInformation("Device {Address} is already connected", address);
+                logger.LogInformation("Device {Address} is already connected", address);
                 return true;
             }
 
-            _logger.LogInformation("Connecting to device {Address}...", address);
+            logger.LogInformation("Connecting to device {Address}...", address);
             await device.ConnectAsync();
             
             var isConnected = await device.GetAsync<bool>("Connected");
-            _logger.LogInformation("Connection to device {Address} {Result}", address, isConnected ? "succeeded" : "failed");
+            logger.LogInformation("Connection to device {Address} {Result}", address, isConnected ? "succeeded" : "failed");
             
             if (isConnected)
             {
@@ -248,7 +242,7 @@ public class BlueZAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to device {Address}", address);
+            logger.LogError(ex, "Failed to connect to device {Address}", address);
             return false;
         }
     }
@@ -265,21 +259,21 @@ public class BlueZAdapter : IDisposable
             
             if (device == null)
             {
-                _logger.LogWarning("Device {Address} not found for disconnection", address);
+                logger.LogWarning("Device {Address} not found for disconnection", address);
                 return false;
             }
 
             if (!await device.GetAsync<bool>("Connected"))
             {
-                _logger.LogInformation("Device {Address} is already disconnected", address);
+                logger.LogInformation("Device {Address} is already disconnected", address);
                 return true;
             }
 
-            _logger.LogInformation("Disconnecting from device {Address}...", address);
+            logger.LogInformation("Disconnecting from device {Address}...", address);
             await device.DisconnectAsync();
             
             var isConnected = await device.GetAsync<bool>("Connected");
-            _logger.LogInformation("Disconnection from device {Address} {Result}", address, !isConnected ? "succeeded" : "failed");
+            logger.LogInformation("Disconnection from device {Address} {Result}", address, !isConnected ? "succeeded" : "failed");
             
             if (!isConnected)
             {
@@ -291,7 +285,7 @@ public class BlueZAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to disconnect from device {Address}", address);
+            logger.LogError(ex, "Failed to disconnect from device {Address}", address);
             return false;
         }
     }
@@ -301,12 +295,12 @@ public class BlueZAdapter : IDisposable
         try
         {
             var deviceInfo = await CreateDeviceInfoAsync(e.Device);
-            _logger.LogDebug("Device found: {Name} ({Address})", deviceInfo.Name, deviceInfo.Address);
+            logger.LogDebug("Device found: {Name} ({Address})", deviceInfo.Name, deviceInfo.Address);
             DeviceFound?.Invoke(this, new BluetoothDeviceEventArgs(deviceInfo));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing found device");
+            logger.LogError(ex, "Error processing found device");
         }
     }
 
@@ -349,7 +343,7 @@ public class BlueZAdapter : IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during disposal");
+            logger.LogError(ex, "Error during disposal");
         }
         finally
         {

@@ -2,18 +2,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.USB;
 
-public class MockUsbRemoteHandler : IUsbRemoteHandler
+public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRemoteHandler
 {
-    private readonly ILogger<MockUsbRemoteHandler> _logger;
     private bool _isListening;
     private readonly Random _random = new();
 
     public event EventHandler<RemoteButtonEventArgs>? ButtonPressed;
-
-    public MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger)
-    {
-        _logger = logger;
-    }
 
     public bool IsListening => _isListening;
 
@@ -23,10 +17,10 @@ public class MockUsbRemoteHandler : IUsbRemoteHandler
             return Task.CompletedTask;
 
         _isListening = true;
-        _logger.LogInformation("Mock USB remote handler started");
+        logger.LogInformation("Mock USB remote handler started");
 
         // Optionally simulate random button presses for testing
-        if (_logger.IsEnabled(LogLevel.Debug))
+        if (logger.IsEnabled(LogLevel.Debug))
         {
             _ = Task.Run(() => SimulateButtonPressesAsync(cancellationToken), cancellationToken);
         }
@@ -37,7 +31,7 @@ public class MockUsbRemoteHandler : IUsbRemoteHandler
     public Task StopListeningAsync()
     {
         _isListening = false;
-        _logger.LogInformation("Mock USB remote handler stopped");
+        logger.LogInformation("Mock USB remote handler stopped");
         return Task.CompletedTask;
     }
 
@@ -52,7 +46,7 @@ public class MockUsbRemoteHandler : IUsbRemoteHandler
             return;
 
         var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
-        _logger.LogDebug("Simulating button press: {DeviceId} - {ButtonName}", deviceId, buttonName);
+        logger.LogDebug("Simulating button press: {DeviceId} - {ButtonName}", deviceId, buttonName);
         ButtonPressed?.Invoke(this, eventArgs);
     }
 

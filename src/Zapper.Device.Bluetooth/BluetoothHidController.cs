@@ -8,9 +8,7 @@ public class BluetoothHidController : IBluetoothHIDController
     private readonly ILogger<BluetoothHidController> _logger;
     private readonly Dictionary<string, BluetoothDeviceInfo> _connectedDevices = new();
 
-    public BluetoothHidController(
-        IBluetoothService bluetoothService,
-        ILogger<BluetoothHidController> logger)
+    public BluetoothHidController(IBluetoothService bluetoothService, ILogger<BluetoothHidController> logger)
     {
         _bluetoothService = bluetoothService ?? throw new ArgumentNullException(nameof(bluetoothService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -54,8 +52,6 @@ public class BluetoothHidController : IBluetoothHIDController
             _logger.LogError(ex, "Failed to send HID key {KeyCode} to device {Address}", keyCode, deviceAddress);
             return Task.FromResult(false);
         }
-        
-        return Task.FromResult(false);
     }
 
     public async Task<bool> SendKeySequenceAsync(string deviceAddress, HIDKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)

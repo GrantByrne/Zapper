@@ -8,20 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSDiscovery : IWebOSDiscovery, IDisposable
+public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSClient) : IWebOSDiscovery, IDisposable
 {
-    private readonly ILogger<WebOSDiscovery> _logger;
-    private readonly IWebOSClient _webOSClient;
     private UdpClient? _udpClient;
     private readonly List<Zapper.Core.Models.Device> _discoveredDevices = [];
 
     public event EventHandler<Zapper.Core.Models.Device>? DeviceDiscovered;
-
-    public WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSClient)
-    {
-        _logger = logger;
-        _webOSClient = webOSClient;
-    }
 
     public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
@@ -41,12 +33,12 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
             // Wait for both discovery methods to complete
             await Task.WhenAll(ssdpTask, mdnsTask);
 
-            _logger.LogInformation("Discovered {Count} WebOS devices", _discoveredDevices.Count);
+            logger.LogInformation("Discovered {Count} WebOS devices", _discoveredDevices.Count);
             return _discoveredDevices.ToList();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during WebOS device discovery");
+            logger.LogError(ex, "Error during WebOS device discovery");
             return [];
         }
     }
@@ -56,11 +48,11 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         try
         {
             // Try to connect to the WebOS TV directly
-            var connected = await _webOSClient.ConnectAsync(ipAddress, false, cancellationToken);
+            var connected = await webOSClient.ConnectAsync(ipAddress, false, cancellationToken);
             if (!connected)
             {
                 // Try secure connection
-                connected = await _webOSClient.ConnectAsync(ipAddress, true, cancellationToken);
+                connected = await webOSClient.ConnectAsync(ipAddress, true, cancellationToken);
             }
 
             if (connected)
@@ -79,7 +71,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
                     LastSeen = DateTime.UtcNow
                 };
 
-                await _webOSClient.DisconnectAsync(cancellationToken);
+                await webOSClient.DisconnectAsync(cancellationToken);
                 return device;
             }
 
@@ -87,7 +79,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to discover WebOS device at {IpAddress}", ipAddress);
+            logger.LogError(ex, "Failed to discover WebOS device at {IpAddress}", ipAddress);
             return null;
         }
     }
@@ -96,44 +88,44 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
     {
         if (device.ConnectionType != ConnectionType.WebOS || string.IsNullOrEmpty(device.NetworkAddress))
         {
-            _logger.LogWarning("Device {DeviceName} is not a valid WebOS device for pairing", device.Name);
+            logger.LogWarning("Device {DeviceName} is not a valid WebOS device for pairing", device.Name);
             return false;
         }
 
         try
         {
             // Connect to the device
-            var connected = await _webOSClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
+            var connected = await webOSClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
             if (!connected)
             {
-                _logger.LogError("Failed to connect to WebOS device {DeviceName} for pairing", device.Name);
+                logger.LogError("Failed to connect to WebOS device {DeviceName} for pairing", device.Name);
                 return false;
             }
 
             // Attempt authentication (this will trigger pairing prompt on TV)
-            var authenticated = await _webOSClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
+            var authenticated = await webOSClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
             if (authenticated)
             {
                 // Store the client key for future connections
-                device.AuthenticationToken = _webOSClient.ClientKey;
+                device.AuthenticationToken = webOSClient.ClientKey;
                 device.IsOnline = true;
                 device.LastSeen = DateTime.UtcNow;
 
-                _logger.LogInformation("Successfully paired with WebOS device {DeviceName}", device.Name);
+                logger.LogInformation("Successfully paired with WebOS device {DeviceName}", device.Name);
                 return true;
             }
 
-            _logger.LogWarning("Failed to authenticate with WebOS device {DeviceName}", device.Name);
+            logger.LogWarning("Failed to authenticate with WebOS device {DeviceName}", device.Name);
             return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during pairing with WebOS device {DeviceName}", device.Name);
+            logger.LogError(ex, "Error during pairing with WebOS device {DeviceName}", device.Name);
             return false;
         }
         finally
         {
-            await _webOSClient.DisconnectAsync(cancellationToken);
+            await webOSClient.DisconnectAsync(cancellationToken);
         }
     }
 
@@ -158,7 +150,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
             var searchBytes = Encoding.UTF8.GetBytes(searchMessage);
             await _udpClient.SendAsync(searchBytes, searchBytes.Length, multicastEndpoint);
 
-            _logger.LogDebug("Sent SSDP discovery request for WebOS devices");
+            logger.LogDebug("Sent SSDP discovery request for WebOS devices");
 
             // Listen for responses
             var endTime = DateTime.UtcNow.Add(timeout);
@@ -178,13 +170,13 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogDebug(ex, "Error receiving SSDP response");
+                    logger.LogDebug(ex, "Error receiving SSDP response");
                 }
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during SSDP discovery");
+            logger.LogError(ex, "Error during SSDP discovery");
         }
     }
 
@@ -222,7 +214,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogDebug(ex, "Error resolving hostname {Hostname}", hostname);
+                    logger.LogDebug(ex, "Error resolving hostname {Hostname}", hostname);
                 }
             }
 
@@ -231,7 +223,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during mDNS discovery");
+            logger.LogError(ex, "Error during mDNS discovery");
         }
     }
 
@@ -259,7 +251,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Error during subnet scanning");
+            logger.LogDebug(ex, "Error during subnet scanning");
         }
     }
 
@@ -293,7 +285,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Error scanning subnet");
+            logger.LogDebug(ex, "Error scanning subnet");
         }
     }
 
@@ -348,12 +340,12 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
                 };
 
                 AddDiscoveredDevice(device);
-                _logger.LogDebug("Discovered WebOS device via SSDP: {DeviceName}", device.Name);
+                logger.LogDebug("Discovered WebOS device via SSDP: {DeviceName}", device.Name);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Error processing SSDP response");
+            logger.LogDebug(ex, "Error processing SSDP response");
         }
     }
 

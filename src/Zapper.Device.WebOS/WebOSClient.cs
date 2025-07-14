@@ -6,10 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSClient : IWebOSClient, IDisposable
+public class WebOSClient(ILogger<WebOSClient> logger) : IWebOSClient, IDisposable
 {
     private ClientWebSocket? _webSocket;
-    private readonly ILogger<WebOSClient> _logger;
     private int _messageId = 1;
     private string? _clientKey;
     private bool _isAuthenticated;
@@ -18,11 +17,6 @@ public class WebOSClient : IWebOSClient, IDisposable
     public string? ClientKey => _clientKey;
     public bool IsConnected => _webSocket?.State == WebSocketState.Open;
     public bool IsAuthenticated => _isAuthenticated;
-
-    public WebOSClient(ILogger<WebOSClient> logger)
-    {
-        _logger = logger;
-    }
 
     public async Task<bool> ConnectAsync(string ipAddress, bool useSecure = false, CancellationToken cancellationToken = default)
     {
@@ -35,7 +29,7 @@ public class WebOSClient : IWebOSClient, IDisposable
             var port = useSecure ? 3001 : 3000;
             var uri = new Uri($"{protocol}://{ipAddress}:{port}");
 
-            _logger.LogInformation("Connecting to webOS TV at {Uri}", uri);
+            logger.LogInformation("Connecting to webOS TV at {Uri}", uri);
 
             await _webSocket.ConnectAsync(uri, cancellationToken);
 
@@ -46,7 +40,7 @@ public class WebOSClient : IWebOSClient, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to webOS TV at {IpAddress}", ipAddress);
+            logger.LogError(ex, "Failed to connect to webOS TV at {IpAddress}", ipAddress);
             return false;
         }
     }
@@ -66,7 +60,7 @@ public class WebOSClient : IWebOSClient, IDisposable
     {
         if (!IsConnected)
         {
-            _logger.LogWarning("Cannot authenticate - not connected to TV");
+            logger.LogWarning("Cannot authenticate - not connected to TV");
             return false;
         }
 
@@ -128,17 +122,17 @@ public class WebOSClient : IWebOSClient, IDisposable
                 {
                     _clientKey = clientKeyElement.GetString();
                     _isAuthenticated = true;
-                    _logger.LogInformation("Successfully authenticated with webOS TV");
+                    logger.LogInformation("Successfully authenticated with webOS TV");
                     return true;
                 }
             }
 
-            _logger.LogWarning("Authentication failed - invalid response");
+            logger.LogWarning("Authentication failed - invalid response");
             return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Authentication failed");
+            logger.LogError(ex, "Authentication failed");
             return false;
         }
     }
@@ -147,7 +141,7 @@ public class WebOSClient : IWebOSClient, IDisposable
     {
         if (!IsConnected)
         {
-            _logger.LogWarning("Cannot send command - not connected to TV");
+            logger.LogWarning("Cannot send command - not connected to TV");
             return null;
         }
 
@@ -181,13 +175,13 @@ public class WebOSClient : IWebOSClient, IDisposable
             catch (OperationCanceledException)
             {
                 _pendingRequests.TryRemove(messageId.ToString(), out _);
-                _logger.LogWarning("Command {Uri} timed out", uri);
+                logger.LogWarning("Command {Uri} timed out", uri);
                 return null;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send command {Uri}", uri);
+            logger.LogError(ex, "Failed to send command {Uri}", uri);
             return null;
         }
     }
@@ -215,7 +209,7 @@ public class WebOSClient : IWebOSClient, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in message listener");
+            logger.LogError(ex, "Error in message listener");
         }
     }
 
@@ -236,7 +230,7 @@ public class WebOSClient : IWebOSClient, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process message: {Message}", message);
+            logger.LogError(ex, "Failed to process message: {Message}", message);
         }
     }
 

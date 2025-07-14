@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class AndroidTVBluetoothController(IBluetoothHIDController hidController, IBluetoothService bluetoothService, ILogger<AndroidTVBluetoothController> logger) : IBluetoothDeviceController
+public class AppleTVBluetoothController(IBluetoothHIDController hidController, IBluetoothService bluetoothService, ILogger<AppleTVBluetoothController> logger) : IBluetoothDeviceController
 {
 
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
             var isConnected = await hidController.IsConnectedAsync(device.MacAddress, cancellationToken);
             if (!isConnected)
             {
-                logger.LogInformation("Connecting to Android TV device {DeviceName} ({Address})", device.Name, device.MacAddress);
+                logger.LogInformation("Connecting to Apple TV device {DeviceName} ({Address})", device.Name, device.MacAddress);
                 var connected = await hidController.ConnectAsync(device.MacAddress, cancellationToken);
                 if (!connected)
                 {
@@ -112,41 +112,45 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
         {
             var devices = await bluetoothService.GetDevicesAsync(cancellationToken);
             return devices
-                .Where(d => d.IsPaired && IsAndroidTVDevice(d))
+                .Where(d => d.IsPaired && IsAppleTVDevice(d))
                 .Select(d => d.Address)
                 .ToList();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to discover paired Android TV devices");
+            logger.LogError(ex, "Failed to discover paired Apple TV devices");
             return [];
         }
     }
 
     private async Task<bool> HandlePowerCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // Android TV doesn't have a direct power button via Bluetooth HID
-        // Send Home button to wake up the device or show home screen
-        logger.LogInformation("Power command requested - using Home button to wake/show home screen");
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Home, cancellationToken);
+        // Apple TV uses Sleep/Wake button for power control
+        // On Apple TV, this is typically the Menu + TV button combination
+        logger.LogInformation("Power command requested - using Menu button to wake/sleep Apple TV");
+        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
     }
 
     private async Task<bool> HandleChannelUp(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Android TV, channel up can be mapped to page up or arrow up
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.PageUp, cancellationToken);
+        // For Apple TV, channel navigation can be mapped to swipe gestures or arrow keys
+        // Using right arrow for channel up (next content/app)
+        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadRight, cancellationToken);
     }
 
     private async Task<bool> HandleChannelDown(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Android TV, channel down can be mapped to page down or arrow down
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.PageDown, cancellationToken);
+        // For Apple TV, channel navigation can be mapped to swipe gestures or arrow keys
+        // Using left arrow for channel down (previous content/app)
+        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadLeft, cancellationToken);
     }
 
     private async Task<bool> HandleInputCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // Input switching typically opens the input selection menu
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
+        // On Apple TV, input switching is typically done through Settings or Home screen
+        // Double-tap Home to show app switcher (similar to input switching)
+        return await hidController.SendKeySequenceAsync(deviceAddress,
+            [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
     }
 
     private async Task<bool> HandleNumberCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
@@ -195,29 +199,44 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
                 return await hidController.SendTextAsync(deviceAddress, text, cancellationToken);
             }
 
-            // Handle specific Android TV commands
+            // Handle specific Apple TV commands
             switch (command.NetworkPayload.ToLowerInvariant())
             {
+                case "siri":
+                    // Activate Siri (long press on Siri Remote)
+                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Assistant, cancellationToken);
+                
+                case "app_switcher":
+                    // Show app switcher (double-click Home button)
+                    return await hidController.SendKeySequenceAsync(deviceAddress,
+                        [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
+                
+                case "control_center":
+                    // Open Control Center (swipe down from top-right, mapped to long Menu press)
+                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
+                
                 case "netflix":
-                    // Send key combination to open Netflix (example)
+                    // Open Netflix app (if available)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.N], 100, cancellationToken);
                 
+                case "disney":
+                case "disney+":
+                    // Open Disney+ app (if available)
+                    return await hidController.SendKeySequenceAsync(deviceAddress,
+                        [HIDKeyCode.Home, HIDKeyCode.D], 100, cancellationToken);
+                
                 case "youtube":
-                    // Send key combination to open YouTube (example)
+                    // Open YouTube app (if available)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.Y], 100, cancellationToken);
                 
-                case "assistant":
-                    // Activate Google Assistant
-                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Assistant, cancellationToken);
-                
                 case "search":
-                    // Open search
+                    // Open search (typically Siri or Search app)
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Search, cancellationToken);
                 
                 case "settings":
-                    // Open settings
+                    // Open Settings app
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Settings, cancellationToken);
                 
                 default:
@@ -245,32 +264,36 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
         return Task.FromResult(false);
     }
 
-    private static bool IsAndroidTVDevice(BluetoothDeviceInfo device)
+    private static bool IsAppleTVDevice(BluetoothDeviceInfo device)
     {
-        // Check if device name suggests it's an Android TV
+        // Check if device name suggests it's an Apple TV
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
         
-        return name.Contains("android tv") || 
-               name.Contains("chromecast") || 
-               name.Contains("google tv") ||
-               alias.Contains("android tv") || 
-               alias.Contains("chromecast") || 
-               alias.Contains("google tv") ||
-               // Check for Android TV service UUIDs if available
-               device.UUIDs.Any(uuid => IsAndroidTVServiceUuid(uuid));
+        return name.Contains("apple tv") || 
+               name.Contains("appletv") || 
+               name.Contains("siri remote") ||
+               name.Contains("apple remote") ||
+               alias.Contains("apple tv") || 
+               alias.Contains("appletv") || 
+               alias.Contains("siri remote") ||
+               alias.Contains("apple remote") ||
+               // Check for Apple TV service UUIDs if available
+               device.UUIDs.Any(uuid => IsAppleTVServiceUuid(uuid));
     }
 
-    private static bool IsAndroidTVServiceUuid(string uuid)
+    private static bool IsAppleTVServiceUuid(string uuid)
     {
-        // Common Android TV Bluetooth service UUIDs
-        var androidTvUuids = new[]
+        // Common Apple TV / Apple device Bluetooth service UUIDs
+        var appleTvUuids = new[]
         {
-            "0000fef3-0000-1000-8000-00805f9b34fb", // Google specific service
-            "0000180f-0000-1000-8000-00805f9b34fb", // Battery Service (common on Android TV remotes)
-            "00001812-0000-1000-8000-00805f9b34fb"  // Human Interface Device
+            "0000180f-0000-1000-8000-00805f9b34fb", // Battery Service (Siri Remote)
+            "00001812-0000-1000-8000-00805f9b34fb", // Human Interface Device
+            "0000180a-0000-1000-8000-00805f9b34fb", // Device Information Service
+            "89d3502b-0f36-433a-8ef4-c502ad55f8dc", // Apple Media Service
+            "7905f431-b5ce-4e99-a40f-4b1e122d00d0"  // Apple Notification Center Service
         };
 
-        return androidTvUuids.Any(tvUuid => string.Equals(uuid, tvUuid, StringComparison.OrdinalIgnoreCase));
+        return appleTvUuids.Any(tvUuid => string.Equals(uuid, tvUuid, StringComparison.OrdinalIgnoreCase));
     }
 }
