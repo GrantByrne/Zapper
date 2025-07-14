@@ -357,13 +357,32 @@
             // Initialize SignalR connection if needed
             await EnsureSignalRConnection();
 
-            // Initialize SignalR connection for real-time updates
-            // For now, use the existing discovery method as fallback
-            // TODO: Implement the new scanning endpoint once API client is fixed
-            var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
-            _discoveredBluetoothDevices = devices.ToList();
-            _isScanning = false;
-            StateHasChanged();
+            // Start the scanning process via API
+            try
+            {
+                var scanRequest = new BluetoothScanRequest { DurationSeconds = 30 };
+                var response = await ApiClient.Devices.StartBluetoothScanAsync(scanRequest);
+                
+                if (!response.Success)
+                {
+                    _scanError = response.Message ?? "Failed to start Bluetooth scan";
+                    _isScanning = false;
+                    StateHasChanged();
+                }
+                // Note: _isScanning will be set to false by SignalR BluetoothScanCompleted event
+            }
+            catch (Exception ex)
+            {
+                // Fallback to the old discovery method if new endpoint fails
+                _scanError = $"New scanning failed ({ex.Message}), using fallback method...";
+                StateHasChanged();
+                await Task.Delay(500);
+                
+                var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
+                _discoveredBluetoothDevices = devices.ToList();
+                _isScanning = false;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -377,9 +396,10 @@
     {
         if (_hubConnection == null)
         {
-            var navigationManager = await JSRuntime.InvokeAsync<string>("eval", "window.location.origin");
+            var baseUri = await JSRuntime.InvokeAsync<string>("eval", "window.location.origin");
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl($"{navigationManager}/zapperhub")
+                .WithUrl($"{baseUri}/hubs/zapper")
+                .WithAutomaticReconnect()
                 .Build();
 
             // Subscribe to Bluetooth scanning events

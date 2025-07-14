@@ -1,6 +1,7 @@
 using Refit;
 using Zapper.Contracts;
 using Zapper.Contracts.Devices;
+using Zapper.Client.Abstractions;
 
 namespace Zapper.Client;
 
@@ -56,16 +57,4 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.BluetoothScan)]
     Task<BluetoothScanResponse> StartBluetoothScanAsync([Body] BluetoothScanRequest request, CancellationToken cancellationToken = default);
-}
-
-public class BluetoothScanRequest
-{
-    public int DurationSeconds { get; set; } = 30;
-}
-
-public class BluetoothScanResponse
-{
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-    public bool IsScanning { get; set; }
 }
