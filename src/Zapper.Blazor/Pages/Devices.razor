@@ -112,10 +112,6 @@ else
             _isLoading = true;
             _errorMessage = null;
             _loadingStep = "initializing";
-            StateHasChanged();
-            
-            // Small delay to show initializing step
-            await Task.Delay(200);
             
             if (ApiClient == null)
             {
@@ -124,11 +120,9 @@ else
             }
             
             _loadingStep = "connecting";
-            StateHasChanged();
-            await Task.Delay(300);
+            await Task.Delay(100); // Brief delay to show connection step
             
             _loadingStep = "fetching";
-            StateHasChanged();
             
             // Add timeout to prevent hanging
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
@@ -151,7 +145,6 @@ else
         {
             _isLoading = false;
             _loadingStep = "initializing";
-            StateHasChanged();
         }
     }
 

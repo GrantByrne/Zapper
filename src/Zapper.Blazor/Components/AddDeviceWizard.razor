@@ -232,7 +232,7 @@
         }
     }
 
-    private void ResetWizard()
+    private void ResetWizardState()
     {
         _currentStep = WizardStep.DeviceType;
         _selectedConnectionType = null;
@@ -240,15 +240,20 @@
         _isRokuDevice = false;
         _newDevice = new CreateDeviceRequest();
         _selectedIrCodeSet = "";
+    }
+
+    private void ResetWizard()
+    {
+        ResetWizardState();
         IsVisible = false;
-        IsVisibleChanged.InvokeAsync(false);
+        _ = IsVisibleChanged.InvokeAsync(false);
     }
 
     protected override void OnParametersSet()
     {
-        if (!IsVisible)
+        if (!IsVisible && _currentStep != WizardStep.DeviceType)
         {
-            ResetWizard();
+            ResetWizardState();
         }
     }
 }
