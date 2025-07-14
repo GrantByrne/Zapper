@@ -17,7 +17,7 @@ public static class ApiRoutes
         public const string DiscoverWebOS = $"{Base}/discover/webos";
         public const string PairWebOS = $"{Base}/pair/webos";
         public const string BluetoothControl = $"{Base}/bluetooth/control";
-        public const string BluetoothDiscovery = $"{Base}/bluetooth/discover";
+        public const string BluetoothDiscovery = $"{Base}/discover/bluetooth";
     }
     
     public static class Activities

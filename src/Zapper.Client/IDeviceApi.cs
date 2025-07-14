@@ -44,4 +44,10 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.SendCommand)]
     Task SendCommandAsync(int id, [Body] SendCommandRequest request, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Discover available Bluetooth devices
+    /// </summary>
+    [Get(ApiRoutes.Devices.BluetoothDiscovery)]
+    Task<IEnumerable<string>> DiscoverBluetoothDevicesAsync(CancellationToken cancellationToken = default);
 }

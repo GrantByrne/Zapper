@@ -1,5 +1,7 @@
 @using Zapper.Contracts.Devices
 @using Zapper.Contracts
+@using Zapper.Client.Abstractions
+@inject IZapperApiClient? ApiClient
 
 <MudDialog @bind-Visible="IsVisible" Options="_dialogOptions">
     <TitleContent>
@@ -7,6 +9,10 @@
             @if (_currentStep == WizardStep.DeviceType)
             {
                 <span>Add New Device - Select Type</span>
+            }
+            else if (_currentStep == WizardStep.BluetoothScan)
+            {
+                <span>Add New Device - Scan for @_selectedDeviceTypeName Devices</span>
             }
             else if (_currentStep == WizardStep.Configuration)
             {
@@ -93,6 +99,66 @@
                 </MudItem>
             </MudGrid>
         }
+        else if (_currentStep == WizardStep.BluetoothScan)
+        {
+            <MudText Class="mb-4">Scanning for available Bluetooth devices...</MudText>
+            
+            @if (_isScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for devices...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your devices are in pairing mode
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_scanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_scanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartBluetoothScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredBluetoothDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredBluetoothDevices.Count() device(s). Select the device you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredBluetoothDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedBluetoothDevice == device ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedBluetoothDevice == device ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectBluetoothDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Bluetooth" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">Bluetooth Device</MudText>
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartBluetoothScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No Bluetooth devices found. Make sure your devices are powered on and in pairing mode.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartBluetoothScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+        }
         else if (_currentStep == WizardStep.Configuration)
         {
             <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
@@ -145,6 +211,14 @@
                 Next
             </MudButton>
         }
+        else if (_currentStep == WizardStep.BluetoothScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(string.IsNullOrEmpty(_selectedBluetoothDevice))">
+                Next
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.Configuration)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
@@ -181,6 +255,7 @@
     private enum WizardStep
     {
         DeviceType,
+        BluetoothScan,
         Configuration
     }
 
@@ -190,6 +265,12 @@
     private bool _isRokuDevice = false;
     private CreateDeviceRequest _newDevice = new();
     private string _selectedIrCodeSet = "";
+    
+    // Bluetooth scanning variables
+    private bool _isScanning = false;
+    private string _scanError = "";
+    private List<string> _discoveredBluetoothDevices = new();
+    private string _selectedBluetoothDevice = "";
     
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
@@ -207,10 +288,27 @@
         return $"device-type-card {(isSelected ? "selected" : "")}";
     }
 
-    private void NextStep()
+    private async Task NextStep()
     {
         if (_currentStep == WizardStep.DeviceType && _selectedConnectionType.HasValue)
         {
+            if (_selectedConnectionType == ConnectionType.Bluetooth)
+            {
+                _currentStep = WizardStep.BluetoothScan;
+                await StartBluetoothScan();
+            }
+            else
+            {
+                _currentStep = WizardStep.Configuration;
+            }
+        }
+        else if (_currentStep == WizardStep.BluetoothScan && !string.IsNullOrEmpty(_selectedBluetoothDevice))
+        {
+            // Pre-populate device name with selected Bluetooth device
+            if (string.IsNullOrEmpty(_newDevice.Name))
+            {
+                _newDevice.Name = _selectedBluetoothDevice;
+            }
             _currentStep = WizardStep.Configuration;
         }
     }
@@ -219,8 +317,54 @@
     {
         if (_currentStep == WizardStep.Configuration)
         {
+            if (_selectedConnectionType == ConnectionType.Bluetooth)
+            {
+                _currentStep = WizardStep.BluetoothScan;
+            }
+            else
+            {
+                _currentStep = WizardStep.DeviceType;
+            }
+        }
+        else if (_currentStep == WizardStep.BluetoothScan)
+        {
             _currentStep = WizardStep.DeviceType;
         }
+    }
+
+    private async Task StartBluetoothScan()
+    {
+        if (ApiClient == null)
+        {
+            _scanError = "API client not available. Cannot scan for Bluetooth devices.";
+            return;
+        }
+
+        try
+        {
+            _isScanning = true;
+            _scanError = "";
+            _discoveredBluetoothDevices.Clear();
+            _selectedBluetoothDevice = "";
+            StateHasChanged();
+
+            var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
+            _discoveredBluetoothDevices = devices.ToList();
+        }
+        catch (Exception ex)
+        {
+            _scanError = $"Failed to scan for Bluetooth devices: {ex.Message}";
+        }
+        finally
+        {
+            _isScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectBluetoothDevice(string deviceName)
+    {
+        _selectedBluetoothDevice = deviceName;
     }
 
     private async Task FinishWizard()
@@ -240,6 +384,12 @@
         _isRokuDevice = false;
         _newDevice = new CreateDeviceRequest();
         _selectedIrCodeSet = "";
+        
+        // Reset Bluetooth scanning state
+        _isScanning = false;
+        _scanError = "";
+        _discoveredBluetoothDevices.Clear();
+        _selectedBluetoothDevice = "";
     }
 
     private void ResetWizard()

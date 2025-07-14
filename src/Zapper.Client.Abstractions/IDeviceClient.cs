@@ -36,4 +36,9 @@ public interface IDeviceClient
     /// Send a command to a device
     /// </summary>
     Task SendCommandAsync(int id, SendCommandRequest request, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Discover available Bluetooth devices
+    /// </summary>
+    Task<IEnumerable<string>> DiscoverBluetoothDevicesAsync(CancellationToken cancellationToken = default);
 }
