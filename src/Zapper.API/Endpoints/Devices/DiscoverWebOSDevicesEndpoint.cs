@@ -1,11 +1,11 @@
 using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Core.Models;
-using Zapper.Integrations;
+using Zapper.Device.Contracts;
 
 namespace Zapper.Endpoints.Devices;
 
-public class DiscoverWebOSDevicesEndpoint(IWebOSDiscovery webOSDiscovery) : Endpoint<DiscoverWebOSDevicesRequest, IEnumerable<Device>>
+public class DiscoverWebOSDevicesEndpoint(IWebOSDiscovery webOSDiscovery) : Endpoint<DiscoverWebOSDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {
 
     public override void Configure()

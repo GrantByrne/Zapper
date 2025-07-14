@@ -1,0 +1,72 @@
+@page "/"
+
+<PageTitle>Zapper - Dashboard</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Dashboard</MudText>
+<MudText Class="mb-8">Welcome to Zapper - Your Universal Remote Control</MudText>
+
+<MudGrid>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h2" Class="mb-2">@(_deviceCount)</MudText>
+                <MudText>Connected Devices</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Primary" Variant="Variant.Text" Href="/devices">Manage</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h2" Class="mb-2">@(_activityCount)</MudText>
+                <MudText>Activities</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Primary" Variant="Variant.Text" Href="/activities">View All</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h2" Class="mb-2">@(_irCodeCount)</MudText>
+                <MudText>IR Codes</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Primary" Variant="Variant.Text" Href="/ircodes">Browse</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <MudIcon Icon="@Icons.Material.Filled.SettingsRemote" Style="font-size: 3rem;" Class="mb-2" />
+                <MudText>Quick Control</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Color="Color.Primary" Variant="Variant.Text" Href="/remote">Open Remote</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudText Typo="Typo.h4" Class="mt-8 mb-4">Recent Activities</MudText>
+<MudPaper Class="pa-4">
+    <MudText Color="Color.Tertiary">No recent activities</MudText>
+</MudPaper>
+
+@code {
+    private int _deviceCount = 0;
+    private int _activityCount = 0;
+    private int _irCodeCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Load actual counts from API
+        _deviceCount = 3;
+        _activityCount = 5;
+        _irCodeCount = 150;
+    }
+}

@@ -4,7 +4,7 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class GetAllDevicesEndpoint(IDeviceService deviceService) : EndpointWithoutRequest<IEnumerable<Device>>
+public class GetAllDevicesEndpoint(IDeviceService deviceService) : EndpointWithoutRequest<IEnumerable<Zapper.Core.Models.Device>>
 {
 
     public override void Configure()

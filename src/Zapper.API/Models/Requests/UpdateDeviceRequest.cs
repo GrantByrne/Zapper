@@ -5,5 +5,5 @@ namespace Zapper.API.Models.Requests;
 public class UpdateDeviceRequest
 {
     public int Id { get; set; }
-    public Device Device { get; set; } = null!;
+    public Zapper.Core.Models.Device Device { get; set; } = null!;
 }

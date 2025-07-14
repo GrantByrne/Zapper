@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.Integrations;
+using Zapper.Device.Contracts;
 
 namespace Zapper.Endpoints.Devices;
 

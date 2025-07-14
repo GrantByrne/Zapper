@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="6.2.0" />
+    <PackageReference Include="FastEndpoints.Swagger" Version="6.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
+    <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
+    <ProjectReference Include="..\Zapper.Services\Zapper.Services.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Contracts\Zapper.Device.Contracts.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Infrared\Zapper.Device.Infrared.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Bluetooth\Zapper.Device.Bluetooth.csproj" />
+    <ProjectReference Include="..\Zapper.Device.WebOS\Zapper.Device.WebOS.csproj" />
+    <ProjectReference Include="..\Zapper.Device.USB\Zapper.Device.USB.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Network\Zapper.Device.Network.csproj" />
+    <ProjectReference Include="..\Zapper.API\Zapper.API.csproj" />
+    <ProjectReference Include="..\Zapper.Blazor\Zapper.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

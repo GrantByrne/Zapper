@@ -1,0 +1,47 @@
+﻿<MudThemeProvider Theme="@_theme" IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <MudText Typo="Typo.h4" Class="mt-8">Sorry, there's nothing at this address.</MudText>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = Colors.BlueGray.Default,
+            Secondary = Colors.BlueGray.Darken1,
+            Background = Colors.Gray.Lighten5,
+            Surface = Colors.Gray.Lighten4,
+            AppbarBackground = Colors.BlueGray.Default,
+            AppbarText = Colors.Gray.Lighten5,
+            DrawerBackground = Colors.Gray.Lighten4,
+            DrawerText = Colors.Gray.Darken3,
+            DrawerIcon = Colors.Gray.Darken3
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.BlueGray.Lighten1,
+            Secondary = Colors.BlueGray.Default,
+            Background = "#121212",
+            Surface = "#1e1e1e",
+            AppbarBackground = "#1e1e1e",
+            AppbarText = Colors.Gray.Lighten5,
+            DrawerBackground = "#1e1e1e",
+            DrawerText = Colors.Gray.Lighten5,
+            DrawerIcon = Colors.Gray.Lighten5
+        }
+    };
+}

@@ -14,7 +14,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
     <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
-    <ProjectReference Include="..\Zapper.Integrations\Zapper.Integrations.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Contracts\Zapper.Device.Contracts.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Infrared\Zapper.Device.Infrared.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Network\Zapper.Device.Network.csproj" />
+    <ProjectReference Include="..\Zapper.Device.WebOS\Zapper.Device.WebOS.csproj" />
+    <ProjectReference Include="..\Zapper.Device.USB\Zapper.Device.USB.csproj" />
   </ItemGroup>
 
 </Project>

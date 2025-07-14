@@ -22,7 +22,7 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
 
     public override async Task HandleAsync(CreateDeviceRequest req, CancellationToken ct)
     {
-        var device = new Device
+        var device = new Zapper.Core.Models.Device
         {
             Name = req.Name,
             Brand = req.Brand ?? string.Empty,

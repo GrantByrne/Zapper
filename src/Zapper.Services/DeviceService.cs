@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zapper.Data;
-using Zapper.Integrations;
+using Zapper.Device.Contracts;
+using Zapper.Device.Network;
+using Zapper.Device.WebOS;
 using Zapper.Core.Models;
 
 namespace Zapper.Services;
@@ -31,7 +33,7 @@ public class DeviceService : IDeviceService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<Device>> GetAllDevicesAsync()
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> GetAllDevicesAsync()
     {
         return await _context.Devices
             .Include(d => d.Commands)
@@ -39,14 +41,14 @@ public class DeviceService : IDeviceService
             .ToListAsync();
     }
 
-    public async Task<Device?> GetDeviceAsync(int id)
+    public async Task<Zapper.Core.Models.Device?> GetDeviceAsync(int id)
     {
         return await _context.Devices
             .Include(d => d.Commands)
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task<Device> CreateDeviceAsync(Device device)
+    public async Task<Zapper.Core.Models.Device> CreateDeviceAsync(Zapper.Core.Models.Device device)
     {
         device.CreatedAt = DateTime.UtcNow;
         device.LastSeen = DateTime.UtcNow;
@@ -58,7 +60,7 @@ public class DeviceService : IDeviceService
         return device;
     }
 
-    public async Task<Device?> UpdateDeviceAsync(int id, Device device)
+    public async Task<Zapper.Core.Models.Device?> UpdateDeviceAsync(int id, Zapper.Core.Models.Device device)
     {
         var existingDevice = await _context.Devices.FindAsync(id);
         if (existingDevice == null)
@@ -182,18 +184,18 @@ public class DeviceService : IDeviceService
         }
     }
 
-    public async Task<IEnumerable<Device>> DiscoverDevicesAsync(string deviceType, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(string deviceType, CancellationToken cancellationToken = default)
     {
         try
         {
             var discoveryResult = await _networkController.DiscoverDevicesAsync(deviceType, TimeSpan.FromSeconds(10), cancellationToken);
             
             if (string.IsNullOrEmpty(discoveryResult))
-                return Enumerable.Empty<Device>();
+                return Enumerable.Empty<Zapper.Core.Models.Device>();
 
             // Parse discovery results and create device objects
             // This is a simplified implementation
-            var devices = new List<Device>();
+            var devices = new List<Zapper.Core.Models.Device>();
             
             _logger.LogInformation("Device discovery completed for type: {DeviceType}", deviceType);
             return devices;
@@ -201,11 +203,11 @@ public class DeviceService : IDeviceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to discover devices of type {DeviceType}", deviceType);
-            return Enumerable.Empty<Device>();
+            return Enumerable.Empty<Zapper.Core.Models.Device>();
         }
     }
 
-    private async Task<bool> ExecuteCommandAsync(Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         _logger.LogDebug("Executing command {CommandName} on device {DeviceName}", command.Name, device.Name);
 
@@ -237,7 +239,7 @@ public class DeviceService : IDeviceService
         return true;
     }
 
-    private async Task<bool> ExecuteNetworkCommandAsync(Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteNetworkCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(device.IpAddress) || !device.Port.HasValue)
         {
@@ -253,7 +255,7 @@ public class DeviceService : IDeviceService
             cancellationToken);
     }
 
-    private async Task<bool> ExecuteWebSocketCommandAsync(Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteWebSocketCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -265,7 +267,7 @@ public class DeviceService : IDeviceService
         return await _networkController.SendWebSocketCommandAsync(wsUrl, command.NetworkPayload ?? command.Name, cancellationToken);
     }
 
-    private async Task<bool> TestNetworkDeviceAsync(Device device)
+    private async Task<bool> TestNetworkDeviceAsync(Zapper.Core.Models.Device device)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;

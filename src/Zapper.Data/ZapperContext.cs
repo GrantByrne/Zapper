@@ -3,7 +3,7 @@ using Zapper.Core.Models;
 
 namespace Zapper.Data;
 
-public class ZapperContext : DbContext
+public class  ZapperContext : DbContext
 {
     public ZapperContext(DbContextOptions<ZapperContext> options) : base(options)
     {

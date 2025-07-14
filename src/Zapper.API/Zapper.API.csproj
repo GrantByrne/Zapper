@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
     <ProjectReference Include="..\Zapper.Services\Zapper.Services.csproj" />
     <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Contracts\Zapper.Device.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
