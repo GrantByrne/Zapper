@@ -8,6 +8,7 @@ using Zapper.Device.Network;
 using Zapper.Device.WebOS;
 using Zapper.Device.Roku;
 using Zapper.Device.USB;
+using Zapper.Device.Bluetooth;
 using Zapper.Endpoints.Devices;
 using Zapper.Services;
 
@@ -59,11 +60,17 @@ builder.Services.AddTransient<IWebOsDeviceController>(provider =>
     return new WebOsHardwareController(client, logger);
 });
 
+// Register HttpClient for network operations
+builder.Services.AddHttpClient();
+
 // Register network device controller
 builder.Services.AddTransient<INetworkDeviceController, NetworkDeviceController>();
 
 // Register Roku services
 builder.Services.AddRokuServices();
+
+// Register Bluetooth services
+builder.Services.AddBluetoothServices();
 
 // Register protocol implementations
 builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();

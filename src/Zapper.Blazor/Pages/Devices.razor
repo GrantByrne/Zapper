@@ -1,0 +1,209 @@
+@page "/devices"
+@using Zapper.Client.Abstractions
+@using Zapper.Contracts.Devices
+@using Zapper.Contracts
+@inject IZapperApiClient ApiClient
+
+<PageTitle>Zapper - Devices</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Devices</MudText>
+<MudText Class="mb-4">Manage your connected devices</MudText>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+}
+
+<MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add Device" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
+
+@if (_isLoading)
+{
+    <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="my-8" />
+    <MudText Class="text-center">Loading devices...</MudText>
+}
+else
+{
+    <MudGrid>
+        @foreach (var device in _devices)
+        {
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard>
+                <MudCardContent>
+                    <div class="d-flex align-center mb-2">
+                        <MudIcon Icon="@GetDeviceIcon(device.Type)" Class="mr-2" />
+                        <MudText Typo="Typo.h6">@device.Name</MudText>
+                    </div>
+                    <MudText Class="mb-1">Type: @device.Type</MudText>
+                    <MudText Class="mb-1">Connection: @device.ConnectionType</MudText>
+                    <MudChip T="string" Color="@(device.IsOnline ? Color.Success : Color.Error)" Size="Size.Small">
+                        @(device.IsOnline ? "Online" : "Offline")
+                    </MudChip>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Color="Color.Primary" Variant="Variant.Text" OnClick="@(() => TestDevice(device))">
+                        Test
+                    </MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="@(() => EditDevice(device))">
+                        Edit
+                    </MudButton>
+                    <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="@(() => DeleteDevice(device))">
+                        Delete
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        }
+    </MudGrid>
+
+    @if (!_devices.Any())
+    {
+        <MudPaper Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.DevicesOther" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
+            <MudText Typo="Typo.h5" Class="mb-2">No devices configured</MudText>
+            <MudText Class="mb-4">Add your first device to get started</MudText>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => _showAddDialog = true)">
+                Add Device
+            </MudButton>
+        </MudPaper>
+    }
+}
+
+<MudDialog @bind-Visible="_showAddDialog" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add New Device</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
+        <MudTextField @bind-Value="_newDevice.Brand" Label="Brand" Class="mb-4" />
+        <MudTextField @bind-Value="_newDevice.Model" Label="Model" Class="mb-4" />
+        <MudSelect T="DeviceType" @bind-Value="_newDevice.Type" Label="Device Type" Required="true" Class="mb-4">
+            <MudSelectItem Value="DeviceType.Television">Television</MudSelectItem>
+            <MudSelectItem Value="DeviceType.SmartTv">Smart TV</MudSelectItem>
+            <MudSelectItem Value="DeviceType.SoundBar">Sound Bar</MudSelectItem>
+            <MudSelectItem Value="DeviceType.StreamingDevice">Streaming Device</MudSelectItem>
+            <MudSelectItem Value="DeviceType.AppleTv">Apple TV</MudSelectItem>
+            <MudSelectItem Value="DeviceType.CableBox">Cable Box</MudSelectItem>
+            <MudSelectItem Value="DeviceType.GameConsole">Game Console</MudSelectItem>
+            <MudSelectItem Value="DeviceType.Receiver">Receiver</MudSelectItem>
+            <MudSelectItem Value="DeviceType.DvdPlayer">DVD Player</MudSelectItem>
+            <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
+        </MudSelect>
+        <MudSelect T="ConnectionType" @bind-Value="_newDevice.ConnectionType" Label="Connection Type" Required="true" Class="mb-4">
+            <MudSelectItem Value="ConnectionType.InfraredIr">Infrared (IR)</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.NetworkTcp">Network (TCP)</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.NetworkWebSocket">Network (WebSocket)</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.NetworkHttp">Network (HTTP)</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.Bluetooth">Bluetooth</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.Usb">USB</MudSelectItem>
+            <MudSelectItem Value="ConnectionType.WebOs">WebOS</MudSelectItem>
+        </MudSelect>
+        <MudTextField @bind-Value="_newDevice.IpAddress" Label="IP Address (if network)" Class="mb-4" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showAddDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddDevice">Add Device</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<DeviceDto> _devices = new();
+    private bool _showAddDialog = false;
+    private CreateDeviceRequest _newDevice = new();
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDevices();
+    }
+
+    private async Task LoadDevices()
+    {
+        try
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            var devices = await ApiClient.Devices.GetAllDevicesAsync();
+            _devices = devices.ToList();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to load devices: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetDeviceIcon(DeviceType deviceType)
+    {
+        return deviceType switch
+        {
+            DeviceType.Television => Icons.Material.Filled.Tv,
+            DeviceType.SmartTv => Icons.Material.Filled.Tv,
+            DeviceType.SoundBar => Icons.Material.Filled.Speaker,
+            DeviceType.StreamingDevice => Icons.Material.Filled.Cast,
+            DeviceType.AppleTv => Icons.Material.Filled.Cast,
+            DeviceType.CableBox => Icons.Material.Filled.Tv,
+            DeviceType.GameConsole => Icons.Material.Filled.SportsEsports,
+            DeviceType.Receiver => Icons.Material.Filled.Speaker,
+            DeviceType.DvdPlayer => Icons.Material.Filled.VideoLibrary,
+            DeviceType.BluRayPlayer => Icons.Material.Filled.VideoLibrary,
+            _ => Icons.Material.Filled.DevicesOther
+        };
+    }
+
+    private async Task AddDevice()
+    {
+        if (!string.IsNullOrWhiteSpace(_newDevice.Name))
+        {
+            try
+            {
+                var createdDevice = await ApiClient.Devices.CreateDeviceAsync(_newDevice);
+                _devices.Add(createdDevice);
+                
+                _newDevice = new CreateDeviceRequest();
+                _showAddDialog = false;
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = $"Failed to create device: {ex.Message}";
+            }
+        }
+    }
+
+    private async Task TestDevice(DeviceDto device)
+    {
+        try
+        {
+            // Send a test command to the device
+            await ApiClient.Devices.SendCommandAsync(device.Id, new SendCommandRequest { Command = "test" });
+            // Note: In a real implementation, you'd want to update the device status based on the response
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to test device: {ex.Message}";
+        }
+    }
+
+    private void EditDevice(DeviceDto device)
+    {
+        // TODO: Implement device editing dialog
+    }
+
+    private async Task DeleteDevice(DeviceDto device)
+    {
+        try
+        {
+            await ApiClient.Devices.DeleteDeviceAsync(device.Id);
+            _devices.Remove(device);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to delete device: {ex.Message}";
+        }
+    }
+}
