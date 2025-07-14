@@ -10,5 +10,6 @@ public enum DeviceType
     SoundBar,
     DVDPlayer,
     BluRayPlayer,
-    SmartTV
+    SmartTV,
+    AppleTV
 }

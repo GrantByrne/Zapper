@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
         // Register device-specific controllers
         services.AddSingleton<IBluetoothDeviceController, AndroidTVBluetoothController>();
         services.AddSingleton<AndroidTVBluetoothController>();
+        services.AddSingleton<IBluetoothDeviceController, AppleTVBluetoothController>();
+        services.AddSingleton<AppleTVBluetoothController>();
         
         return services;
     }

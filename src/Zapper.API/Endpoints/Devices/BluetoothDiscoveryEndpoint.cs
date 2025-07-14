@@ -3,7 +3,9 @@ using Zapper.Device.Bluetooth;
 
 namespace Zapper.Endpoints.Devices;
 
-public class BluetoothDiscoveryEndpoint(IBluetoothDeviceController bluetoothController) : EndpointWithoutRequest<IEnumerable<string>>
+public class BluetoothDiscoveryEndpoint(
+    AndroidTVBluetoothController androidTvController,
+    AppleTVBluetoothController appleTvController) : EndpointWithoutRequest<IEnumerable<string>>
 {
     public override void Configure()
     {
@@ -12,13 +14,16 @@ public class BluetoothDiscoveryEndpoint(IBluetoothDeviceController bluetoothCont
         Summary(s =>
         {
             s.Summary = "Discover Bluetooth devices";
-            s.Description = "Get a list of paired Bluetooth devices that can be used for remote control";
+            s.Description = "Get a list of paired Bluetooth devices that can be used for remote control (Android TV and Apple TV)";
         });
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var devices = await bluetoothController.DiscoverPairedDevicesAsync(ct);
-        await SendOkAsync(devices, ct);
+        var androidDevices = await androidTvController.DiscoverPairedDevicesAsync(ct);
+        var appleDevices = await appleTvController.DiscoverPairedDevicesAsync(ct);
+        
+        var allDevices = androidDevices.Concat(appleDevices).Distinct();
+        await SendOkAsync(allDevices, ct);
     }
 }
