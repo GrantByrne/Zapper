@@ -19,8 +19,30 @@
 
 @if (_isLoading)
 {
-    <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="my-8" />
-    <MudText Class="text-center">Loading devices...</MudText>
+    <div class="d-flex justify-center align-center" style="min-height: 400px;">
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Loading devices...</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                @if (_loadingStep == "initializing")
+                {
+                    <span>Initializing...</span>
+                }
+                else if (_loadingStep == "connecting")
+                {
+                    <span>Connecting to API...</span>
+                }
+                else if (_loadingStep == "fetching")
+                {
+                    <span>Fetching device data...</span>
+                }
+                else
+                {
+                    <span>Please wait...</span>
+                }
+            </MudText>
+        </div>
+    </div>
 }
 else
 {
@@ -76,6 +98,7 @@ else
     private bool _showAddDialog = false;
     private bool _isLoading = true;
     private string? _errorMessage;
+    private string _loadingStep = "initializing";
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,12 +111,24 @@ else
         {
             _isLoading = true;
             _errorMessage = null;
+            _loadingStep = "initializing";
+            StateHasChanged();
+            
+            // Small delay to show initializing step
+            await Task.Delay(200);
             
             if (ApiClient == null)
             {
                 _errorMessage = "API client not configured. Please check the application setup.";
                 return;
             }
+            
+            _loadingStep = "connecting";
+            StateHasChanged();
+            await Task.Delay(300);
+            
+            _loadingStep = "fetching";
+            StateHasChanged();
             
             // Add timeout to prevent hanging
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
@@ -115,6 +150,7 @@ else
         finally
         {
             _isLoading = false;
+            _loadingStep = "initializing";
             StateHasChanged();
         }
     }
