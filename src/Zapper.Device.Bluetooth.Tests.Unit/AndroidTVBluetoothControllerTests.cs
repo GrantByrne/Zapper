@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Zapper.Core.Models;

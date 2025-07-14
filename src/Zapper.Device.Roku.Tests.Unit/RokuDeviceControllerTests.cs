@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -38,7 +39,7 @@ public class RokuDeviceControllerTests
         var result = await _controller.SendCommandAsync(device, command);
 
         // Assert
-        Assert.True(result);
+        result.Should().BeTrue();
         await _mockNetworkController.Received(1).SendHttpCommandAsync("http://192.168.1.100:8060", "/keypress/Power", "POST", null, null, Arg.Any<CancellationToken>());
     }
 
@@ -59,7 +60,7 @@ public class RokuDeviceControllerTests
         var result = await _controller.TestConnectionAsync(device);
 
         // Assert
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -77,7 +78,7 @@ public class RokuDeviceControllerTests
         var result = await _controller.LaunchAppAsync(ipAddress, appId);
 
         // Assert
-        Assert.True(result);
+        result.Should().BeTrue();
         await _mockNetworkController.Received(1).SendHttpCommandAsync("http://192.168.1.100:8060", "/launch/12", "POST", null, null, Arg.Any<CancellationToken>());
     }
 }

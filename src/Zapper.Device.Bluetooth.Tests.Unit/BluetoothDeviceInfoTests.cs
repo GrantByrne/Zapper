@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+using FluentAssertions;
 
 namespace Zapper.Device.Bluetooth.Tests.Unit;
 

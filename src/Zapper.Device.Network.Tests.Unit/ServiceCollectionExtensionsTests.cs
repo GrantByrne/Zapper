@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Zapper.Device.Network.Tests.Unit;
