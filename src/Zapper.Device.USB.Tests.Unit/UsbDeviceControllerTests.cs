@@ -1,22 +1,22 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.USB.Tests.Unit;
 
 public class UsbDeviceControllerTests
 {
-    private readonly Mock<IUsbRemoteHandler> _mockRemoteHandler;
+    private readonly IUsbRemoteHandler _mockRemoteHandler;
     private readonly ILogger<UsbDeviceController> _logger;
     private readonly UsbDeviceController _controller;
 
     public UsbDeviceControllerTests()
     {
-        _mockRemoteHandler = new Mock<IUsbRemoteHandler>();
+        _mockRemoteHandler = Substitute.For<IUsbRemoteHandler>();
         _logger = NullLogger<UsbDeviceController>.Instance;
-        _controller = new UsbDeviceController(_mockRemoteHandler.Object, _logger);
+        _controller = new UsbDeviceController(_mockRemoteHandler, _logger);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class UsbDeviceControllerTests
             MacAddress = "0001:0002:remote1"
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0001:0002:remote1", "USB:0003:0004:remote2"]);
 
         var result = await _controller.TestConnectionAsync(device);
@@ -97,7 +97,7 @@ public class UsbDeviceControllerTests
             MacAddress = "0001:0002:remote1"
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0003:0004:remote2"]);
 
         var result = await _controller.TestConnectionAsync(device);
@@ -115,7 +115,7 @@ public class UsbDeviceControllerTests
             ConnectionType = ConnectionType.USB
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:046D:C52B:LogitechRemote"]);
 
         var result = await _controller.TestConnectionAsync(device);
@@ -150,9 +150,9 @@ public class UsbDeviceControllerTests
             MacAddress = "0001:0002:remote1"
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0001:0002:remote1", "USB:0003:0004:remote2"]);
-        _mockRemoteHandler.Setup(h => h.IsListening).Returns(true);
+        _mockRemoteHandler.IsListening.Returns(true);
 
         var result = await _controller.GetStatusAsync(device);
 
@@ -175,7 +175,7 @@ public class UsbDeviceControllerTests
             MacAddress = "0001:0002:remote1"
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0003:0004:remote2"]);
 
         var result = await _controller.GetStatusAsync(device);
@@ -215,7 +215,7 @@ public class UsbDeviceControllerTests
             MacAddress = "0001:0002:remote1"
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns([]);
 
         var result = await _controller.TestConnectionAsync(device);
@@ -234,7 +234,7 @@ public class UsbDeviceControllerTests
             MacAddress = null
         };
 
-        _mockRemoteHandler.Setup(h => h.GetConnectedRemotes())
+        _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:046D:C52B:LogitechRemote"]);
 
         var result = await _controller.TestConnectionAsync(device);

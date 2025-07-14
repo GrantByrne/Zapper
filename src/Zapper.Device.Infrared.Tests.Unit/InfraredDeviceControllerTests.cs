@@ -1,22 +1,22 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
+using NSubstitute;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.Infrared.Tests.Unit;
 
 public class InfraredDeviceControllerTests
 {
-    private readonly Mock<IInfraredTransmitter> _mockTransmitter;
+    private readonly IInfraredTransmitter _mockTransmitter;
     private readonly ILogger<InfraredDeviceController> _logger;
     private readonly InfraredDeviceController _controller;
 
     public InfraredDeviceControllerTests()
     {
-        _mockTransmitter = new Mock<IInfraredTransmitter>();
+        _mockTransmitter = Substitute.For<IInfraredTransmitter>();
         _logger = NullLogger<InfraredDeviceController>.Instance;
-        _controller = new InfraredDeviceController(_mockTransmitter.Object, _logger);
+        _controller = new InfraredDeviceController(_mockTransmitter, _logger);
     }
 
     [Fact]
@@ -87,13 +87,13 @@ public class InfraredDeviceControllerTests
             DelayMs = 0
         };
 
-        _mockTransmitter.Setup(t => t.TransmitAsync(command.IrCode, 1, It.IsAny<CancellationToken>()))
+        _mockTransmitter.TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var result = await _controller.SendCommandAsync(device, command);
 
         result.Should().BeTrue();
-        _mockTransmitter.Verify(t => t.TransmitAsync(command.IrCode, 1, It.IsAny<CancellationToken>()), Times.Once);
+        await _mockTransmitter.Received(1).TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>());
         // Logger assertions removed - using NullLogger for simplicity
     }
 
@@ -114,13 +114,13 @@ public class InfraredDeviceControllerTests
             DelayMs = 0
         };
 
-        _mockTransmitter.Setup(t => t.TransmitAsync(command.IrCode, 3, It.IsAny<CancellationToken>()))
+        _mockTransmitter.TransmitAsync(command.IrCode, 3, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var result = await _controller.SendCommandAsync(device, command);
 
         result.Should().BeTrue();
-        _mockTransmitter.Verify(t => t.TransmitAsync(command.IrCode, 3, It.IsAny<CancellationToken>()), Times.Once);
+        await _mockTransmitter.Received(1).TransmitAsync(command.IrCode, 3, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class InfraredDeviceControllerTests
             DelayMs = 100
         };
 
-        _mockTransmitter.Setup(t => t.TransmitAsync(command.IrCode, 1, It.IsAny<CancellationToken>()))
+        _mockTransmitter.TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var startTime = DateTime.UtcNow;
@@ -166,8 +166,8 @@ public class InfraredDeviceControllerTests
             IrCode = "9000 4500 560 560"
         };
 
-        _mockTransmitter.Setup(t => t.TransmitAsync(command.IrCode, It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                       .ThrowsAsync(new InvalidOperationException("Transmitter error"));
+        _mockTransmitter.TransmitAsync(command.IrCode, Arg.Any<int>(), Arg.Any<CancellationToken>())
+                       .Returns(Task.FromException(new InvalidOperationException("Transmitter error")));
 
         var result = await _controller.SendCommandAsync(device, command);
 
@@ -185,7 +185,7 @@ public class InfraredDeviceControllerTests
             ConnectionType = ConnectionType.Bluetooth
         };
 
-        _mockTransmitter.Setup(t => t.IsAvailable).Returns(true);
+        _mockTransmitter.IsAvailable.Returns(true);
 
         var result = await _controller.TestConnectionAsync(device);
 
@@ -202,7 +202,7 @@ public class InfraredDeviceControllerTests
             ConnectionType = ConnectionType.InfraredIR
         };
 
-        _mockTransmitter.Setup(t => t.IsAvailable).Returns(true);
+        _mockTransmitter.IsAvailable.Returns(true);
 
         var result = await _controller.TestConnectionAsync(device);
 
@@ -219,7 +219,7 @@ public class InfraredDeviceControllerTests
             ConnectionType = ConnectionType.InfraredIR
         };
 
-        _mockTransmitter.Setup(t => t.IsAvailable).Returns(false);
+        _mockTransmitter.IsAvailable.Returns(false);
 
         var result = await _controller.TestConnectionAsync(device);
 
@@ -236,7 +236,7 @@ public class InfraredDeviceControllerTests
             ConnectionType = ConnectionType.InfraredIR
         };
 
-        _mockTransmitter.Setup(t => t.IsAvailable).Returns(true);
+        _mockTransmitter.IsAvailable.Returns(true);
 
         var result = await _controller.GetStatusAsync(device);
 
@@ -254,7 +254,7 @@ public class InfraredDeviceControllerTests
             ConnectionType = ConnectionType.InfraredIR
         };
 
-        _mockTransmitter.Setup(t => t.IsAvailable).Returns(false);
+        _mockTransmitter.IsAvailable.Returns(false);
 
         var result = await _controller.GetStatusAsync(device);
 

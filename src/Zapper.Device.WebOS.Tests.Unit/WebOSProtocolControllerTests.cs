@@ -1,6 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Zapper.Core.Models;
 
@@ -8,17 +8,17 @@ namespace Zapper.Device.WebOS.Tests.Unit;
 
 public class WebOSProtocolControllerTests
 {
-    private readonly Mock<IWebOSDeviceController> _mockWebOSController;
-    private readonly Mock<ILogger<WebOSProtocolController>> _mockLogger;
+    private readonly IWebOSDeviceController _mockWebOSController;
+    private readonly ILogger<WebOSProtocolController> _mockLogger;
     private readonly WebOSProtocolController _controller;
     private readonly Zapper.Core.Models.Device _webOSDevice;
     private readonly DeviceCommand _testCommand;
 
     public WebOSProtocolControllerTests()
     {
-        _mockWebOSController = new Mock<IWebOSDeviceController>();
-        _mockLogger = new Mock<ILogger<WebOSProtocolController>>();
-        _controller = new WebOSProtocolController(_mockWebOSController.Object, _mockLogger.Object);
+        _mockWebOSController = Substitute.For<IWebOSDeviceController>();
+        _mockLogger = Substitute.For<ILogger<WebOSProtocolController>>();
+        _controller = new WebOSProtocolController(_mockWebOSController, _mockLogger);
 
         _webOSDevice = new Zapper.Core.Models.Device
         {
@@ -41,15 +41,15 @@ public class WebOSProtocolControllerTests
     {
         // Arrange
         _mockWebOSController
-            .Setup(x => x.SendCommandAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<DeviceCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         var result = await _controller.SendCommandAsync(_webOSDevice, _testCommand);
 
         // Assert
         result.Should().BeTrue();
-        _mockWebOSController.Verify(x => x.SendCommandAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<DeviceCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+        await _mockWebOSController.Received(1).SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class WebOSProtocolControllerTests
 
         // Assert
         result.Should().BeFalse();
-        _mockWebOSController.Verify(x => x.SendCommandAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<DeviceCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        await _mockWebOSController.DidNotReceive().SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -75,15 +75,15 @@ public class WebOSProtocolControllerTests
     {
         // Arrange
         _mockWebOSController
-            .Setup(x => x.TestConnectionAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .TestConnectionAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         var result = await _controller.TestConnectionAsync(_webOSDevice);
 
         // Assert
         result.Should().BeTrue();
-        _mockWebOSController.Verify(x => x.TestConnectionAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<CancellationToken>()), Times.Once);
+        await _mockWebOSController.Received(1).TestConnectionAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<CancellationToken>());
     }
 
     [Theory]

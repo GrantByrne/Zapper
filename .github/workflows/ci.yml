@@ -42,6 +42,12 @@ jobs:
     - name: Run tests
       run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
       
+    - name: Install dotnet format
+      run: dotnet tool install -g dotnet-format
+      
+    - name: Run linter (dotnet format)
+      run: dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
+      
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       if: success()

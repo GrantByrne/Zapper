@@ -1,19 +1,19 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 
 namespace Zapper.Device.WebOS.Tests.Unit;
 
 public class WebOSClientTests
 {
-    private readonly Mock<ILogger<WebOSClient>> _mockLogger;
+    private readonly ILogger<WebOSClient> _mockLogger;
     private readonly WebOSClient _client;
 
     public WebOSClientTests()
     {
-        _mockLogger = new Mock<ILogger<WebOSClient>>();
-        _client = new WebOSClient(_mockLogger.Object);
+        _mockLogger = Substitute.For<ILogger<WebOSClient>>();
+        _client = new WebOSClient(_mockLogger);
     }
 
     [Fact]

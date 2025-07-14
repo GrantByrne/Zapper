@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Xunit;
 using Zapper.Core.Models;
 using Zapper.Device.Network;
@@ -8,15 +8,15 @@ namespace Zapper.Device.Roku.Tests.Unit;
 
 public class RokuDeviceControllerTests
 {
-    private readonly Mock<INetworkDeviceController> _mockNetworkController;
-    private readonly Mock<ILogger<RokuDeviceController>> _mockLogger;
+    private readonly INetworkDeviceController _mockNetworkController;
+    private readonly ILogger<RokuDeviceController> _mockLogger;
     private readonly RokuDeviceController _controller;
 
     public RokuDeviceControllerTests()
     {
-        _mockNetworkController = new Mock<INetworkDeviceController>();
-        _mockLogger = new Mock<ILogger<RokuDeviceController>>();
-        _controller = new RokuDeviceController(_mockNetworkController.Object, _mockLogger.Object);
+        _mockNetworkController = Substitute.For<INetworkDeviceController>();
+        _mockLogger = Substitute.For<ILogger<RokuDeviceController>>();
+        _controller = new RokuDeviceController(_mockNetworkController, _mockLogger);
     }
 
     [Fact]
@@ -31,15 +31,15 @@ public class RokuDeviceControllerTests
         var command = new DeviceCommand { Type = CommandType.Power };
 
         _mockNetworkController
-            .Setup(x => x.SendHttpCommandAsync("http://192.168.1.100:8060", "/keypress/Power", "POST", null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .SendHttpCommandAsync("http://192.168.1.100:8060", "/keypress/Power", "POST", null, null, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         var result = await _controller.SendCommandAsync(device, command);
 
         // Assert
         Assert.True(result);
-        _mockNetworkController.Verify(x => x.SendHttpCommandAsync("http://192.168.1.100:8060", "/keypress/Power", "POST", null, null, It.IsAny<CancellationToken>()), Times.Once);
+        await _mockNetworkController.Received(1).SendHttpCommandAsync("http://192.168.1.100:8060", "/keypress/Power", "POST", null, null, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -52,8 +52,8 @@ public class RokuDeviceControllerTests
         };
 
         _mockNetworkController
-            .Setup(x => x.SendHttpCommandAsync("http://192.168.1.100:8060", "/", "GET", null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .SendHttpCommandAsync("http://192.168.1.100:8060", "/", "GET", null, null, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         var result = await _controller.TestConnectionAsync(device);
@@ -70,14 +70,14 @@ public class RokuDeviceControllerTests
         var appId = "12"; // Netflix
 
         _mockNetworkController
-            .Setup(x => x.SendHttpCommandAsync("http://192.168.1.100:8060", "/launch/12", "POST", null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .SendHttpCommandAsync("http://192.168.1.100:8060", "/launch/12", "POST", null, null, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         // Act
         var result = await _controller.LaunchAppAsync(ipAddress, appId);
 
         // Assert
         Assert.True(result);
-        _mockNetworkController.Verify(x => x.SendHttpCommandAsync("http://192.168.1.100:8060", "/launch/12", "POST", null, null, It.IsAny<CancellationToken>()), Times.Once);
+        await _mockNetworkController.Received(1).SendHttpCommandAsync("http://192.168.1.100:8060", "/launch/12", "POST", null, null, Arg.Any<CancellationToken>());
     }
 }
