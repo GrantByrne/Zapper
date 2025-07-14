@@ -3,7 +3,7 @@
 @using Zapper.Client.Abstractions
 @using Zapper.Contracts.Devices
 @using Zapper.Contracts
-@inject IZapperApiClient ApiClient
+@inject IZapperApiClient? ApiClient
 
 <PageTitle>Zapper - Devices</PageTitle>
 
@@ -88,8 +88,25 @@ else
         {
             _isLoading = true;
             _errorMessage = null;
+            
+            if (ApiClient == null)
+            {
+                _errorMessage = "API client not configured. Please check the application setup.";
+                return;
+            }
+            
+            // Add timeout to prevent hanging
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             var devices = await ApiClient.Devices.GetAllDevicesAsync();
             _devices = devices.ToList();
+        }
+        catch (TaskCanceledException)
+        {
+            _errorMessage = "Request timed out. Please check if the API server is running.";
+        }
+        catch (HttpRequestException ex)
+        {
+            _errorMessage = $"Network error: {ex.Message}. The API server may not be running.";
         }
         catch (Exception ex)
         {
@@ -98,6 +115,7 @@ else
         finally
         {
             _isLoading = false;
+            StateHasChanged();
         }
     }
 
@@ -121,7 +139,7 @@ else
 
     private async Task AddDevice(CreateDeviceRequest newDevice)
     {
-        if (!string.IsNullOrWhiteSpace(newDevice.Name))
+        if (!string.IsNullOrWhiteSpace(newDevice.Name) && ApiClient != null)
         {
             try
             {
@@ -135,10 +153,20 @@ else
                 _errorMessage = $"Failed to create device: {ex.Message}";
             }
         }
+        else if (ApiClient == null)
+        {
+            _errorMessage = "API client not available";
+        }
     }
 
     private async Task TestDevice(DeviceDto device)
     {
+        if (ApiClient == null)
+        {
+            _errorMessage = "API client not available";
+            return;
+        }
+
         try
         {
             // Send a test command to the device
@@ -158,6 +186,12 @@ else
 
     private async Task DeleteDevice(DeviceDto device)
     {
+        if (ApiClient == null)
+        {
+            _errorMessage = "API client not available";
+            return;
+        }
+
         try
         {
             await ApiClient.Devices.DeleteDeviceAsync(device.Id);
