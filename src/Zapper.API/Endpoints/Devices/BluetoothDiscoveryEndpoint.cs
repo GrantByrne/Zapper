@@ -3,10 +3,8 @@ using Zapper.Device.Bluetooth;
 
 namespace Zapper.Endpoints.Devices;
 
-public class BluetoothDiscoveryEndpoint : EndpointWithoutRequest<IEnumerable<string>>
+public class BluetoothDiscoveryEndpoint(IBluetoothDeviceController bluetoothController) : EndpointWithoutRequest<IEnumerable<string>>
 {
-    public IBluetoothDeviceController BluetoothController { get; set; } = null!;
-
     public override void Configure()
     {
         Get("/api/devices/discover/bluetooth");
@@ -20,7 +18,7 @@ public class BluetoothDiscoveryEndpoint : EndpointWithoutRequest<IEnumerable<str
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var devices = await BluetoothController.DiscoverPairedDevicesAsync(ct);
+        var devices = await bluetoothController.DiscoverPairedDevicesAsync(ct);
         await SendOkAsync(devices, ct);
     }
 }
