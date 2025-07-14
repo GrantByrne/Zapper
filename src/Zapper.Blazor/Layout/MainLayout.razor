@@ -1,7 +1,12 @@
 @inherits LayoutComponentBase
 
 <MudLayout>
-    <MudMainContent Class="pb-16">
+    <MudAppBar Elevation="1" Class="top-navbar">
+        <MudSpacer />
+        <MudText Typo="Typo.h5" Class="navbar-title">Zapper</MudText>
+        <MudSpacer />
+    </MudAppBar>
+    <MudMainContent Class="pb-16 pt-16">
         <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
             @Body
         </MudContainer>

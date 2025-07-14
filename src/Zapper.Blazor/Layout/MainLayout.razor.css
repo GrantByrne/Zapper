@@ -1,3 +1,13 @@
+.top-navbar {
+    background: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-title {
+    color: white;
+    font-weight: 600;
+}
+
 .bottom-nav {
     position: fixed;
     bottom: 0;

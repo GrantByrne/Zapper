@@ -1,0 +1,254 @@
+@using Zapper.Contracts.Devices
+@using Zapper.Contracts
+
+<MudDialog @bind-Visible="IsVisible" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @if (_currentStep == WizardStep.DeviceType)
+            {
+                <span>Add New Device - Select Type</span>
+            }
+            else if (_currentStep == WizardStep.Configuration)
+            {
+                <span>Add New Device - Configure @_selectedDeviceTypeName</span>
+            }
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_currentStep == WizardStep.DeviceType)
+        {
+            <MudText Class="mb-4">Choose the type of device you want to add:</MudText>
+            <MudGrid>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.Bluetooth, false)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.Bluetooth, "Bluetooth"))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Bluetooth" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Bluetooth</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Apple TV, Android TV, Controllers
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.InfraredIr, false)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.InfraredIr, "Infrared"))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Sensors" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Infrared</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                TVs, Sound Bars, Cable Boxes
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.NetworkTcp, false)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.NetworkTcp, "Network"))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Network</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Smart TVs, Receivers, IP Devices
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.NetworkWebSocket, true)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.NetworkWebSocket, "Roku", true))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Cast" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Roku</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Roku Streaming Devices
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.Usb, false)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.Usb, "USB"))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Usb" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">USB</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                USB Remote Controls
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="@GetCardClass(ConnectionType.WebOs, false)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.WebOs, "WebOS"))">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Tv" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">WebOS</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                LG Smart TVs
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        }
+        else if (_currentStep == WizardStep.Configuration)
+        {
+            <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
+            <MudTextField @bind-Value="_newDevice.Brand" Label="Brand" Class="mb-4" />
+            <MudTextField @bind-Value="_newDevice.Model" Label="Model" Class="mb-4" />
+            
+            <MudSelect T="DeviceType" @bind-Value="_newDevice.Type" Label="Device Type" Required="true" Class="mb-4">
+                <MudSelectItem Value="DeviceType.Television">Television</MudSelectItem>
+                <MudSelectItem Value="DeviceType.SmartTv">Smart TV</MudSelectItem>
+                <MudSelectItem Value="DeviceType.SoundBar">Sound Bar</MudSelectItem>
+                <MudSelectItem Value="DeviceType.StreamingDevice">Streaming Device</MudSelectItem>
+                <MudSelectItem Value="DeviceType.AppleTv">Apple TV</MudSelectItem>
+                <MudSelectItem Value="DeviceType.CableBox">Cable Box</MudSelectItem>
+                <MudSelectItem Value="DeviceType.GameConsole">Game Console</MudSelectItem>
+                <MudSelectItem Value="DeviceType.Receiver">Receiver</MudSelectItem>
+                <MudSelectItem Value="DeviceType.DvdPlayer">DVD Player</MudSelectItem>
+                <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
+            </MudSelect>
+
+            @if (_selectedConnectionType == ConnectionType.NetworkTcp || _selectedConnectionType == ConnectionType.NetworkWebSocket || _selectedConnectionType == ConnectionType.WebOs)
+            {
+                <MudTextField @bind-Value="_newDevice.IpAddress" Label="IP Address" Required="true" Class="mb-4" 
+                              HelperText="Enter the device's IP address (e.g., 192.168.1.100)" />
+            }
+
+            @if (_selectedConnectionType == ConnectionType.InfraredIr)
+            {
+                <MudText Class="mb-2">IR Code Set</MudText>
+                <MudSelect T="string" @bind-Value="_selectedIrCodeSet" Label="Select IR Code Set" Class="mb-4">
+                    <MudSelectItem Value="@("samsung-tv")">Samsung TV</MudSelectItem>
+                    <MudSelectItem Value="@("lg-tv")">LG TV</MudSelectItem>
+                    <MudSelectItem Value="@("sony-tv")">Sony TV</MudSelectItem>
+                    <MudSelectItem Value="@("generic-tv")">Generic TV</MudSelectItem>
+                </MudSelect>
+            }
+
+            @if (_selectedConnectionType == ConnectionType.Bluetooth)
+            {
+                <MudAlert Severity="Severity.Info" Class="mb-4">
+                    Make sure your device is in pairing mode before proceeding.
+                </MudAlert>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        @if (_currentStep == WizardStep.DeviceType)
+        {
+            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedConnectionType == null)">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.Configuration)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="FinishWizard" Disabled="@(string.IsNullOrWhiteSpace(_newDevice.Name))">
+                Add Device
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .device-type-card {
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+    .device-type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .device-type-card.selected {
+        border-color: var(--mud-palette-primary);
+        background-color: rgba(var(--mud-palette-primary-rgb), 0.1);
+    }
+</style>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public EventCallback<CreateDeviceRequest> OnDeviceAdded { get; set; }
+
+    private enum WizardStep
+    {
+        DeviceType,
+        Configuration
+    }
+
+    private WizardStep _currentStep = WizardStep.DeviceType;
+    private ConnectionType? _selectedConnectionType;
+    private string _selectedDeviceTypeName = "";
+    private bool _isRokuDevice = false;
+    private CreateDeviceRequest _newDevice = new();
+    private string _selectedIrCodeSet = "";
+    
+    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    private void SelectDeviceType(ConnectionType connectionType, string typeName, bool isRoku = false)
+    {
+        _selectedConnectionType = connectionType;
+        _selectedDeviceTypeName = typeName;
+        _isRokuDevice = isRoku;
+        _newDevice.ConnectionType = connectionType;
+    }
+
+    private string GetCardClass(ConnectionType connectionType, bool isRoku = false)
+    {
+        bool isSelected = _selectedConnectionType == connectionType && (_isRokuDevice == isRoku || !isRoku);
+        return $"device-type-card {(isSelected ? "selected" : "")}";
+    }
+
+    private void NextStep()
+    {
+        if (_currentStep == WizardStep.DeviceType && _selectedConnectionType.HasValue)
+        {
+            _currentStep = WizardStep.Configuration;
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (_currentStep == WizardStep.Configuration)
+        {
+            _currentStep = WizardStep.DeviceType;
+        }
+    }
+
+    private async Task FinishWizard()
+    {
+        if (!string.IsNullOrWhiteSpace(_newDevice.Name))
+        {
+            await OnDeviceAdded.InvokeAsync(_newDevice);
+            ResetWizard();
+        }
+    }
+
+    private void ResetWizard()
+    {
+        _currentStep = WizardStep.DeviceType;
+        _selectedConnectionType = null;
+        _selectedDeviceTypeName = "";
+        _isRokuDevice = false;
+        _newDevice = new CreateDeviceRequest();
+        _selectedIrCodeSet = "";
+        IsVisible = false;
+        IsVisibleChanged.InvokeAsync(false);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!IsVisible)
+        {
+            ResetWizard();
+        }
+    }
+}

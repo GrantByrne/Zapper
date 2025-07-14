@@ -1,4 +1,5 @@
 @page "/devices"
+@page "/"
 @using Zapper.Client.Abstractions
 @using Zapper.Contracts.Devices
 @using Zapper.Contracts
@@ -68,51 +69,13 @@ else
     }
 }
 
-<MudDialog @bind-Visible="_showAddDialog" Options="_dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Add New Device</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
-        <MudTextField @bind-Value="_newDevice.Brand" Label="Brand" Class="mb-4" />
-        <MudTextField @bind-Value="_newDevice.Model" Label="Model" Class="mb-4" />
-        <MudSelect T="DeviceType" @bind-Value="_newDevice.Type" Label="Device Type" Required="true" Class="mb-4">
-            <MudSelectItem Value="DeviceType.Television">Television</MudSelectItem>
-            <MudSelectItem Value="DeviceType.SmartTv">Smart TV</MudSelectItem>
-            <MudSelectItem Value="DeviceType.SoundBar">Sound Bar</MudSelectItem>
-            <MudSelectItem Value="DeviceType.StreamingDevice">Streaming Device</MudSelectItem>
-            <MudSelectItem Value="DeviceType.AppleTv">Apple TV</MudSelectItem>
-            <MudSelectItem Value="DeviceType.CableBox">Cable Box</MudSelectItem>
-            <MudSelectItem Value="DeviceType.GameConsole">Game Console</MudSelectItem>
-            <MudSelectItem Value="DeviceType.Receiver">Receiver</MudSelectItem>
-            <MudSelectItem Value="DeviceType.DvdPlayer">DVD Player</MudSelectItem>
-            <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
-        </MudSelect>
-        <MudSelect T="ConnectionType" @bind-Value="_newDevice.ConnectionType" Label="Connection Type" Required="true" Class="mb-4">
-            <MudSelectItem Value="ConnectionType.InfraredIr">Infrared (IR)</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.NetworkTcp">Network (TCP)</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.NetworkWebSocket">Network (WebSocket)</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.NetworkHttp">Network (HTTP)</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.Bluetooth">Bluetooth</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.Usb">USB</MudSelectItem>
-            <MudSelectItem Value="ConnectionType.WebOs">WebOS</MudSelectItem>
-        </MudSelect>
-        <MudTextField @bind-Value="_newDevice.IpAddress" Label="IP Address (if network)" Class="mb-4" />
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="@(() => _showAddDialog = false)">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddDevice">Add Device</MudButton>
-    </DialogActions>
-</MudDialog>
+<AddDeviceWizard @bind-IsVisible="_showAddDialog" OnDeviceAdded="AddDevice" />
 
 @code {
     private List<DeviceDto> _devices = new();
     private bool _showAddDialog = false;
-    private CreateDeviceRequest _newDevice = new();
     private bool _isLoading = true;
     private string? _errorMessage;
-    
-    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
 
     protected override async Task OnInitializedAsync()
     {
@@ -156,16 +119,15 @@ else
         };
     }
 
-    private async Task AddDevice()
+    private async Task AddDevice(CreateDeviceRequest newDevice)
     {
-        if (!string.IsNullOrWhiteSpace(_newDevice.Name))
+        if (!string.IsNullOrWhiteSpace(newDevice.Name))
         {
             try
             {
-                var createdDevice = await ApiClient.Devices.CreateDeviceAsync(_newDevice);
+                var createdDevice = await ApiClient.Devices.CreateDeviceAsync(newDevice);
                 _devices.Add(createdDevice);
                 
-                _newDevice = new CreateDeviceRequest();
                 _showAddDialog = false;
             }
             catch (Exception ex)
