@@ -1,23 +1,17 @@
+using System.Collections.Concurrent;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.Network;
 
-public class NetworkDeviceController : INetworkDeviceController
+public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDeviceController> logger) : INetworkDeviceController, IDisposable
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<NetworkDeviceController> _logger;
-
-    public NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDeviceController> logger)
-    {
-        _httpClient = httpClient;
-        _logger = logger;
-    }
+    private readonly ConcurrentDictionary<string, ClientWebSocket> _webSocketConnections = new();
+    private bool _disposed;
 
     public async Task<bool> SendCommandAsync(string ipAddress, int port, string command, string? payload = null, CancellationToken cancellationToken = default)
     {
@@ -25,19 +19,19 @@ public class NetworkDeviceController : INetworkDeviceController
         {
             using var client = new TcpClient();
             await client.ConnectAsync(IPAddress.Parse(ipAddress), port, cancellationToken);
-            
-            using var stream = client.GetStream();
+
+            await using var stream = client.GetStream();
             var commandData = Encoding.UTF8.GetBytes(command + (payload ?? ""));
             
             await stream.WriteAsync(commandData, cancellationToken);
             await stream.FlushAsync(cancellationToken);
             
-            _logger.LogDebug("Sent TCP command to {IpAddress}:{Port}: {Command}", ipAddress, port, command);
+            logger.LogDebug("Sent TCP command to {IpAddress}:{Port}: {Command}", ipAddress, port, command);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send TCP command to {IpAddress}:{Port}", ipAddress, port);
+            logger.LogError(ex, "Failed to send TCP command to {IpAddress}:{Port}", ipAddress, port);
             return false;
         }
     }
@@ -61,15 +55,15 @@ public class NetworkDeviceController : INetworkDeviceController
                 request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
             }
             
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var response = await httpClient.SendAsync(request, cancellationToken);
             var success = response.IsSuccessStatusCode;
             
-            _logger.LogDebug("Sent HTTP {Method} to {Url}: {Success}", method, request.RequestUri, success);
+            logger.LogDebug("Sent HTTP {Method} to {Url}: {Success}", method, request.RequestUri, success);
             return success;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send HTTP command to {BaseUrl}/{Endpoint}", baseUrl, endpoint);
+            logger.LogError(ex, "Failed to send HTTP command to {BaseUrl}/{Endpoint}", baseUrl, endpoint);
             return false;
         }
     }
@@ -78,16 +72,71 @@ public class NetworkDeviceController : INetworkDeviceController
     {
         try
         {
-            // WebSocket implementation would go here
-            // For now, just log the attempt
-            _logger.LogDebug("WebSocket command to {WsUrl}: {Command}", wsUrl, command);
-            await Task.Delay(100, cancellationToken); // Simulate network delay
+            var webSocket = await GetOrCreateWebSocketAsync(wsUrl, cancellationToken);
+            if (webSocket?.State != WebSocketState.Open)
+            {
+                logger.LogWarning("WebSocket connection to {WsUrl} is not open", wsUrl);
+                return false;
+            }
+
+            var commandBytes = Encoding.UTF8.GetBytes(command);
+            await webSocket.SendAsync(
+                new ArraySegment<byte>(commandBytes),
+                WebSocketMessageType.Text,
+                true,
+                cancellationToken);
+
+            logger.LogDebug("Sent WebSocket command to {WsUrl}: {Command}", wsUrl, command);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send WebSocket command to {WsUrl}", wsUrl);
+            logger.LogError(ex, "Failed to send WebSocket command to {WsUrl}", wsUrl);
+            
+            // Clean up failed connection
+            if (_webSocketConnections.TryRemove(wsUrl, out var failedSocket))
+            {
+                failedSocket.Dispose();
+            }
+            
             return false;
+        }
+    }
+
+    private async Task<ClientWebSocket?> GetOrCreateWebSocketAsync(string wsUrl, CancellationToken cancellationToken)
+    {
+        if (_webSocketConnections.TryGetValue(wsUrl, out var existingSocket) && 
+            existingSocket.State == WebSocketState.Open)
+        {
+            return existingSocket;
+        }
+
+        // Remove any existing closed connections
+        if (existingSocket != null)
+        {
+            _webSocketConnections.TryRemove(wsUrl, out _);
+            existingSocket.Dispose();
+        }
+
+        try
+        {
+            var newSocket = new ClientWebSocket();
+            await newSocket.ConnectAsync(new Uri(wsUrl), cancellationToken);
+            
+            if (_webSocketConnections.TryAdd(wsUrl, newSocket))
+            {
+                logger.LogDebug("Established WebSocket connection to {WsUrl}", wsUrl);
+                return newSocket;
+            }
+            
+            // Another thread created the connection
+            newSocket.Dispose();
+            return _webSocketConnections.TryGetValue(wsUrl, out var socket) ? socket : null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to establish WebSocket connection to {WsUrl}", wsUrl);
+            return null;
         }
     }
 
@@ -95,7 +144,7 @@ public class NetworkDeviceController : INetworkDeviceController
     {
         try
         {
-            _logger.LogInformation("Starting device discovery for {DeviceType}", deviceType);
+            logger.LogInformation("Starting device discovery for {DeviceType}", deviceType);
             
             // Simple SSDP-style discovery
             using var client = new UdpClient();
@@ -110,7 +159,7 @@ public class NetworkDeviceController : INetworkDeviceController
             var searchBytes = Encoding.UTF8.GetBytes(searchMessage);
             await client.SendAsync(searchBytes, multicastEndpoint, cancellationToken);
             
-            _logger.LogDebug("Sent SSDP discovery message for {DeviceType}", deviceType);
+            logger.LogDebug("Sent SSDP discovery message for {DeviceType}", deviceType);
             
             // Wait for responses
             var endTime = DateTime.UtcNow.Add(timeout);
@@ -124,28 +173,49 @@ public class NetworkDeviceController : INetworkDeviceController
                     var timeoutTask = Task.Delay(1000, cancellationToken);
                     
                     var completedTask = await Task.WhenAny(receiveTask, timeoutTask);
+
+                    if (completedTask != receiveTask) 
+                        continue;
                     
-                    if (completedTask == receiveTask)
-                    {
-                        var result = await receiveTask;
-                        var response = Encoding.UTF8.GetString(result.Buffer);
-                        discoveredDevices.Add($"{result.RemoteEndPoint}: {response}");
-                        _logger.LogDebug("Received discovery response from {Endpoint}", result.RemoteEndPoint);
-                    }
+                    var result = await receiveTask;
+                    var response = Encoding.UTF8.GetString(result.Buffer);
+                    discoveredDevices.Add($"{result.RemoteEndPoint}: {response}");
+                    logger.LogDebug("Received discovery response from {Endpoint}", result.RemoteEndPoint);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Error during device discovery");
+                    logger.LogWarning(ex, "Error during device discovery");
                 }
             }
             
-            _logger.LogInformation("Device discovery completed. Found {Count} devices", discoveredDevices.Count);
+            logger.LogInformation("Device discovery completed. Found {Count} devices", discoveredDevices.Count);
             return discoveredDevices.Count > 0 ? JsonSerializer.Serialize(discoveredDevices) : null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to discover devices of type {DeviceType}", deviceType);
+            logger.LogError(ex, "Failed to discover devices of type {DeviceType}", deviceType);
             return null;
         }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        foreach (var webSocket in _webSocketConnections.Values)
+        {
+            try
+            {
+                webSocket.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error disposing WebSocket connection");
+            }
+        }
+
+        _webSocketConnections.Clear();
+        _disposed = true;
     }
 }

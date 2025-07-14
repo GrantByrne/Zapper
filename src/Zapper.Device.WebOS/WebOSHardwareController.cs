@@ -1,6 +1,5 @@
 using Zapper.Core.Models;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.WebOS;
 

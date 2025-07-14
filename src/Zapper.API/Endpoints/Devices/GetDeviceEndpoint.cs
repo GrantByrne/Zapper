@@ -1,6 +1,5 @@
 using FastEndpoints;
 using Zapper.API.Models.Requests;
-using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;

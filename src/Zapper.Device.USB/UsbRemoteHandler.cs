@@ -1,7 +1,6 @@
 using HidSharp;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.USB;
 
@@ -50,10 +49,10 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         }
     }
 
-    public async Task StopListeningAsync()
+    public Task StopListeningAsync()
     {
         if (!_isListening)
-            return;
+            return Task.CompletedTask;
 
         _logger.LogInformation("Stopping USB remote listener");
 
@@ -77,6 +76,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         _connectedDevices.Clear();
 
         _logger.LogInformation("USB remote listener stopped");
+        return Task.CompletedTask;
     }
 
     public IEnumerable<string> GetConnectedRemotes()
@@ -91,27 +91,28 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
 
         foreach (var device in hidDevices)
         {
-            if (IsRemoteDevice(device))
-            {
-                var deviceId = GetDeviceId(device);
-                _connectedDevices.TryAdd(deviceId, device);
+            if (!IsRemoteDevice(device)) 
+                continue;
+            
+            var deviceId = GetDeviceId(device);
+            _connectedDevices.TryAdd(deviceId, device);
 
-                try
-                {
-                    var stream = device.Open();
-                    if (stream != null)
-                    {
-                        _activeStreams.TryAdd(deviceId, stream);
-                        _ = Task.Run(() => ListenToDeviceAsync(deviceId, stream, _cancellationTokenSource.Token));
+            try
+            {
+                var stream = device.Open();
+                    
+                if (stream == null) 
+                    continue;
+                    
+                _activeStreams.TryAdd(deviceId, stream);
+                _ = Task.Run(() => ListenToDeviceAsync(deviceId, stream, _cancellationTokenSource.Token));
                         
-                        _logger.LogInformation("Connected to USB remote: {DeviceId} ({ProductName})", 
-                                             deviceId, device.GetProductName() ?? "Unknown");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Failed to open device {DeviceId}", deviceId);
-                }
+                _logger.LogInformation("Connected to USB remote: {DeviceId} ({ProductName})", 
+                    deviceId, device.GetProductName() ?? "Unknown");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to open device {DeviceId}", deviceId);
             }
         }
     }
@@ -172,17 +173,17 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         {
             // Simple key mapping - in reality you'd have device-specific mappings
             var keyCode = buffer[1]; // Assuming second byte contains key code
+
+            if (keyCode == 0) 
+                return;
             
-            if (keyCode != 0) // Ignore empty reports
-            {
-                var buttonName = MapKeyCodeToButton(keyCode);
-                var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
+            var buttonName = MapKeyCodeToButton(keyCode);
+            var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
                 
-                _logger.LogDebug("Button pressed on {DeviceId}: {ButtonName} (0x{KeyCode:X2})", 
-                               deviceId, buttonName, keyCode);
+            _logger.LogDebug("Button pressed on {DeviceId}: {ButtonName} (0x{KeyCode:X2})", 
+                deviceId, buttonName, keyCode);
                 
-                ButtonPressed?.Invoke(this, eventArgs);
-            }
+            ButtonPressed?.Invoke(this, eventArgs);
         }
         catch (Exception ex)
         {

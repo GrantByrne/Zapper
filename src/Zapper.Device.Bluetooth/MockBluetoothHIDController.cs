@@ -1,4 +1,3 @@
-using Zapper.Device.Contracts;
 using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
@@ -6,105 +5,96 @@ namespace Zapper.Device.Bluetooth;
 public class MockBluetoothHIDController : IBluetoothHIDController
 {
     private readonly ILogger<MockBluetoothHIDController> _logger;
-    private bool _isAdvertising;
-    private bool _isConnected;
-    private string? _connectedDeviceId;
-
-    public bool IsConnected => _isConnected;
-    public bool IsAdvertising => _isAdvertising;
-    public string? ConnectedDeviceId => _connectedDeviceId;
-
-    public event EventHandler<string>? DeviceConnected;
-    public event EventHandler<string>? DeviceDisconnected;
+    private readonly Dictionary<string, bool> _connectedDevices = new();
 
     public MockBluetoothHIDController(ILogger<MockBluetoothHIDController> logger)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<bool> StartAdvertisingAsync(CancellationToken cancellationToken = default)
+    public Task<bool> SendKeyAsync(string deviceAddress, HIDKeyCode keyCode, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Mock: Starting Bluetooth HID advertising");
-        _isAdvertising = true;
-        return Task.FromResult(true);
-    }
-
-    public Task<bool> StopAdvertisingAsync(CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Mock: Stopping Bluetooth HID advertising");
-        _isAdvertising = false;
-        return Task.FromResult(true);
-    }
-
-    public Task<bool> ConnectToDeviceAsync(string deviceId, CancellationToken cancellationToken = default)
-    {
-        _logger.LogInformation("Mock: Connecting to Bluetooth device {DeviceId}", deviceId);
-        _isConnected = true;
-        _connectedDeviceId = deviceId;
-        DeviceConnected?.Invoke(this, deviceId);
-        return Task.FromResult(true);
-    }
-
-    public Task<bool> DisconnectAsync(CancellationToken cancellationToken = default)
-    {
-        if (_isConnected && _connectedDeviceId != null)
+        if (string.IsNullOrEmpty(deviceAddress))
         {
-            _logger.LogInformation("Mock: Disconnecting from Bluetooth device {DeviceId}", _connectedDeviceId);
-            var deviceId = _connectedDeviceId;
-            _isConnected = false;
-            _connectedDeviceId = null;
-            DeviceDisconnected?.Invoke(this, deviceId);
-        }
-        return Task.FromResult(true);
-    }
-
-    public Task<bool> SendKeyEventAsync(HIDKeyCode keyCode, bool isPressed = true, CancellationToken cancellationToken = default)
-    {
-        if (!_isConnected)
-        {
-            _logger.LogWarning("Mock: Cannot send key event - not connected to any device");
+            _logger.LogWarning("Mock: Cannot send key - device address is null or empty");
             return Task.FromResult(false);
         }
 
-        _logger.LogInformation("Mock: Sending key event {KeyCode} (pressed: {IsPressed}) to device {DeviceId}", 
-            keyCode, isPressed, _connectedDeviceId);
+        _logger.LogInformation("Mock: Sending key {KeyCode} to device {DeviceAddress}", keyCode, deviceAddress);
         return Task.FromResult(true);
     }
 
-    public Task<bool> SendMouseEventAsync(int deltaX, int deltaY, bool leftClick = false, bool rightClick = false, CancellationToken cancellationToken = default)
+    public Task<bool> SendKeySequenceAsync(string deviceAddress, HIDKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
     {
-        if (!_isConnected)
+        if (string.IsNullOrEmpty(deviceAddress))
         {
-            _logger.LogWarning("Mock: Cannot send mouse event - not connected to any device");
+            _logger.LogWarning("Mock: Cannot send key sequence - device address is null or empty");
             return Task.FromResult(false);
         }
 
-        _logger.LogInformation("Mock: Sending mouse event (deltaX: {DeltaX}, deltaY: {DeltaY}, leftClick: {LeftClick}, rightClick: {RightClick}) to device {DeviceId}", 
-            deltaX, deltaY, leftClick, rightClick, _connectedDeviceId);
+        _logger.LogInformation("Mock: Sending key sequence [{KeyCodes}] to device {DeviceAddress} with {DelayMs}ms delay",
+            string.Join(", ", keyCodes), deviceAddress, delayMs);
         return Task.FromResult(true);
     }
 
-    public Task<bool> SendKeyboardTextAsync(string text, CancellationToken cancellationToken = default)
+    public Task<bool> SendTextAsync(string deviceAddress, string text, CancellationToken cancellationToken = default)
     {
-        if (!_isConnected)
+        if (string.IsNullOrEmpty(deviceAddress))
         {
-            _logger.LogWarning("Mock: Cannot send keyboard text - not connected to any device");
+            _logger.LogWarning("Mock: Cannot send text - device address is null or empty");
             return Task.FromResult(false);
         }
 
-        _logger.LogInformation("Mock: Sending keyboard text '{Text}' to device {DeviceId}", text, _connectedDeviceId);
+        _logger.LogInformation("Mock: Sending text '{Text}' to device {DeviceAddress}", text, deviceAddress);
         return Task.FromResult(true);
     }
 
-    public Task<IEnumerable<string>> GetPairedDevicesAsync(CancellationToken cancellationToken = default)
+    public Task<bool> ConnectAsync(string deviceAddress, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Mock: Getting paired Bluetooth devices");
-        var mockDevices = new[]
+        if (string.IsNullOrEmpty(deviceAddress))
         {
-            "Mock Android TV (AA:BB:CC:DD:EE:FF)",
-            "Mock Apple TV (11:22:33:44:55:66)",
-            "Mock Smart TV (99:88:77:66:55:44)"
-        };
-        return Task.FromResult<IEnumerable<string>>(mockDevices);
+            _logger.LogWarning("Mock: Cannot connect - device address is null or empty");
+            return Task.FromResult(false);
+        }
+
+        _logger.LogInformation("Mock: Connecting to device {DeviceAddress}", deviceAddress);
+        _connectedDevices[deviceAddress] = true;
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> DisconnectAsync(string deviceAddress, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(deviceAddress))
+        {
+            _logger.LogWarning("Mock: Cannot disconnect - device address is null or empty");
+            return Task.FromResult(false);
+        }
+
+        _logger.LogInformation("Mock: Disconnecting from device {DeviceAddress}", deviceAddress);
+        _connectedDevices[deviceAddress] = false;
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> IsConnectedAsync(string deviceAddress, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrEmpty(deviceAddress))
+        {
+            return Task.FromResult(false);
+        }
+
+        var isConnected = _connectedDevices.GetValueOrDefault(deviceAddress, false);
+        _logger.LogInformation("Mock: Device {DeviceAddress} connection status: {IsConnected}", deviceAddress, isConnected);
+        return Task.FromResult(isConnected);
+    }
+
+    public Task<IEnumerable<string>> GetConnectedDevicesAsync(CancellationToken cancellationToken = default)
+    {
+        var connectedDevices = _connectedDevices
+            .Where(kvp => kvp.Value)
+            .Select(kvp => kvp.Key)
+            .ToList();
+
+        _logger.LogInformation("Mock: Getting connected devices: [{Devices}]", string.Join(", ", connectedDevices));
+        return Task.FromResult<IEnumerable<string>>(connectedDevices);
     }
 }

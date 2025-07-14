@@ -1,5 +1,4 @@
 using FastEndpoints;
-using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;

@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.API.Models.Responses;
-using Zapper.Device.Contracts;
+using Zapper.Device.Bluetooth;
 
 namespace Zapper.Endpoints.Devices;
 
@@ -26,12 +26,10 @@ public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothControlle
             bool success = req.Action.ToLower() switch
             {
                 "connect" => await HandleConnect(req, ct),
-                "disconnect" => await bluetoothController.DisconnectAsync(ct),
-                "start_advertising" => await bluetoothController.StartAdvertisingAsync(ct),
-                "stop_advertising" => await bluetoothController.StopAdvertisingAsync(ct),
+                "disconnect" => await HandleDisconnect(req, ct),
                 "send_key" => await HandleSendKey(req, ct),
-                "send_mouse" => await HandleSendMouse(req, ct),
                 "send_text" => await HandleSendText(req, ct),
+                "get_connected_devices" => await HandleGetConnectedDevices(req, ct),
                 _ => false
             };
 
@@ -68,34 +66,41 @@ public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothControlle
         {
             return false;
         }
-        return await bluetoothController.ConnectToDeviceAsync(req.DeviceId, ct);
+        return await bluetoothController.ConnectAsync(req.DeviceId, ct);
+    }
+
+    private async Task<bool> HandleDisconnect(BluetoothControlRequest req, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(req.DeviceId))
+        {
+            return false;
+        }
+        return await bluetoothController.DisconnectAsync(req.DeviceId, ct);
     }
 
     private async Task<bool> HandleSendKey(BluetoothControlRequest req, CancellationToken ct)
     {
-        if (string.IsNullOrEmpty(req.KeyCode) || !Enum.TryParse<HIDKeyCode>(req.KeyCode, true, out var keyCode))
+        if (string.IsNullOrEmpty(req.DeviceId) || string.IsNullOrEmpty(req.KeyCode) || 
+            !Enum.TryParse<HIDKeyCode>(req.KeyCode, true, out var keyCode))
         {
             return false;
         }
-        return await bluetoothController.SendKeyEventAsync(keyCode, true, ct);
-    }
-
-    private async Task<bool> HandleSendMouse(BluetoothControlRequest req, CancellationToken ct)
-    {
-        var deltaX = req.MouseX ?? 0;
-        var deltaY = req.MouseY ?? 0;
-        var leftClick = req.LeftClick ?? false;
-        var rightClick = req.RightClick ?? false;
-        
-        return await bluetoothController.SendMouseEventAsync(deltaX, deltaY, leftClick, rightClick, ct);
+        return await bluetoothController.SendKeyAsync(req.DeviceId, keyCode, ct);
     }
 
     private async Task<bool> HandleSendText(BluetoothControlRequest req, CancellationToken ct)
     {
-        if (string.IsNullOrEmpty(req.Text))
+        if (string.IsNullOrEmpty(req.DeviceId) || string.IsNullOrEmpty(req.Text))
         {
             return false;
         }
-        return await bluetoothController.SendKeyboardTextAsync(req.Text, ct);
+        return await bluetoothController.SendTextAsync(req.DeviceId, req.Text, ct);
+    }
+
+    private async Task<bool> HandleGetConnectedDevices(BluetoothControlRequest req, CancellationToken ct)
+    {
+        var devices = await bluetoothController.GetConnectedDevicesAsync(ct);
+        // This method returns true if successful, the actual devices would be in the response
+        return devices != null;
     }
 }

@@ -1,5 +1,4 @@
 using Zapper.Core.Models;
-using Zapper.Device.Contracts;
 using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Infrared;

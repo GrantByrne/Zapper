@@ -217,9 +217,8 @@ public class IRCodeService : IIRCodeService
 
     private static List<IRCodeSet> GetDefaultCodeSets()
     {
-        return new List<IRCodeSet>
-        {
-            // Samsung TV
+        return
+        [
             new IRCodeSet
             {
                 Brand = "Samsung",
@@ -227,24 +226,49 @@ public class IRCodeService : IIRCodeService
                 DeviceType = DeviceType.Television,
                 Description = "Generic Samsung TV IR codes",
                 IsVerified = true,
-                Codes = new List<IRCode>
-                {
+                Codes =
+                [
                     new IRCode { CommandName = "Power", Protocol = "NEC", HexCode = "0xE0E040BF", Frequency = 38000 },
-                    new IRCode { CommandName = "VolumeUp", Protocol = "NEC", HexCode = "0xE0E0E01F", Frequency = 38000 },
-                    new IRCode { CommandName = "VolumeDown", Protocol = "NEC", HexCode = "0xE0E0D02F", Frequency = 38000 },
+                    new IRCode
+                    {
+                        CommandName = "VolumeUp", Protocol = "NEC", HexCode = "0xE0E0E01F", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "VolumeDown", Protocol = "NEC", HexCode = "0xE0E0D02F", Frequency = 38000
+                    },
+
                     new IRCode { CommandName = "Mute", Protocol = "NEC", HexCode = "0xE0E0F00F", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalUp", Protocol = "NEC", HexCode = "0xE0E006F9", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalDown", Protocol = "NEC", HexCode = "0xE0E08679", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalLeft", Protocol = "NEC", HexCode = "0xE0E0A659", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalRight", Protocol = "NEC", HexCode = "0xE0E046B9", Frequency = 38000 },
+                    new IRCode
+                    {
+                        CommandName = "DirectionalUp", Protocol = "NEC", HexCode = "0xE0E006F9", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalDown", Protocol = "NEC", HexCode = "0xE0E08679", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalLeft", Protocol = "NEC", HexCode = "0xE0E0A659", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalRight", Protocol = "NEC", HexCode = "0xE0E046B9", Frequency = 38000
+                    },
+
                     new IRCode { CommandName = "OK", Protocol = "NEC", HexCode = "0xE0E016E9", Frequency = 38000 },
                     new IRCode { CommandName = "Menu", Protocol = "NEC", HexCode = "0xE0E058A7", Frequency = 38000 },
                     new IRCode { CommandName = "Back", Protocol = "NEC", HexCode = "0xE0E01AE5", Frequency = 38000 },
                     new IRCode { CommandName = "Home", Protocol = "NEC", HexCode = "0xE0E079F6", Frequency = 38000 }
-                }
+                ]
             },
-            
+
             // LG TV
+
             new IRCodeSet
             {
                 Brand = "LG",
@@ -252,24 +276,49 @@ public class IRCodeService : IIRCodeService
                 DeviceType = DeviceType.Television,
                 Description = "Generic LG TV IR codes",
                 IsVerified = true,
-                Codes = new List<IRCode>
-                {
+                Codes =
+                [
                     new IRCode { CommandName = "Power", Protocol = "NEC", HexCode = "0x20DF10EF", Frequency = 38000 },
-                    new IRCode { CommandName = "VolumeUp", Protocol = "NEC", HexCode = "0x20DF40BF", Frequency = 38000 },
-                    new IRCode { CommandName = "VolumeDown", Protocol = "NEC", HexCode = "0x20DFC03F", Frequency = 38000 },
+                    new IRCode
+                    {
+                        CommandName = "VolumeUp", Protocol = "NEC", HexCode = "0x20DF40BF", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "VolumeDown", Protocol = "NEC", HexCode = "0x20DFC03F", Frequency = 38000
+                    },
+
                     new IRCode { CommandName = "Mute", Protocol = "NEC", HexCode = "0x20DF906F", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalUp", Protocol = "NEC", HexCode = "0x20DF02FD", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalDown", Protocol = "NEC", HexCode = "0x20DF827D", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalLeft", Protocol = "NEC", HexCode = "0x20DFE01F", Frequency = 38000 },
-                    new IRCode { CommandName = "DirectionalRight", Protocol = "NEC", HexCode = "0x20DF609F", Frequency = 38000 },
+                    new IRCode
+                    {
+                        CommandName = "DirectionalUp", Protocol = "NEC", HexCode = "0x20DF02FD", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalDown", Protocol = "NEC", HexCode = "0x20DF827D", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalLeft", Protocol = "NEC", HexCode = "0x20DFE01F", Frequency = 38000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalRight", Protocol = "NEC", HexCode = "0x20DF609F", Frequency = 38000
+                    },
+
                     new IRCode { CommandName = "OK", Protocol = "NEC", HexCode = "0x20DF22DD", Frequency = 38000 },
                     new IRCode { CommandName = "Menu", Protocol = "NEC", HexCode = "0x20DFC23D", Frequency = 38000 },
                     new IRCode { CommandName = "Back", Protocol = "NEC", HexCode = "0x20DF14EB", Frequency = 38000 },
                     new IRCode { CommandName = "Home", Protocol = "NEC", HexCode = "0x20DF3EC1", Frequency = 38000 }
-                }
+                ]
             },
-            
+
             // Sony TV
+
             new IRCodeSet
             {
                 Brand = "Sony",
@@ -277,23 +326,39 @@ public class IRCodeService : IIRCodeService
                 DeviceType = DeviceType.Television,
                 Description = "Generic Sony TV IR codes",
                 IsVerified = true,
-                Codes = new List<IRCode>
-                {
+                Codes =
+                [
                     new IRCode { CommandName = "Power", Protocol = "SONY", HexCode = "0xA90", Frequency = 40000 },
                     new IRCode { CommandName = "VolumeUp", Protocol = "SONY", HexCode = "0x490", Frequency = 40000 },
                     new IRCode { CommandName = "VolumeDown", Protocol = "SONY", HexCode = "0xC90", Frequency = 40000 },
                     new IRCode { CommandName = "Mute", Protocol = "SONY", HexCode = "0x290", Frequency = 40000 },
-                    new IRCode { CommandName = "DirectionalUp", Protocol = "SONY", HexCode = "0x2F0", Frequency = 40000 },
-                    new IRCode { CommandName = "DirectionalDown", Protocol = "SONY", HexCode = "0xAF0", Frequency = 40000 },
-                    new IRCode { CommandName = "DirectionalLeft", Protocol = "SONY", HexCode = "0x2D0", Frequency = 40000 },
-                    new IRCode { CommandName = "DirectionalRight", Protocol = "SONY", HexCode = "0xCD0", Frequency = 40000 },
+                    new IRCode
+                    {
+                        CommandName = "DirectionalUp", Protocol = "SONY", HexCode = "0x2F0", Frequency = 40000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalDown", Protocol = "SONY", HexCode = "0xAF0", Frequency = 40000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalLeft", Protocol = "SONY", HexCode = "0x2D0", Frequency = 40000
+                    },
+
+                    new IRCode
+                    {
+                        CommandName = "DirectionalRight", Protocol = "SONY", HexCode = "0xCD0", Frequency = 40000
+                    },
+
                     new IRCode { CommandName = "OK", Protocol = "SONY", HexCode = "0xA70", Frequency = 40000 },
                     new IRCode { CommandName = "Menu", Protocol = "SONY", HexCode = "0x070", Frequency = 40000 },
                     new IRCode { CommandName = "Back", Protocol = "SONY", HexCode = "0x870", Frequency = 40000 },
                     new IRCode { CommandName = "Home", Protocol = "SONY", HexCode = "0x670", Frequency = 40000 }
-                }
+                ]
             }
-        };
+        ];
     }
 }
 
@@ -303,7 +368,7 @@ public class IRCodeSetImport
     public string Model { get; set; } = string.Empty;
     public DeviceType DeviceType { get; set; }
     public string? Description { get; set; }
-    public List<IRCodeImport> Codes { get; set; } = new();
+    public List<IRCodeImport> Codes { get; set; } = [];
 }
 
 public class IRCodeImport

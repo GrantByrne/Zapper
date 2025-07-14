@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Zapper.Core.Models;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.WebOS;
 
@@ -14,7 +13,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
     private readonly ILogger<WebOSDiscovery> _logger;
     private readonly IWebOSClient _webOSClient;
     private UdpClient? _udpClient;
-    private readonly List<Zapper.Core.Models.Device> _discoveredDevices = new();
+    private readonly List<Zapper.Core.Models.Device> _discoveredDevices = [];
 
     public event EventHandler<Zapper.Core.Models.Device>? DeviceDiscovered;
 
@@ -48,7 +47,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error during WebOS device discovery");
-            return Enumerable.Empty<Zapper.Core.Models.Device>();
+            return [];
         }
     }
 
@@ -171,7 +170,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
                     timeoutCts.CancelAfter(TimeSpan.FromSeconds(1));
 
                     var result = await _udpClient.ReceiveAsync().WaitAsync(timeoutCts.Token);
-                    await ProcessSsdpResponseAsync(result.Buffer, result.RemoteEndPoint);
+                    ProcessSsdpResponseAsync(result.Buffer, result.RemoteEndPoint);
                 }
                 catch (OperationCanceledException)
                 {
@@ -320,7 +319,7 @@ public class WebOSDiscovery : IWebOSDiscovery, IDisposable
         }
     }
 
-    private async Task ProcessSsdpResponseAsync(byte[] responseBytes, IPEndPoint remoteEndPoint)
+    private void ProcessSsdpResponseAsync(byte[] responseBytes, IPEndPoint remoteEndPoint)
     {
         try
         {

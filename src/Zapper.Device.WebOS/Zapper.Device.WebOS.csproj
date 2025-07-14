@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
-    <ProjectReference Include="..\Zapper.Device.Contracts\Zapper.Device.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
 using FastEndpoints;
 using Zapper.API.Models.Requests;
-using Zapper.Core.Models;
-using Zapper.Device.Contracts;
+using Zapper.Device.WebOS;
 
 namespace Zapper.Endpoints.Devices;
 

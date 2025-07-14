@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.Device.Contracts;
+using Zapper.Device.Bluetooth;
 
 namespace Zapper.Endpoints.Devices;
 

@@ -62,11 +62,13 @@
     private int _activityCount = 0;
     private int _irCodeCount = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         // TODO: Load actual counts from API
         _deviceCount = 3;
         _activityCount = 5;
         _irCodeCount = 150;
+        
+        return Task.CompletedTask;
     }
 }

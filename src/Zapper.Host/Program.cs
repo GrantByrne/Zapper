@@ -1,13 +1,12 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
-using Zapper.API;
 using Zapper.Core.Interfaces;
 using Zapper.Data;
-using Zapper.Device.Contracts;
 using Zapper.Device.Infrared;
 using Zapper.Device.WebOS;
 using Zapper.Device.USB;
+using Zapper.Endpoints.Devices;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,9 +80,8 @@ builder.Services.AddSignalR();
 // Add FastEndpoints
 builder.Services.AddFastEndpoints(o =>
 {
-    o.Assemblies = [typeof(Zapper.API.ServiceCollectionExtensions).Assembly];
+    o.Assemblies = [typeof(BluetoothControlEndpoint).Assembly];
 });
-builder.Services.AddZapperApi();
 
 // Add Swagger documentation
 builder.Services.SwaggerDocument();

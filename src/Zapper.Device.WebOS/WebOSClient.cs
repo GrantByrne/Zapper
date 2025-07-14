@@ -3,7 +3,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.WebOS;
 
@@ -18,6 +17,7 @@ public class WebOSClient : IWebOSClient, IDisposable
 
     public string? ClientKey => _clientKey;
     public bool IsConnected => _webSocket?.State == WebSocketState.Open;
+    public bool IsAuthenticated => _isAuthenticated;
 
     public WebOSClient(ILogger<WebOSClient> logger)
     {

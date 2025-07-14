@@ -1,5 +1,3 @@
-using Zapper.Core.Models;
-
 namespace Zapper.API.Models.Requests;
 
 public class UpdateDeviceRequest

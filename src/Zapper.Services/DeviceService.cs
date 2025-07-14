@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zapper.Data;
-using Zapper.Device.Contracts;
+using Zapper.Device.Infrared;
 using Zapper.Device.Network;
 using Zapper.Device.WebOS;
 using Zapper.Core.Models;
@@ -191,7 +191,7 @@ public class DeviceService : IDeviceService
             var discoveryResult = await _networkController.DiscoverDevicesAsync(deviceType, TimeSpan.FromSeconds(10), cancellationToken);
             
             if (string.IsNullOrEmpty(discoveryResult))
-                return Enumerable.Empty<Zapper.Core.Models.Device>();
+                return [];
 
             // Parse discovery results and create device objects
             // This is a simplified implementation
@@ -203,7 +203,7 @@ public class DeviceService : IDeviceService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to discover devices of type {DeviceType}", deviceType);
-            return Enumerable.Empty<Zapper.Core.Models.Device>();
+            return [];
         }
     }
 

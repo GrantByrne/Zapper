@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Contracts;
 
 namespace Zapper.Device.USB;
 
@@ -44,7 +43,7 @@ public class MockUsbRemoteHandler : IUsbRemoteHandler
 
     public IEnumerable<string> GetConnectedRemotes()
     {
-        return new[] { "MOCK:0001:remote1", "MOCK:0002:remote2" };
+        return ["MOCK:0001:remote1", "MOCK:0002:remote2"];
     }
 
     public void SimulateButtonPress(string deviceId, string buttonName, int keyCode = 0)

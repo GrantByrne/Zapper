@@ -1,6 +1,4 @@
-using Zapper.Core.Models;
-
-namespace Zapper.Device.Contracts;
+namespace Zapper.Device.WebOS;
 
 public interface IWebOSDiscovery
 {
