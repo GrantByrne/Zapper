@@ -1,7 +1,10 @@
 @using Zapper.Contracts.Devices
 @using Zapper.Contracts
 @using Zapper.Client.Abstractions
+@using Microsoft.AspNetCore.SignalR.Client
 @inject IZapperApiClient? ApiClient
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
 <MudDialog @bind-Visible="IsVisible" Options="_dialogOptions">
     <TitleContent>
@@ -272,6 +275,9 @@
     private List<string> _discoveredBluetoothDevices = new();
     private string _selectedBluetoothDevice = "";
     
+    // SignalR connection for real-time updates
+    private HubConnection? _hubConnection;
+    
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
     private void SelectDeviceType(ConnectionType connectionType, string typeName, bool isRoku = false)
@@ -348,17 +354,77 @@
             _selectedBluetoothDevice = "";
             StateHasChanged();
 
+            // Initialize SignalR connection if needed
+            await EnsureSignalRConnection();
+
+            // Initialize SignalR connection for real-time updates
+            // For now, use the existing discovery method as fallback
+            // TODO: Implement the new scanning endpoint once API client is fixed
             var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
             _discoveredBluetoothDevices = devices.ToList();
+            _isScanning = false;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             _scanError = $"Failed to scan for Bluetooth devices: {ex.Message}";
-        }
-        finally
-        {
             _isScanning = false;
             StateHasChanged();
+        }
+    }
+
+    private async Task EnsureSignalRConnection()
+    {
+        if (_hubConnection == null)
+        {
+            var navigationManager = await JSRuntime.InvokeAsync<string>("eval", "window.location.origin");
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl($"{navigationManager}/zapperhub")
+                .Build();
+
+            // Subscribe to Bluetooth scanning events
+            _hubConnection.On("BluetoothScanStarted", () =>
+            {
+                InvokeAsync(() =>
+                {
+                    _isScanning = true;
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<object>("BluetoothDeviceFound", (device) =>
+            {
+                InvokeAsync(() =>
+                {
+                    var deviceName = device?.GetType().GetProperty("Name")?.GetValue(device)?.ToString();
+                    if (!string.IsNullOrEmpty(deviceName) && !_discoveredBluetoothDevices.Contains(deviceName))
+                    {
+                        _discoveredBluetoothDevices.Add(deviceName);
+                        StateHasChanged();
+                    }
+                });
+            });
+
+            _hubConnection.On("BluetoothScanCompleted", () =>
+            {
+                InvokeAsync(() =>
+                {
+                    _isScanning = false;
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<string>("BluetoothScanError", (error) =>
+            {
+                InvokeAsync(() =>
+                {
+                    _scanError = error;
+                    _isScanning = false;
+                    StateHasChanged();
+                });
+            });
+
+            await _hubConnection.StartAsync();
         }
     }
 
@@ -406,4 +472,24 @@
             ResetWizardState();
         }
     }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection != null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+}
+
+public class BluetoothScanRequest
+{
+    public int DurationSeconds { get; set; } = 30;
+}
+
+public class BluetoothScanResponse
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public bool IsScanning { get; set; }
 }

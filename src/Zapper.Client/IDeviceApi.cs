@@ -50,4 +50,22 @@ public interface IDeviceApi
     /// </summary>
     [Get(ApiRoutes.Devices.BluetoothDiscovery)]
     Task<IEnumerable<string>> DiscoverBluetoothDevicesAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Start Bluetooth device scanning with real-time updates
+    /// </summary>
+    [Post(ApiRoutes.Devices.BluetoothScan)]
+    Task<BluetoothScanResponse> StartBluetoothScanAsync([Body] BluetoothScanRequest request, CancellationToken cancellationToken = default);
+}
+
+public class BluetoothScanRequest
+{
+    public int DurationSeconds { get; set; } = 30;
+}
+
+public class BluetoothScanResponse
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public bool IsScanning { get; set; }
 }

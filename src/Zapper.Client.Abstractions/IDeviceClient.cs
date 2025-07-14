@@ -41,4 +41,21 @@ public interface IDeviceClient
     /// Discover available Bluetooth devices
     /// </summary>
     Task<IEnumerable<string>> DiscoverBluetoothDevicesAsync(CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Start Bluetooth device scanning with real-time updates
+    /// </summary>
+    Task<BluetoothScanResponse> StartBluetoothScanAsync(BluetoothScanRequest request, CancellationToken cancellationToken = default);
+}
+
+public class BluetoothScanRequest
+{
+    public int DurationSeconds { get; set; } = 30;
+}
+
+public class BluetoothScanResponse
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public bool IsScanning { get; set; }
 }

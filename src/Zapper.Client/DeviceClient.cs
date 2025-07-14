@@ -49,4 +49,9 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
     {
         return await deviceApi.DiscoverBluetoothDevicesAsync(cancellationToken);
     }
+
+    public async Task<BluetoothScanResponse> StartBluetoothScanAsync(BluetoothScanRequest request, CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.StartBluetoothScanAsync(request, cancellationToken);
+    }
 }
