@@ -52,7 +52,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
                     Brand = "Roku",
                     Model = "Unknown",
                     Type = DeviceType.StreamingDevice,
-                    ConnectionType = ConnectionType.NetworkHTTP,
+                    ConnectionType = ConnectionType.NetworkHttp,
                     IpAddress = ipAddress,
                     Port = 8060,
                     IsOnline = true,

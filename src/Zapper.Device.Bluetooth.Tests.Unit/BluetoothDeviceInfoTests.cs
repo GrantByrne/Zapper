@@ -21,7 +21,7 @@ public class BluetoothDeviceInfoTests
         deviceInfo.Rssi.Should().BeNull();
         deviceInfo.TxPower.Should().BeNull();
         deviceInfo.Class.Should().BeNull();
-        deviceInfo.UUIDs.Should().BeEmpty();
+        deviceInfo.UuiDs.Should().BeEmpty();
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class BluetoothDeviceInfoTests
         deviceInfo.Rssi = -50;
         deviceInfo.TxPower = 4;
         deviceInfo.Class = 0x240404;
-        deviceInfo.UUIDs = expectedUuids;
+        deviceInfo.UuiDs = expectedUuids;
 
         // Assert
         deviceInfo.Address.Should().Be(expectedAddress);
@@ -58,7 +58,7 @@ public class BluetoothDeviceInfoTests
         deviceInfo.Rssi.Should().Be(-50);
         deviceInfo.TxPower.Should().Be(4);
         deviceInfo.Class.Should().Be(0x240404u);
-        deviceInfo.UUIDs.Should().BeEquivalentTo(expectedUuids);
+        deviceInfo.UuiDs.Should().BeEquivalentTo(expectedUuids);
     }
 }
 

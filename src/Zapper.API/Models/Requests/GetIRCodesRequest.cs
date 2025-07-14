@@ -1,6 +1,6 @@
 namespace Zapper.API.Models.Requests;
 
-public class GetIRCodesRequest
+public class GetIrCodesRequest
 {
     public int CodeSetId { get; set; }
 }

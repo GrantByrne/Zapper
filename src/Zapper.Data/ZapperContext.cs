@@ -11,8 +11,8 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityDevice> ActivityDevices { get; set; }
     public DbSet<ActivityStep> ActivitySteps { get; set; }
-    public DbSet<IRCode> IRCodes { get; set; }
-    public DbSet<IRCodeSet> IRCodeSets { get; set; }
+    public DbSet<IrCode> IrCodes { get; set; }
+    public DbSet<IrCodeSet> IrCodeSets { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,14 +71,14 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        modelBuilder.Entity<IRCode>(entity =>
+        modelBuilder.Entity<IrCode>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.Brand, e.Model, e.CommandName });
             entity.Property(e => e.DeviceType).HasConversion<string>();
         });
         
-        modelBuilder.Entity<IRCodeSet>(entity =>
+        modelBuilder.Entity<IrCodeSet>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.Brand, e.Model }).IsUnique();

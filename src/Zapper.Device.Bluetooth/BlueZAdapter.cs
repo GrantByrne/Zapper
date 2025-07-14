@@ -317,7 +317,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
             Rssi = properties.RSSI,
             TxPower = properties.TxPower,
             Class = properties.Class,
-            UUIDs = properties.UUIDs ?? []
+            UuiDs = properties.UUIDs ?? []
         };
     }
 
@@ -362,7 +362,7 @@ public class BluetoothDeviceInfo
     public short? Rssi { get; set; }
     public short? TxPower { get; set; }
     public uint? Class { get; set; }
-    public string[] UUIDs { get; set; } = [];
+    public string[] UuiDs { get; set; } = [];
 }
 
 public class BluetoothDeviceEventArgs : EventArgs

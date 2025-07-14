@@ -1,9 +1,9 @@
 namespace Zapper.Device.Bluetooth;
 
-public interface IBluetoothHIDController
+public interface IBluetoothHidController
 {
-    Task<bool> SendKeyAsync(string deviceAddress, HIDKeyCode keyCode, CancellationToken cancellationToken = default);
-    Task<bool> SendKeySequenceAsync(string deviceAddress, HIDKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default);
+    Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default);
+    Task<bool> SendKeySequenceAsync(string deviceAddress, HidKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default);
     Task<bool> SendTextAsync(string deviceAddress, string text, CancellationToken cancellationToken = default);
     Task<bool> ConnectAsync(string deviceAddress, CancellationToken cancellationToken = default);
     Task<bool> DisconnectAsync(string deviceAddress, CancellationToken cancellationToken = default);
@@ -11,7 +11,7 @@ public interface IBluetoothHIDController
     Task<IEnumerable<string>> GetConnectedDevicesAsync(CancellationToken cancellationToken = default);
 }
 
-public enum HIDKeyCode
+public enum HidKeyCode
 {
     None = 0x00,
     

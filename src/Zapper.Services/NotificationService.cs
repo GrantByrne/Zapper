@@ -138,7 +138,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         logger.LogInformation("Bluetooth device disconnected: {DeviceName}", deviceName);
     }
 
-    public async Task NotifyWebOSDevicePairedAsync(string deviceId, string deviceName, bool success)
+    public async Task NotifyWebOsDevicePairedAsync(string deviceId, string deviceName, bool success)
     {
         var data = new
         {

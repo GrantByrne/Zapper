@@ -4,7 +4,7 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class ExportIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<ExportIRCodeSetRequest, string>
+public class ExportIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<ExportIrCodeSetRequest, string>
 {
     public override void Configure()
     {
@@ -12,7 +12,7 @@ public class ExportIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<Ex
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(ExportIRCodeSetRequest req, CancellationToken ct)
+    public override async Task HandleAsync(ExportIrCodeSetRequest req, CancellationToken ct)
     {
         try
         {

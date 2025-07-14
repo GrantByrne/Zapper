@@ -66,7 +66,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
     }
 
-    public async Task TransmitAsync(IRCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task TransmitAsync(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");

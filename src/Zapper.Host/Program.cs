@@ -39,24 +39,24 @@ builder.Services.AddSingleton<IUsbRemoteHandler>(provider =>
     return new UsbRemoteHandler(logger);
 });
 
-builder.Services.AddTransient<IWebOSClient>(provider =>
+builder.Services.AddTransient<IWebOsClient>(provider =>
 {
-    var logger = provider.GetRequiredService<ILogger<WebOSClient>>();
-    return new WebOSClient(logger);
+    var logger = provider.GetRequiredService<ILogger<WebOsClient>>();
+    return new WebOsClient(logger);
 });
 
-builder.Services.AddSingleton<IWebOSDiscovery>(provider =>
+builder.Services.AddSingleton<IWebOsDiscovery>(provider =>
 {
-    var logger = provider.GetRequiredService<ILogger<WebOSDiscovery>>();
-    var webOSClient = provider.GetRequiredService<IWebOSClient>();
-    return new WebOSDiscovery(logger, webOSClient);
+    var logger = provider.GetRequiredService<ILogger<WebOsDiscovery>>();
+    var webOsClient = provider.GetRequiredService<IWebOsClient>();
+    return new WebOsDiscovery(logger, webOsClient);
 });
 
-builder.Services.AddTransient<IWebOSDeviceController>(provider =>
+builder.Services.AddTransient<IWebOsDeviceController>(provider =>
 {
-    var logger = provider.GetRequiredService<ILogger<WebOSHardwareController>>();
-    var client = provider.GetRequiredService<IWebOSClient>();
-    return new WebOSHardwareController(client, logger);
+    var logger = provider.GetRequiredService<ILogger<WebOsHardwareController>>();
+    var client = provider.GetRequiredService<IWebOsClient>();
+    return new WebOsHardwareController(client, logger);
 });
 
 // Register network device controller
@@ -67,7 +67,7 @@ builder.Services.AddRokuServices();
 
 // Register protocol implementations
 builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();
-builder.Services.AddTransient<Zapper.Device.WebOS.WebOSProtocolController>();
+builder.Services.AddTransient<Zapper.Device.WebOS.WebOsProtocolController>();
 
 // Register device controllers with factory pattern
 builder.Services.AddTransient<IDeviceController>(provider =>
@@ -79,7 +79,7 @@ builder.Services.AddTransient<IDeviceController>(provider =>
 // Register business services
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
-builder.Services.AddScoped<IIRCodeService, IRCodeService>();
+builder.Services.AddScoped<IIrCodeService, IrCodeService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Add SignalR

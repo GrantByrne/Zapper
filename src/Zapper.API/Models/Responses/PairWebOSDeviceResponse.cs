@@ -1,6 +1,6 @@
 namespace Zapper.API.Models.Responses;
 
-public class PairWebOSDeviceResponse
+public class PairWebOsDeviceResponse
 {
     public bool Success { get; set; }
     public string Message { get; set; } = string.Empty;

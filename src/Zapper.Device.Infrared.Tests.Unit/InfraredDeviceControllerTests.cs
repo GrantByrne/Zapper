@@ -43,7 +43,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand { Name = "Power", IrCode = null };
 
@@ -60,7 +60,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand { Name = "Power", IrCode = "" };
 
@@ -77,7 +77,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Samsung TV",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand 
         { 
@@ -104,7 +104,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Samsung TV",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand 
         { 
@@ -130,7 +130,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Samsung TV",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand 
         { 
@@ -158,7 +158,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Samsung TV",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
         var command = new DeviceCommand 
         { 
@@ -199,7 +199,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
 
         _mockTransmitter.IsAvailable.Returns(true);
@@ -216,7 +216,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
 
         _mockTransmitter.IsAvailable.Returns(false);
@@ -233,7 +233,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
 
         _mockTransmitter.IsAvailable.Returns(true);
@@ -251,7 +251,7 @@ public class InfraredDeviceControllerTests
         {
             Id = 1,
             Name = "Test Device",
-            ConnectionType = ConnectionType.InfraredIR
+            ConnectionType = ConnectionType.InfraredIr
         };
 
         _mockTransmitter.IsAvailable.Returns(false);
@@ -263,10 +263,10 @@ public class InfraredDeviceControllerTests
     }
 
     [Theory]
-    [InlineData(ConnectionType.InfraredIR, true)]
+    [InlineData(ConnectionType.InfraredIr, true)]
     [InlineData(ConnectionType.Bluetooth, false)]
-    [InlineData(ConnectionType.NetworkTCP, false)]
-    [InlineData(ConnectionType.USB, false)]
+    [InlineData(ConnectionType.NetworkTcp, false)]
+    [InlineData(ConnectionType.Usb, false)]
     public void SupportsDevice_ShouldReturnCorrectResult(ConnectionType connectionType, bool expectedResult)
     {
         var device = new Zapper.Core.Models.Device

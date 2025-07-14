@@ -42,7 +42,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB
+            ConnectionType = ConnectionType.Usb
         };
         var command = new DeviceCommand { Name = "Power" };
 
@@ -74,7 +74,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = "0001:0002:remote1"
         };
 
@@ -93,7 +93,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = "0001:0002:remote1"
         };
 
@@ -112,7 +112,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "LogitechRemote",
-            ConnectionType = ConnectionType.USB
+            ConnectionType = ConnectionType.Usb
         };
 
         _mockRemoteHandler.GetConnectedRemotes()
@@ -146,7 +146,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = "0001:0002:remote1"
         };
 
@@ -171,7 +171,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = "0001:0002:remote1"
         };
 
@@ -185,11 +185,11 @@ public class UsbDeviceControllerTests
     }
 
     [Theory]
-    [InlineData(ConnectionType.USB, true)]
+    [InlineData(ConnectionType.Usb, true)]
     [InlineData(ConnectionType.Bluetooth, false)]
-    [InlineData(ConnectionType.InfraredIR, false)]
-    [InlineData(ConnectionType.NetworkTCP, false)]
-    [InlineData(ConnectionType.WebOS, false)]
+    [InlineData(ConnectionType.InfraredIr, false)]
+    [InlineData(ConnectionType.NetworkTcp, false)]
+    [InlineData(ConnectionType.WebOs, false)]
     public void SupportsDevice_ShouldReturnCorrectResult(ConnectionType connectionType, bool expectedResult)
     {
         var device = new Zapper.Core.Models.Device
@@ -211,7 +211,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "USB Remote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = "0001:0002:remote1"
         };
 
@@ -230,7 +230,7 @@ public class UsbDeviceControllerTests
         {
             Id = 1,
             Name = "LogitechRemote",
-            ConnectionType = ConnectionType.USB,
+            ConnectionType = ConnectionType.Usb,
             MacAddress = null
         };
 

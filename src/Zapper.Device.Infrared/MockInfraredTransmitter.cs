@@ -31,7 +31,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
-    public async Task TransmitAsync(IRCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task TransmitAsync(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");

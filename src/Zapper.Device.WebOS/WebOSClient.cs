@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSClient(ILogger<WebOSClient> logger) : IWebOSClient, IDisposable
+public class WebOsClient(ILogger<WebOsClient> logger) : IWebOsClient, IDisposable
 {
     private ClientWebSocket? _webSocket;
     private int _messageId = 1;

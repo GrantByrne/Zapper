@@ -50,7 +50,7 @@ public enum CommandType
     Menu,
     Back,
     Home,
-    OK,
+    Ok,
     DirectionalUp,
     DirectionalDown,
     DirectionalLeft,

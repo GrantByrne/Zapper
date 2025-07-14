@@ -11,7 +11,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
 
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
-        if (device.ConnectionType != ConnectionType.NetworkHTTP)
+        if (device.ConnectionType != ConnectionType.NetworkHttp)
         {
             logger.LogWarning("Device {DeviceName} is not configured for HTTP connection", device.Name);
             return false;
@@ -39,7 +39,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
                 CommandType.DirectionalDown => await SendKeyAsync(device.IpAddress, "Down", cancellationToken),
                 CommandType.DirectionalLeft => await SendKeyAsync(device.IpAddress, "Left", cancellationToken),
                 CommandType.DirectionalRight => await SendKeyAsync(device.IpAddress, "Right", cancellationToken),
-                CommandType.OK => await SendKeyAsync(device.IpAddress, "Select", cancellationToken),
+                CommandType.Ok => await SendKeyAsync(device.IpAddress, "Select", cancellationToken),
                 CommandType.PlayPause => await SendKeyAsync(device.IpAddress, "Play", cancellationToken),
                 CommandType.Stop => await SendKeyAsync(device.IpAddress, "Stop", cancellationToken),
                 CommandType.FastForward => await SendKeyAsync(device.IpAddress, "Fwd", cancellationToken),

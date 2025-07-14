@@ -13,7 +13,7 @@ public class DeviceService(
     ZapperContext context,
     IInfraredTransmitter irTransmitter,
     INetworkDeviceController networkController,
-    IWebOSDeviceController webOSController,
+    IWebOsDeviceController webOsController,
     IRokuDeviceController rokuController,
     INotificationService notificationService,
     ILogger<DeviceService> logger) : IDeviceService
@@ -143,14 +143,14 @@ public class DeviceService(
         {
             bool isOnline = device.ConnectionType switch
             {
-                ConnectionType.NetworkTCP or ConnectionType.NetworkWebSocket => 
+                ConnectionType.NetworkTcp or ConnectionType.NetworkWebSocket => 
                     await TestNetworkDeviceAsync(device),
-                ConnectionType.NetworkHTTP =>
+                ConnectionType.NetworkHttp =>
                     await rokuController.TestConnectionAsync(device),
-                ConnectionType.InfraredIR => 
+                ConnectionType.InfraredIr => 
                     irTransmitter.IsAvailable,
-                ConnectionType.WebOS =>
-                    await webOSController.TestConnectionAsync(device),
+                ConnectionType.WebOs =>
+                    await webOsController.TestConnectionAsync(device),
                 _ => false
             };
 
@@ -196,11 +196,11 @@ public class DeviceService(
 
         return device.ConnectionType switch
         {
-            ConnectionType.InfraredIR => await ExecuteIrCommandAsync(command, cancellationToken),
-            ConnectionType.NetworkTCP => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
+            ConnectionType.InfraredIr => await ExecuteIrCommandAsync(command, cancellationToken),
+            ConnectionType.NetworkTcp => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
             ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommandAsync(device, command, cancellationToken),
-            ConnectionType.NetworkHTTP => await rokuController.SendCommandAsync(device, command, cancellationToken),
-            ConnectionType.WebOS => await webOSController.SendCommandAsync(device, command, cancellationToken),
+            ConnectionType.NetworkHttp => await rokuController.SendCommandAsync(device, command, cancellationToken),
+            ConnectionType.WebOs => await webOsController.SendCommandAsync(device, command, cancellationToken),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };
     }

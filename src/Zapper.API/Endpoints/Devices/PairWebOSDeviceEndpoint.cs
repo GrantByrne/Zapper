@@ -7,7 +7,7 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscovery webOSDiscovery) : Endpoint<PairWebOSDeviceRequest, PairWebOSDeviceResponse>
+public class PairWebOsDeviceEndpoint(IDeviceService deviceService, IWebOsDiscovery webOsDiscovery) : Endpoint<PairWebOsDeviceRequest, PairWebOsDeviceResponse>
 {
 
     public override void Configure()
@@ -21,12 +21,12 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
         });
     }
 
-    public override async Task HandleAsync(PairWebOSDeviceRequest req, CancellationToken ct)
+    public override async Task HandleAsync(PairWebOsDeviceRequest req, CancellationToken ct)
     {
         var device = await deviceService.GetDeviceAsync(req.DeviceId);
         if (device == null)
         {
-            await SendAsync(new PairWebOSDeviceResponse
+            await SendAsync(new PairWebOsDeviceResponse
             {
                 Success = false,
                 Message = "Device not found"
@@ -34,9 +34,9 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
             return;
         }
 
-        if (device.ConnectionType != ConnectionType.WebOS)
+        if (device.ConnectionType != ConnectionType.WebOs)
         {
-            await SendAsync(new PairWebOSDeviceResponse
+            await SendAsync(new PairWebOsDeviceResponse
             {
                 Success = false,
                 Message = "Device is not a WebOS device"
@@ -44,12 +44,12 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
             return;
         }
 
-        var success = await webOSDiscovery.PairWithDeviceAsync(device, ct);
+        var success = await webOsDiscovery.PairWithDeviceAsync(device, ct);
         if (success)
         {
             await deviceService.UpdateDeviceAsync(device.Id, device);
 
-            await SendOkAsync(new PairWebOSDeviceResponse
+            await SendOkAsync(new PairWebOsDeviceResponse
             {
                 Success = true,
                 Message = "Pairing successful",
@@ -58,7 +58,7 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
         }
         else
         {
-            await SendAsync(new PairWebOSDeviceResponse
+            await SendAsync(new PairWebOsDeviceResponse
             {
                 Success = false,
                 Message = "Pairing failed. Ensure the TV is on and you accept the pairing request on the TV screen."

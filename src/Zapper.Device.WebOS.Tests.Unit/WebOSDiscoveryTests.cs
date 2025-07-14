@@ -5,17 +5,17 @@ using Xunit;
 
 namespace Zapper.Device.WebOS.Tests.Unit;
 
-public class WebOSDiscoveryTests
+public class WebOsDiscoveryTests
 {
-    private readonly ILogger<WebOSDiscovery> _mockLogger;
-    private readonly IWebOSClient _mockWebOSClient;
-    private readonly WebOSDiscovery _discovery;
+    private readonly ILogger<WebOsDiscovery> _mockLogger;
+    private readonly IWebOsClient _mockWebOsClient;
+    private readonly WebOsDiscovery _discovery;
 
-    public WebOSDiscoveryTests()
+    public WebOsDiscoveryTests()
     {
-        _mockLogger = Substitute.For<ILogger<WebOSDiscovery>>();
-        _mockWebOSClient = Substitute.For<IWebOSClient>();
-        _discovery = new WebOSDiscovery(_mockLogger, _mockWebOSClient);
+        _mockLogger = Substitute.For<ILogger<WebOsDiscovery>>();
+        _mockWebOsClient = Substitute.For<IWebOsClient>();
+        _discovery = new WebOsDiscovery(_mockLogger, _mockWebOsClient);
     }
 
     [Fact]

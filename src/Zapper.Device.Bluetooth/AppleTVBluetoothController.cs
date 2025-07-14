@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class AppleTVBluetoothController(IBluetoothHIDController hidController, IBluetoothService bluetoothService, ILogger<AppleTVBluetoothController> logger) : IBluetoothDeviceController
+public class AppleTvBluetoothController(IBluetoothHidController hidController, IBluetoothService bluetoothService, ILogger<AppleTvBluetoothController> logger) : IBluetoothDeviceController
 {
 
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
@@ -37,25 +37,25 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
             return command.Type switch
             {
                 CommandType.Power => await HandlePowerCommand(device.MacAddress, command, cancellationToken),
-                CommandType.VolumeUp => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.VolumeUp, cancellationToken),
-                CommandType.VolumeDown => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.VolumeDown, cancellationToken),
-                CommandType.Mute => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.VolumeMute, cancellationToken),
+                CommandType.VolumeUp => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.VolumeUp, cancellationToken),
+                CommandType.VolumeDown => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.VolumeDown, cancellationToken),
+                CommandType.Mute => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.VolumeMute, cancellationToken),
                 CommandType.ChannelUp => await HandleChannelUp(device.MacAddress, cancellationToken),
                 CommandType.ChannelDown => await HandleChannelDown(device.MacAddress, cancellationToken),
                 CommandType.Input => await HandleInputCommand(device.MacAddress, command, cancellationToken),
-                CommandType.Menu => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.Menu, cancellationToken),
-                CommandType.Back => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.Back, cancellationToken),
-                CommandType.Home => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.Home, cancellationToken),
-                CommandType.OK => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.DPadCenter, cancellationToken),
-                CommandType.DirectionalUp => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.DPadUp, cancellationToken),
-                CommandType.DirectionalDown => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.DPadDown, cancellationToken),
-                CommandType.DirectionalLeft => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.DPadLeft, cancellationToken),
-                CommandType.DirectionalRight => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.DPadRight, cancellationToken),
+                CommandType.Menu => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.Menu, cancellationToken),
+                CommandType.Back => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.Back, cancellationToken),
+                CommandType.Home => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.Home, cancellationToken),
+                CommandType.Ok => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.DPadCenter, cancellationToken),
+                CommandType.DirectionalUp => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.DPadUp, cancellationToken),
+                CommandType.DirectionalDown => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.DPadDown, cancellationToken),
+                CommandType.DirectionalLeft => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.DPadLeft, cancellationToken),
+                CommandType.DirectionalRight => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.DPadRight, cancellationToken),
                 CommandType.Number => await HandleNumberCommand(device.MacAddress, command, cancellationToken),
-                CommandType.PlayPause => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.PlayPause, cancellationToken),
-                CommandType.Stop => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.Stop, cancellationToken),
-                CommandType.FastForward => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.FastForward, cancellationToken),
-                CommandType.Rewind => await hidController.SendKeyAsync(device.MacAddress, HIDKeyCode.Rewind, cancellationToken),
+                CommandType.PlayPause => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.PlayPause, cancellationToken),
+                CommandType.Stop => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.Stop, cancellationToken),
+                CommandType.FastForward => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.FastForward, cancellationToken),
+                CommandType.Rewind => await hidController.SendKeyAsync(device.MacAddress, HidKeyCode.Rewind, cancellationToken),
                 CommandType.Custom => await HandleCustomCommand(device.MacAddress, command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
@@ -108,7 +108,7 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
         {
             var devices = await bluetoothService.GetDevicesAsync(cancellationToken);
             return devices
-                .Where(d => d.IsPaired && IsAppleTVDevice(d))
+                .Where(d => d.IsPaired && IsAppleTvDevice(d))
                 .Select(d => d.Address)
                 .ToList();
         }
@@ -122,23 +122,23 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
     private async Task<bool> HandlePowerCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
         logger.LogInformation("Power command requested - using Menu button to wake/sleep Apple TV");
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
+        return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Menu, cancellationToken);
     }
 
     private async Task<bool> HandleChannelUp(string deviceAddress, CancellationToken cancellationToken)
     {
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadRight, cancellationToken);
+        return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.DPadRight, cancellationToken);
     }
 
     private async Task<bool> HandleChannelDown(string deviceAddress, CancellationToken cancellationToken)
     {
-        return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadLeft, cancellationToken);
+        return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.DPadLeft, cancellationToken);
     }
 
     private async Task<bool> HandleInputCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
         return await hidController.SendKeySequenceAsync(deviceAddress,
-            [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
+            [HidKeyCode.Home, HidKeyCode.Home], 200, cancellationToken);
     }
 
     private async Task<bool> HandleNumberCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
@@ -147,17 +147,17 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
         {
             var keyCode = number switch
             {
-                0 => HIDKeyCode.Key0,
-                1 => HIDKeyCode.Key1,
-                2 => HIDKeyCode.Key2,
-                3 => HIDKeyCode.Key3,
-                4 => HIDKeyCode.Key4,
-                5 => HIDKeyCode.Key5,
-                6 => HIDKeyCode.Key6,
-                7 => HIDKeyCode.Key7,
-                8 => HIDKeyCode.Key8,
-                9 => HIDKeyCode.Key9,
-                _ => (HIDKeyCode?)null
+                0 => HidKeyCode.Key0,
+                1 => HidKeyCode.Key1,
+                2 => HidKeyCode.Key2,
+                3 => HidKeyCode.Key3,
+                4 => HidKeyCode.Key4,
+                5 => HidKeyCode.Key5,
+                6 => HidKeyCode.Key6,
+                7 => HidKeyCode.Key7,
+                8 => HidKeyCode.Key8,
+                9 => HidKeyCode.Key9,
+                _ => (HidKeyCode?)null
             };
 
             if (keyCode.HasValue)
@@ -189,36 +189,36 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
             switch (command.NetworkPayload.ToLowerInvariant())
             {
                 case "siri":
-                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Assistant, cancellationToken);
+                    return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Assistant, cancellationToken);
                 
                 case "app_switcher":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
-                        [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
+                        [HidKeyCode.Home, HidKeyCode.Home], 200, cancellationToken);
                 
                 case "control_center":
-                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
+                    return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Menu, cancellationToken);
                 
                 case "netflix":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
-                        [HIDKeyCode.Home, HIDKeyCode.N], 100, cancellationToken);
+                        [HidKeyCode.Home, HidKeyCode.N], 100, cancellationToken);
                 
                 case "disney":
                 case "disney+":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
-                        [HIDKeyCode.Home, HIDKeyCode.D], 100, cancellationToken);
+                        [HidKeyCode.Home, HidKeyCode.D], 100, cancellationToken);
                 
                 case "youtube":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
-                        [HIDKeyCode.Home, HIDKeyCode.Y], 100, cancellationToken);
+                        [HidKeyCode.Home, HidKeyCode.Y], 100, cancellationToken);
                 
                 case "search":
-                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Search, cancellationToken);
+                    return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Search, cancellationToken);
                 
                 case "settings":
-                    return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Settings, cancellationToken);
+                    return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Settings, cancellationToken);
                 
                 default:
-                    if (Enum.TryParse<HIDKeyCode>(command.NetworkPayload, true, out var keyCode))
+                    if (Enum.TryParse<HidKeyCode>(command.NetworkPayload, true, out var keyCode))
                     {
                         return await hidController.SendKeyAsync(deviceAddress, keyCode, cancellationToken);
                     }
@@ -241,7 +241,7 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
         return Task.FromResult(false);
     }
 
-    private static bool IsAppleTVDevice(BluetoothDeviceInfo device)
+    private static bool IsAppleTvDevice(BluetoothDeviceInfo device)
     {
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
@@ -254,10 +254,10 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
                alias.Contains("appletv") || 
                alias.Contains("siri remote") ||
                alias.Contains("apple remote") ||
-               device.UUIDs.Any(uuid => IsAppleTVServiceUuid(uuid));
+               device.UuiDs.Any(uuid => IsAppleTvServiceUuid(uuid));
     }
 
-    private static bool IsAppleTVServiceUuid(string uuid)
+    private static bool IsAppleTvServiceUuid(string uuid)
     {
         var appleTvUuids = new[]
         {

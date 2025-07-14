@@ -4,8 +4,8 @@ using Zapper.Device.Bluetooth;
 namespace Zapper.Endpoints.Devices;
 
 public class BluetoothDiscoveryEndpoint(
-    AndroidTVBluetoothController androidTvController,
-    AppleTVBluetoothController appleTvController) : EndpointWithoutRequest<IEnumerable<string>>
+    AndroidTvBluetoothController androidTvController,
+    AppleTvBluetoothController appleTvController) : EndpointWithoutRequest<IEnumerable<string>>
 {
     public override void Configure()
     {

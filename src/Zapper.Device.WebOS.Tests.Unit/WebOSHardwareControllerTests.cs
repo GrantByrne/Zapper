@@ -6,24 +6,24 @@ using Zapper.Core.Models;
 
 namespace Zapper.Device.WebOS.Tests.Unit;
 
-public class WebOSHardwareControllerTests
+public class WebOsHardwareControllerTests
 {
-    private readonly IWebOSClient _mockWebOSClient;
-    private readonly ILogger<WebOSHardwareController> _mockLogger;
-    private readonly WebOSHardwareController _controller;
-    private readonly Zapper.Core.Models.Device _webOSDevice;
+    private readonly IWebOsClient _mockWebOsClient;
+    private readonly ILogger<WebOsHardwareController> _mockLogger;
+    private readonly WebOsHardwareController _controller;
+    private readonly Zapper.Core.Models.Device _webOsDevice;
 
-    public WebOSHardwareControllerTests()
+    public WebOsHardwareControllerTests()
     {
-        _mockWebOSClient = Substitute.For<IWebOSClient>();
-        _mockLogger = Substitute.For<ILogger<WebOSHardwareController>>();
-        _controller = new WebOSHardwareController(_mockWebOSClient, _mockLogger);
+        _mockWebOsClient = Substitute.For<IWebOsClient>();
+        _mockLogger = Substitute.For<ILogger<WebOsHardwareController>>();
+        _controller = new WebOsHardwareController(_mockWebOsClient, _mockLogger);
 
-        _webOSDevice = new Zapper.Core.Models.Device
+        _webOsDevice = new Zapper.Core.Models.Device
         {
             Id = 1,
             Name = "Test WebOS TV",
-            ConnectionType = ConnectionType.WebOS,
+            ConnectionType = ConnectionType.WebOs,
             NetworkAddress = "192.168.1.100",
             AuthenticationToken = "test-client-key"
         };
@@ -39,19 +39,19 @@ public class WebOSHardwareControllerTests
             Type = CommandType.Power
         };
 
-        _mockWebOSClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.PowerOffAsync(Arg.Any<CancellationToken>())
+        _mockWebOsClient.PowerOffAsync(Arg.Any<CancellationToken>())
                        .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOSDevice, powerCommand);
+        var result = await _controller.SendCommandAsync(_webOsDevice, powerCommand);
 
         // Assert
         result.Should().BeTrue();
-        await _mockWebOSClient.Received(1).PowerOffAsync(Arg.Any<CancellationToken>());
+        await _mockWebOsClient.Received(1).PowerOffAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -60,28 +60,28 @@ public class WebOSHardwareControllerTests
         // Arrange
         var command = new DeviceCommand { Type = CommandType.Power };
 
-        _mockWebOSClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                        .Returns(false);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOSDevice, command);
+        var result = await _controller.SendCommandAsync(_webOsDevice, command);
 
         // Assert
         result.Should().BeFalse();
-        await _mockWebOSClient.Received(1).ConnectAsync(_webOSDevice.NetworkAddress!, false, Arg.Any<CancellationToken>());
+        await _mockWebOsClient.Received(1).ConnectAsync(_webOsDevice.NetworkAddress!, false, Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task TestConnectionAsync_WithSuccessfulConnection_ShouldReturnTrue()
     {
         // Arrange
-        _mockWebOSClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                        .Returns(true);
 
         // Act
-        var result = await _controller.TestConnectionAsync(_webOSDevice);
+        var result = await _controller.TestConnectionAsync(_webOsDevice);
 
         // Assert
         result.Should().BeTrue();
@@ -91,11 +91,11 @@ public class WebOSHardwareControllerTests
     public async Task TestConnectionAsync_WithConnectionFailure_ShouldReturnFalse()
     {
         // Arrange
-        _mockWebOSClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                        .Returns(false);
 
         // Act
-        var result = await _controller.TestConnectionAsync(_webOSDevice);
+        var result = await _controller.TestConnectionAsync(_webOsDevice);
 
         // Assert
         result.Should().BeFalse();
@@ -111,21 +111,21 @@ public class WebOSHardwareControllerTests
         // Arrange
         var command = new DeviceCommand { Type = commandType };
 
-        _mockWebOSClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.ConnectAsync(Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _mockWebOsClient.AuthenticateAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.VolumeUpAsync(Arg.Any<CancellationToken>())
+        _mockWebOsClient.VolumeUpAsync(Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.VolumeDownAsync(Arg.Any<CancellationToken>())
+        _mockWebOsClient.VolumeDownAsync(Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.ChannelUpAsync(Arg.Any<CancellationToken>())
+        _mockWebOsClient.ChannelUpAsync(Arg.Any<CancellationToken>())
                        .Returns(true);
-        _mockWebOSClient.ChannelDownAsync(Arg.Any<CancellationToken>())
+        _mockWebOsClient.ChannelDownAsync(Arg.Any<CancellationToken>())
                        .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOSDevice, command);
+        var result = await _controller.SendCommandAsync(_webOsDevice, command);
 
         // Assert
         result.Should().BeTrue();
@@ -133,16 +133,16 @@ public class WebOSHardwareControllerTests
         switch (commandType)
         {
             case CommandType.VolumeUp:
-                await _mockWebOSClient.Received(1).VolumeUpAsync(Arg.Any<CancellationToken>());
+                await _mockWebOsClient.Received(1).VolumeUpAsync(Arg.Any<CancellationToken>());
                 break;
             case CommandType.VolumeDown:
-                await _mockWebOSClient.Received(1).VolumeDownAsync(Arg.Any<CancellationToken>());
+                await _mockWebOsClient.Received(1).VolumeDownAsync(Arg.Any<CancellationToken>());
                 break;
             case CommandType.ChannelUp:
-                await _mockWebOSClient.Received(1).ChannelUpAsync(Arg.Any<CancellationToken>());
+                await _mockWebOsClient.Received(1).ChannelUpAsync(Arg.Any<CancellationToken>());
                 break;
             case CommandType.ChannelDown:
-                await _mockWebOSClient.Received(1).ChannelDownAsync(Arg.Any<CancellationToken>());
+                await _mockWebOsClient.Received(1).ChannelDownAsync(Arg.Any<CancellationToken>());
                 break;
         }
     }

@@ -4,7 +4,7 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class CreateIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<IRCodeSet, IRCodeSet>
+public class CreateIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<IrCodeSet, IrCodeSet>
 {
     public override void Configure()
     {
@@ -12,9 +12,9 @@ public class CreateIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<IR
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(IRCodeSet req, CancellationToken ct)
+    public override async Task HandleAsync(IrCodeSet req, CancellationToken ct)
     {
         var codeSet = await irCodeService.CreateCodeSetAsync(req);
-        await SendCreatedAtAsync<GetIRCodeSetEndpoint>(new { Id = codeSet.Id }, codeSet, cancellation: ct);
+        await SendCreatedAtAsync<GetIrCodeSetEndpoint>(new { Id = codeSet.Id }, codeSet, cancellation: ct);
     }
 }

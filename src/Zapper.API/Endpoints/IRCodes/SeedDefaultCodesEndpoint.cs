@@ -3,7 +3,7 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class SeedDefaultCodesEndpoint(IIRCodeService irCodeService) : EndpointWithoutRequest
+public class SeedDefaultCodesEndpoint(IIrCodeService irCodeService) : EndpointWithoutRequest
 {
     public override void Configure()
     {

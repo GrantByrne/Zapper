@@ -2,12 +2,12 @@ namespace Zapper.Core.Models;
 
 public enum ConnectionType
 {
-    InfraredIR,
-    RadioFrequencyRF,
-    NetworkTCP,
+    InfraredIr,
+    RadioFrequencyRf,
+    NetworkTcp,
     NetworkWebSocket,
-    NetworkHTTP,
+    NetworkHttp,
     Bluetooth,
-    USB,
-    WebOS
+    Usb,
+    WebOs
 }

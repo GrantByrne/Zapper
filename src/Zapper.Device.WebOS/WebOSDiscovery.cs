@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSClient) : IWebOSDiscovery, IDisposable
+public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsClient) : IWebOsDiscovery, IDisposable
 {
     private UdpClient? _udpClient;
     private readonly List<Zapper.Core.Models.Device> _discoveredDevices = [];
@@ -48,11 +48,11 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
         try
         {
             // Try to connect to the WebOS TV directly
-            var connected = await webOSClient.ConnectAsync(ipAddress, false, cancellationToken);
+            var connected = await webOsClient.ConnectAsync(ipAddress, false, cancellationToken);
             if (!connected)
             {
                 // Try secure connection
-                connected = await webOSClient.ConnectAsync(ipAddress, true, cancellationToken);
+                connected = await webOsClient.ConnectAsync(ipAddress, true, cancellationToken);
             }
 
             if (connected)
@@ -62,8 +62,8 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
                     Name = $"WebOS TV ({ipAddress})",
                     Brand = "LG",
                     Model = "Unknown",
-                    Type = DeviceType.SmartTV,
-                    ConnectionType = ConnectionType.WebOS,
+                    Type = DeviceType.SmartTv,
+                    ConnectionType = ConnectionType.WebOs,
                     NetworkAddress = ipAddress,
                     UseSecureConnection = false,
                     IsOnline = true,
@@ -71,7 +71,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
                     LastSeen = DateTime.UtcNow
                 };
 
-                await webOSClient.DisconnectAsync(cancellationToken);
+                await webOsClient.DisconnectAsync(cancellationToken);
                 return device;
             }
 
@@ -86,7 +86,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
 
     public async Task<bool> PairWithDeviceAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
-        if (device.ConnectionType != ConnectionType.WebOS || string.IsNullOrEmpty(device.NetworkAddress))
+        if (device.ConnectionType != ConnectionType.WebOs || string.IsNullOrEmpty(device.NetworkAddress))
         {
             logger.LogWarning("Device {DeviceName} is not a valid WebOS device for pairing", device.Name);
             return false;
@@ -95,7 +95,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
         try
         {
             // Connect to the device
-            var connected = await webOSClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
+            var connected = await webOsClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
             if (!connected)
             {
                 logger.LogError("Failed to connect to WebOS device {DeviceName} for pairing", device.Name);
@@ -103,11 +103,11 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
             }
 
             // Attempt authentication (this will trigger pairing prompt on TV)
-            var authenticated = await webOSClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
+            var authenticated = await webOsClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
             if (authenticated)
             {
                 // Store the client key for future connections
-                device.AuthenticationToken = webOSClient.ClientKey;
+                device.AuthenticationToken = webOsClient.ClientKey;
                 device.IsOnline = true;
                 device.LastSeen = DateTime.UtcNow;
 
@@ -125,7 +125,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
         }
         finally
         {
-            await webOSClient.DisconnectAsync(cancellationToken);
+            await webOsClient.DisconnectAsync(cancellationToken);
         }
     }
 
@@ -271,7 +271,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
-                tasks.Add(CheckAddressForWebOSAsync(address, cancellationToken));
+                tasks.Add(CheckAddressForWebOsAsync(address, cancellationToken));
                 
                 // Limit concurrent scans
                 if (tasks.Count >= 5)
@@ -289,7 +289,7 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
         }
     }
 
-    private async Task CheckAddressForWebOSAsync(IPAddress address, CancellationToken cancellationToken)
+    private async Task CheckAddressForWebOsAsync(IPAddress address, CancellationToken cancellationToken)
     {
         try
         {
@@ -330,8 +330,8 @@ public class WebOSDiscovery(ILogger<WebOSDiscovery> logger, IWebOSClient webOSCl
                     Name = $"WebOS TV ({remoteEndPoint.Address})",
                     Brand = "LG",
                     Model = serverMatch.Success ? ExtractModelFromServer(serverMatch.Groups[1].Value) : "Unknown",
-                    Type = DeviceType.SmartTV,
-                    ConnectionType = ConnectionType.WebOS,
+                    Type = DeviceType.SmartTv,
+                    ConnectionType = ConnectionType.WebOs,
                     NetworkAddress = remoteEndPoint.Address.ToString(),
                     UseSecureConnection = false,
                     IsOnline = true,

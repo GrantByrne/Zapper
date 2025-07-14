@@ -45,13 +45,13 @@ public class BluetoothHidControllerTests
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        var keyCode = HIDKeyCode.Home;
+        var keyCode = HidKeyCode.Home;
         var deviceInfo = new BluetoothDeviceInfo
         {
             Address = deviceAddress,
             Name = "Test HID Device",
             IsConnected = true,
-            UUIDs = ["00001124-0000-1000-8000-00805f9b34fb"] // HID Service UUID
+            UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"] // HID Service UUID
         };
 
         _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
@@ -70,13 +70,13 @@ public class BluetoothHidControllerTests
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        var keyCode = HIDKeyCode.Home;
+        var keyCode = HidKeyCode.Home;
         var deviceInfo = new BluetoothDeviceInfo
         {
             Address = deviceAddress,
             Name = "Test Non-HID Device",
             IsConnected = true,
-            UUIDs = ["0000180f-0000-1000-8000-00805f9b34fb"] // Battery Service UUID
+            UuiDs = ["0000180f-0000-1000-8000-00805f9b34fb"] // Battery Service UUID
         };
 
         _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
@@ -94,7 +94,7 @@ public class BluetoothHidControllerTests
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        var keyCode = HIDKeyCode.Home;
+        var keyCode = HidKeyCode.Home;
 
         _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
             .Returns((BluetoothDeviceInfo?)null);
@@ -111,13 +111,13 @@ public class BluetoothHidControllerTests
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        var keyCodes = new[] { HIDKeyCode.Home, HIDKeyCode.DPadDown, HIDKeyCode.DPadCenter };
+        var keyCodes = new[] { HidKeyCode.Home, HidKeyCode.DPadDown, HidKeyCode.DPadCenter };
         var deviceInfo = new BluetoothDeviceInfo
         {
             Address = deviceAddress,
             Name = "Test HID Device",
             IsConnected = true,
-            UUIDs = ["00001124-0000-1000-8000-00805f9b34fb"]
+            UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
         };
 
         _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
@@ -141,7 +141,7 @@ public class BluetoothHidControllerTests
             Address = deviceAddress,
             Name = "Test HID Device",
             IsConnected = true,
-            UUIDs = ["00001124-0000-1000-8000-00805f9b34fb"]
+            UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
         };
 
         _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
@@ -255,21 +255,21 @@ public class BluetoothHidControllerTests
                 Address = "AA:BB:CC:DD:EE:FF",
                 Name = "HID Device",
                 IsConnected = true,
-                UUIDs = ["00001124-0000-1000-8000-00805f9b34fb"]
+                UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
             },
             new BluetoothDeviceInfo
             {
                 Address = "11:22:33:44:55:66",
                 Name = "Audio Device",
                 IsConnected = true,
-                UUIDs = ["0000110b-0000-1000-8000-00805f9b34fb"]
+                UuiDs = ["0000110b-0000-1000-8000-00805f9b34fb"]
             },
             new BluetoothDeviceInfo
             {
                 Address = "99:88:77:66:55:44",
                 Name = "Another HID Device",
                 IsConnected = false,
-                UUIDs = ["00001124-0000-1000-8000-00805f9b34fb"]
+                UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
             }
         };
 

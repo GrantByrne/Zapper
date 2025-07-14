@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHardwareController> logger) : IWebOSDeviceController
+public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHardwareController> logger) : IWebOsDeviceController
 {
 
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
-        if (device.ConnectionType != ConnectionType.WebOS)
+        if (device.ConnectionType != ConnectionType.WebOs)
         {
             logger.LogWarning("Device {DeviceName} is not a WebOS device", device.Name);
             return false;
@@ -23,9 +23,9 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
         try
         {
             // Connect if not already connected
-            if (!webOSClient.IsConnected)
+            if (!webOsClient.IsConnected)
             {
-                var connected = await webOSClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
+                var connected = await webOsClient.ConnectAsync(device.NetworkAddress, device.UseSecureConnection, cancellationToken);
                 if (!connected)
                 {
                     logger.LogError("Failed to connect to WebOS device {DeviceName}", device.Name);
@@ -33,7 +33,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
                 }
 
                 // Authenticate with stored key
-                var authenticated = await webOSClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
+                var authenticated = await webOsClient.AuthenticateAsync(device.AuthenticationToken, cancellationToken);
                 if (!authenticated)
                 {
                     logger.LogError("Failed to authenticate with WebOS device {DeviceName}", device.Name);
@@ -44,12 +44,12 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
             // Execute the command based on type
             return command.Type switch
             {
-                CommandType.Power => await webOSClient.PowerOffAsync(cancellationToken),
-                CommandType.VolumeUp => await webOSClient.VolumeUpAsync(cancellationToken),
-                CommandType.VolumeDown => await webOSClient.VolumeDownAsync(cancellationToken),
+                CommandType.Power => await webOsClient.PowerOffAsync(cancellationToken),
+                CommandType.VolumeUp => await webOsClient.VolumeUpAsync(cancellationToken),
+                CommandType.VolumeDown => await webOsClient.VolumeDownAsync(cancellationToken),
                 CommandType.Mute => await HandleMute(command, cancellationToken),
-                CommandType.ChannelUp => await webOSClient.ChannelUpAsync(cancellationToken),
-                CommandType.ChannelDown => await webOSClient.ChannelDownAsync(cancellationToken),
+                CommandType.ChannelUp => await webOsClient.ChannelUpAsync(cancellationToken),
+                CommandType.ChannelDown => await webOsClient.ChannelDownAsync(cancellationToken),
                 CommandType.AppLaunch => await HandleLaunchApp(command, cancellationToken),
                 CommandType.Input => await HandleSwitchInput(command, cancellationToken),
                 CommandType.Custom => await HandleCustomCommand(command, cancellationToken),
@@ -68,7 +68,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
     {
         if (bool.TryParse(command.NetworkPayload, out var muted))
         {
-            return await webOSClient.SetMuteAsync(muted, cancellationToken);
+            return await webOsClient.SetMuteAsync(muted, cancellationToken);
         }
         logger.LogWarning("Invalid mute parameter: {Parameters}", command.NetworkPayload);
         return false;
@@ -78,7 +78,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
     {
         if (!string.IsNullOrEmpty(command.NetworkPayload))
         {
-            return await webOSClient.LaunchAppAsync(command.NetworkPayload, cancellationToken);
+            return await webOsClient.LaunchAppAsync(command.NetworkPayload, cancellationToken);
         }
         logger.LogWarning("App ID parameter is required for launch_app command");
         return false;
@@ -88,7 +88,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
     {
         if (!string.IsNullOrEmpty(command.NetworkPayload))
         {
-            return await webOSClient.SwitchInputAsync(command.NetworkPayload, cancellationToken);
+            return await webOsClient.SwitchInputAsync(command.NetworkPayload, cancellationToken);
         }
         logger.LogWarning("Input ID parameter is required for switch_input command");
         return false;
@@ -99,7 +99,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
         if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
             // For custom commands, use the HttpEndpoint field as the SSAP URI
-            var response = await webOSClient.SendCommandAsync(command.HttpEndpoint, 
+            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint, 
                 string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }
@@ -114,7 +114,7 @@ public class WebOSHardwareController(IWebOSClient webOSClient, ILogger<WebOSHard
         // Try to execute as a direct SSAP URI if HttpEndpoint field is set
         if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
-            var response = await webOSClient.SendCommandAsync(command.HttpEndpoint, 
+            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint, 
                 string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }

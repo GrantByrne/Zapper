@@ -5,7 +5,7 @@ using Zapper.API.Models.Requests;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class GetIRCodesEndpoint(IIRCodeService irCodeService) : Endpoint<GetIRCodesRequest, IEnumerable<IRCode>>
+public class GetIrCodesEndpoint(IIrCodeService irCodeService) : Endpoint<GetIrCodesRequest, IEnumerable<IrCode>>
 {
     public override void Configure()
     {
@@ -13,7 +13,7 @@ public class GetIRCodesEndpoint(IIRCodeService irCodeService) : Endpoint<GetIRCo
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(GetIRCodesRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetIrCodesRequest req, CancellationToken ct)
     {
         var codes = await irCodeService.GetCodesAsync(req.CodeSetId);
         await SendOkAsync(codes, ct);

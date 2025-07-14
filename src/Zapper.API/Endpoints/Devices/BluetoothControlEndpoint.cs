@@ -5,7 +5,7 @@ using Zapper.Device.Bluetooth;
 
 namespace Zapper.Endpoints.Devices;
 
-public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothController) : Endpoint<BluetoothControlRequest, BluetoothControlResponse>
+public class BluetoothControlEndpoint(IBluetoothHidController bluetoothController) : Endpoint<BluetoothControlRequest, BluetoothControlResponse>
 {
 
     public override void Configure()
@@ -81,7 +81,7 @@ public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothControlle
     private async Task<bool> HandleSendKey(BluetoothControlRequest req, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(req.DeviceId) || string.IsNullOrEmpty(req.KeyCode) || 
-            !Enum.TryParse<HIDKeyCode>(req.KeyCode, true, out var keyCode))
+            !Enum.TryParse<HidKeyCode>(req.KeyCode, true, out var keyCode))
         {
             return false;
         }

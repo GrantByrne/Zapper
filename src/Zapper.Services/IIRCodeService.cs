@@ -2,17 +2,17 @@ using Zapper.Core.Models;
 
 namespace Zapper.Services;
 
-public interface IIRCodeService
+public interface IIrCodeService
 {
-    Task<IEnumerable<IRCodeSet>> GetCodeSetsAsync();
-    Task<IEnumerable<IRCodeSet>> SearchCodeSetsAsync(string? brand = null, string? model = null, DeviceType? deviceType = null);
-    Task<IRCodeSet?> GetCodeSetAsync(int id);
-    Task<IRCodeSet?> GetCodeSetAsync(string brand, string model, DeviceType deviceType);
-    Task<IEnumerable<IRCode>> GetCodesAsync(int codeSetId);
-    Task<IRCode?> GetCodeAsync(int codeSetId, string commandName);
-    Task<IRCodeSet> CreateCodeSetAsync(IRCodeSet codeSet);
-    Task<IRCode> AddCodeAsync(int codeSetId, IRCode code);
-    Task UpdateCodeSetAsync(IRCodeSet codeSet);
+    Task<IEnumerable<IrCodeSet>> GetCodeSetsAsync();
+    Task<IEnumerable<IrCodeSet>> SearchCodeSetsAsync(string? brand = null, string? model = null, DeviceType? deviceType = null);
+    Task<IrCodeSet?> GetCodeSetAsync(int id);
+    Task<IrCodeSet?> GetCodeSetAsync(string brand, string model, DeviceType deviceType);
+    Task<IEnumerable<IrCode>> GetCodesAsync(int codeSetId);
+    Task<IrCode?> GetCodeAsync(int codeSetId, string commandName);
+    Task<IrCodeSet> CreateCodeSetAsync(IrCodeSet codeSet);
+    Task<IrCode> AddCodeAsync(int codeSetId, IrCode code);
+    Task UpdateCodeSetAsync(IrCodeSet codeSet);
     Task DeleteCodeSetAsync(int id);
     Task<bool> ImportCodeSetAsync(string filePath);
     Task<string> ExportCodeSetAsync(int id);

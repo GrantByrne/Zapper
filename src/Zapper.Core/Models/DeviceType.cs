@@ -8,8 +8,8 @@ public enum DeviceType
     StreamingDevice,
     GameConsole,
     SoundBar,
-    DVDPlayer,
+    DvdPlayer,
     BluRayPlayer,
-    SmartTV,
-    AppleTV
+    SmartTv,
+    AppleTv
 }

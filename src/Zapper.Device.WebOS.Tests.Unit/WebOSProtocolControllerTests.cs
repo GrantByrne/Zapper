@@ -6,25 +6,25 @@ using Zapper.Core.Models;
 
 namespace Zapper.Device.WebOS.Tests.Unit;
 
-public class WebOSProtocolControllerTests
+public class WebOsProtocolControllerTests
 {
-    private readonly IWebOSDeviceController _mockWebOSController;
-    private readonly ILogger<WebOSProtocolController> _mockLogger;
-    private readonly WebOSProtocolController _controller;
-    private readonly Zapper.Core.Models.Device _webOSDevice;
+    private readonly IWebOsDeviceController _mockWebOsController;
+    private readonly ILogger<WebOsProtocolController> _mockLogger;
+    private readonly WebOsProtocolController _controller;
+    private readonly Zapper.Core.Models.Device _webOsDevice;
     private readonly DeviceCommand _testCommand;
 
-    public WebOSProtocolControllerTests()
+    public WebOsProtocolControllerTests()
     {
-        _mockWebOSController = Substitute.For<IWebOSDeviceController>();
-        _mockLogger = Substitute.For<ILogger<WebOSProtocolController>>();
-        _controller = new WebOSProtocolController(_mockWebOSController, _mockLogger);
+        _mockWebOsController = Substitute.For<IWebOsDeviceController>();
+        _mockLogger = Substitute.For<ILogger<WebOsProtocolController>>();
+        _controller = new WebOsProtocolController(_mockWebOsController, _mockLogger);
 
-        _webOSDevice = new Zapper.Core.Models.Device
+        _webOsDevice = new Zapper.Core.Models.Device
         {
             Id = 1,
             Name = "Test WebOS TV",
-            ConnectionType = ConnectionType.WebOS,
+            ConnectionType = ConnectionType.WebOs,
             NetworkAddress = "192.168.1.100"
         };
 
@@ -40,16 +40,16 @@ public class WebOSProtocolControllerTests
     public async Task SendCommandAsync_WithSupportedDevice_ShouldCallWebOSController()
     {
         // Arrange
-        _mockWebOSController
+        _mockWebOsController
             .SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOSDevice, _testCommand);
+        var result = await _controller.SendCommandAsync(_webOsDevice, _testCommand);
 
         // Assert
         result.Should().BeTrue();
-        await _mockWebOSController.Received(1).SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
+        await _mockWebOsController.Received(1).SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -67,30 +67,30 @@ public class WebOSProtocolControllerTests
 
         // Assert
         result.Should().BeFalse();
-        await _mockWebOSController.DidNotReceive().SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
+        await _mockWebOsController.DidNotReceive().SendCommandAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<DeviceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task TestConnectionAsync_WithSupportedDevice_ShouldCallWebOSController()
     {
         // Arrange
-        _mockWebOSController
+        _mockWebOsController
             .TestConnectionAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.TestConnectionAsync(_webOSDevice);
+        var result = await _controller.TestConnectionAsync(_webOsDevice);
 
         // Assert
         result.Should().BeTrue();
-        await _mockWebOSController.Received(1).TestConnectionAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<CancellationToken>());
+        await _mockWebOsController.Received(1).TestConnectionAsync(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<CancellationToken>());
     }
 
     [Theory]
-    [InlineData(ConnectionType.WebOS, true)]
+    [InlineData(ConnectionType.WebOs, true)]
     [InlineData(ConnectionType.Bluetooth, false)]
-    [InlineData(ConnectionType.InfraredIR, false)]
-    [InlineData(ConnectionType.NetworkTCP, false)]
+    [InlineData(ConnectionType.InfraredIr, false)]
+    [InlineData(ConnectionType.NetworkTcp, false)]
     public void SupportsDevice_ShouldReturnCorrectValue(ConnectionType connectionType, bool expected)
     {
         // Arrange

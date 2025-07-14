@@ -75,6 +75,6 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
 
     public bool SupportsDevice(Zapper.Core.Models.Device device)
     {
-        return device.ConnectionType == ConnectionType.USB;
+        return device.ConnectionType == ConnectionType.Usb;
     }
 }

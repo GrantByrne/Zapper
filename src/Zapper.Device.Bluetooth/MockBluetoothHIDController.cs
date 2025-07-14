@@ -2,17 +2,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class MockBluetoothHIDController : IBluetoothHIDController
+public class MockBluetoothHidController : IBluetoothHidController
 {
-    private readonly ILogger<MockBluetoothHIDController> _logger;
+    private readonly ILogger<MockBluetoothHidController> _logger;
     private readonly Dictionary<string, bool> _connectedDevices = new();
 
-    public MockBluetoothHIDController(ILogger<MockBluetoothHIDController> logger)
+    public MockBluetoothHidController(ILogger<MockBluetoothHidController> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<bool> SendKeyAsync(string deviceAddress, HIDKeyCode keyCode, CancellationToken cancellationToken = default)
+    public Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(deviceAddress))
         {
@@ -24,7 +24,7 @@ public class MockBluetoothHIDController : IBluetoothHIDController
         return Task.FromResult(true);
     }
 
-    public Task<bool> SendKeySequenceAsync(string deviceAddress, HIDKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
+    public Task<bool> SendKeySequenceAsync(string deviceAddress, HidKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(deviceAddress))
         {

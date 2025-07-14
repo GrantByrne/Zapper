@@ -37,7 +37,7 @@ public class GpioInfraredTransmitterTests
     public async Task TransmitAsync_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var transmitter = new GpioInfraredTransmitter(18, _logger);
-        var irCode = new IRCode
+        var irCode = new IrCode
         {
             Brand = "Test",
             Model = "Model",

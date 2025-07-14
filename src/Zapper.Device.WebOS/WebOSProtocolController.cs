@@ -4,7 +4,7 @@ using Zapper.Core.Models;
 
 namespace Zapper.Device.WebOS;
 
-public class WebOSProtocolController(IWebOSDeviceController webOSController, ILogger<WebOSProtocolController> logger) : IDeviceController
+public class WebOsProtocolController(IWebOsDeviceController webOsController, ILogger<WebOsProtocolController> logger) : IDeviceController
 {
 
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command)
@@ -17,7 +17,7 @@ public class WebOSProtocolController(IWebOSDeviceController webOSController, ILo
 
         try
         {
-            var result = await webOSController.SendCommandAsync(device, command);
+            var result = await webOsController.SendCommandAsync(device, command);
             
             if (command.DelayMs > 0)
             {
@@ -43,7 +43,7 @@ public class WebOSProtocolController(IWebOSDeviceController webOSController, ILo
 
         try
         {
-            return await webOSController.TestConnectionAsync(device);
+            return await webOsController.TestConnectionAsync(device);
         }
         catch (Exception ex)
         {
@@ -76,6 +76,6 @@ public class WebOSProtocolController(IWebOSDeviceController webOSController, ILo
 
     public bool SupportsDevice(Zapper.Core.Models.Device device)
     {
-        return device.ConnectionType == ConnectionType.WebOS;
+        return device.ConnectionType == ConnectionType.WebOs;
     }
 }

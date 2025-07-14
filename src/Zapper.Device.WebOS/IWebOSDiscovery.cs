@@ -1,6 +1,6 @@
 namespace Zapper.Device.WebOS;
 
-public interface IWebOSDiscovery
+public interface IWebOsDiscovery
 {
     Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default);
     Task<Zapper.Core.Models.Device?> DiscoverDeviceByIpAsync(string ipAddress, CancellationToken cancellationToken = default);

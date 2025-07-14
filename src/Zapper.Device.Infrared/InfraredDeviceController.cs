@@ -66,6 +66,6 @@ public class InfraredDeviceController : IDeviceController
 
     public bool SupportsDevice(Zapper.Core.Models.Device device)
     {
-        return device.ConnectionType == ConnectionType.InfraredIR;
+        return device.ConnectionType == ConnectionType.InfraredIr;
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class BluetoothHidController : IBluetoothHIDController
+public class BluetoothHidController : IBluetoothHidController
 {
     private readonly IBluetoothService _bluetoothService;
     private readonly ILogger<BluetoothHidController> _logger;
@@ -17,7 +17,7 @@ public class BluetoothHidController : IBluetoothHIDController
         _bluetoothService.DeviceDisconnected += OnDeviceDisconnected;
     }
 
-    public Task<bool> SendKeyAsync(string deviceAddress, HIDKeyCode keyCode, CancellationToken cancellationToken = default)
+    public Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -50,7 +50,7 @@ public class BluetoothHidController : IBluetoothHIDController
         }
     }
 
-    public async Task<bool> SendKeySequenceAsync(string deviceAddress, HIDKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
+    public async Task<bool> SendKeySequenceAsync(string deviceAddress, HidKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -109,11 +109,11 @@ public class BluetoothHidController : IBluetoothHIDController
 
             _logger.LogDebug("Sending text '{Text}' to device {Address}", text, deviceAddress);
 
-            var keyCodes = new List<HIDKeyCode>();
+            var keyCodes = new List<HidKeyCode>();
             foreach (char c in text)
             {
                 var keyCode = CharToHidKeyCode(c);
-                if (keyCode != HIDKeyCode.None)
+                if (keyCode != HidKeyCode.None)
                 {
                     keyCodes.Add(keyCode);
                 }
@@ -212,55 +212,55 @@ public class BluetoothHidController : IBluetoothHIDController
     private static bool IsHidDevice(BluetoothDeviceInfo device)
     {
         const string hidServiceUuid = "00001124-0000-1000-8000-00805f9b34fb";
-        return device.UUIDs.Any(uuid => string.Equals(uuid, hidServiceUuid, StringComparison.OrdinalIgnoreCase));
+        return device.UuiDs.Any(uuid => string.Equals(uuid, hidServiceUuid, StringComparison.OrdinalIgnoreCase));
     }
 
-    private static HIDKeyCode CharToHidKeyCode(char c)
+    private static HidKeyCode CharToHidKeyCode(char c)
     {
         return c switch
         {
-            ' ' => HIDKeyCode.Space,
-            '0' => HIDKeyCode.Key0,
-            '1' => HIDKeyCode.Key1,
-            '2' => HIDKeyCode.Key2,
-            '3' => HIDKeyCode.Key3,
-            '4' => HIDKeyCode.Key4,
-            '5' => HIDKeyCode.Key5,
-            '6' => HIDKeyCode.Key6,
-            '7' => HIDKeyCode.Key7,
-            '8' => HIDKeyCode.Key8,
-            '9' => HIDKeyCode.Key9,
-            'a' or 'A' => HIDKeyCode.A,
-            'b' or 'B' => HIDKeyCode.B,
-            'c' or 'C' => HIDKeyCode.C,
-            'd' or 'D' => HIDKeyCode.D,
-            'e' or 'E' => HIDKeyCode.E,
-            'f' or 'F' => HIDKeyCode.F,
-            'g' or 'G' => HIDKeyCode.G,
-            'h' or 'H' => HIDKeyCode.H,
-            'i' or 'I' => HIDKeyCode.I,
-            'j' or 'J' => HIDKeyCode.J,
-            'k' or 'K' => HIDKeyCode.K,
-            'l' or 'L' => HIDKeyCode.L,
-            'm' or 'M' => HIDKeyCode.M,
-            'n' or 'N' => HIDKeyCode.N,
-            'o' or 'O' => HIDKeyCode.O,
-            'p' or 'P' => HIDKeyCode.P,
-            'q' or 'Q' => HIDKeyCode.Q,
-            'r' or 'R' => HIDKeyCode.R,
-            's' or 'S' => HIDKeyCode.S,
-            't' or 'T' => HIDKeyCode.T,
-            'u' or 'U' => HIDKeyCode.U,
-            'v' or 'V' => HIDKeyCode.V,
-            'w' or 'W' => HIDKeyCode.W,
-            'x' or 'X' => HIDKeyCode.X,
-            'y' or 'Y' => HIDKeyCode.Y,
-            'z' or 'Z' => HIDKeyCode.Z,
-            '\n' => HIDKeyCode.Enter,
-            '\r' => HIDKeyCode.Enter,
-            '\t' => HIDKeyCode.Tab,
-            '\b' => HIDKeyCode.Backspace,
-            _ => HIDKeyCode.None
+            ' ' => HidKeyCode.Space,
+            '0' => HidKeyCode.Key0,
+            '1' => HidKeyCode.Key1,
+            '2' => HidKeyCode.Key2,
+            '3' => HidKeyCode.Key3,
+            '4' => HidKeyCode.Key4,
+            '5' => HidKeyCode.Key5,
+            '6' => HidKeyCode.Key6,
+            '7' => HidKeyCode.Key7,
+            '8' => HidKeyCode.Key8,
+            '9' => HidKeyCode.Key9,
+            'a' or 'A' => HidKeyCode.A,
+            'b' or 'B' => HidKeyCode.B,
+            'c' or 'C' => HidKeyCode.C,
+            'd' or 'D' => HidKeyCode.D,
+            'e' or 'E' => HidKeyCode.E,
+            'f' or 'F' => HidKeyCode.F,
+            'g' or 'G' => HidKeyCode.G,
+            'h' or 'H' => HidKeyCode.H,
+            'i' or 'I' => HidKeyCode.I,
+            'j' or 'J' => HidKeyCode.J,
+            'k' or 'K' => HidKeyCode.K,
+            'l' or 'L' => HidKeyCode.L,
+            'm' or 'M' => HidKeyCode.M,
+            'n' or 'N' => HidKeyCode.N,
+            'o' or 'O' => HidKeyCode.O,
+            'p' or 'P' => HidKeyCode.P,
+            'q' or 'Q' => HidKeyCode.Q,
+            'r' or 'R' => HidKeyCode.R,
+            's' or 'S' => HidKeyCode.S,
+            't' or 'T' => HidKeyCode.T,
+            'u' or 'U' => HidKeyCode.U,
+            'v' or 'V' => HidKeyCode.V,
+            'w' or 'W' => HidKeyCode.W,
+            'x' or 'X' => HidKeyCode.X,
+            'y' or 'Y' => HidKeyCode.Y,
+            'z' or 'Z' => HidKeyCode.Z,
+            '\n' => HidKeyCode.Enter,
+            '\r' => HidKeyCode.Enter,
+            '\t' => HidKeyCode.Tab,
+            '\b' => HidKeyCode.Backspace,
+            _ => HidKeyCode.None
         };
     }
 }

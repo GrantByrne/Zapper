@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Zapper.Core.Models;
 
-public class IRCode
+public class IrCode
 {
     public int Id { get; set; }
     
@@ -35,7 +35,7 @@ public class IRCode
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
 
-public class IRCodeSet
+public class IrCodeSet
 {
     public int Id { get; set; }
     
@@ -58,5 +58,5 @@ public class IRCodeSet
     
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
-    public List<IRCode> Codes { get; set; } = new();
+    public List<IrCode> Codes { get; set; } = new();
 }

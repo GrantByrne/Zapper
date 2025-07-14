@@ -10,7 +10,7 @@ public interface INotificationService
     Task NotifyDeviceDiscoveredAsync(string deviceType, string deviceName, string deviceAddress);
     Task NotifyBluetoothDeviceConnectedAsync(string deviceId, string deviceName);
     Task NotifyBluetoothDeviceDisconnectedAsync(string deviceId, string deviceName);
-    Task NotifyWebOSDevicePairedAsync(string deviceId, string deviceName, bool success);
+    Task NotifyWebOsDevicePairedAsync(string deviceId, string deviceName, bool success);
     Task SendSystemMessageAsync(string message, string level = "info");
     Task SendToAllClientsAsync(string method, object data);
     Task SendToDeviceGroupAsync(int deviceId, string method, object data);

@@ -65,7 +65,7 @@ public class MockInfraredTransmitterTests
     [Fact]
     public async Task TransmitAsync_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
-        var irCode = new IRCode
+        var irCode = new IrCode
         {
             Brand = "Test",
             Model = "Model",
@@ -83,7 +83,7 @@ public class MockInfraredTransmitterTests
     public async Task TransmitAsync_WithIRCode_WhenInitialized_ShouldSimulateTransmission()
     {
         _transmitter.Initialize();
-        var irCode = new IRCode
+        var irCode = new IrCode
         {
             Brand = "Samsung",
             Model = "TV65",

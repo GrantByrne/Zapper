@@ -1,6 +1,6 @@
 namespace Zapper.API.Models.Requests;
 
-public class PairWebOSDeviceRequest
+public class PairWebOsDeviceRequest
 {
     public int DeviceId { get; set; }
 }

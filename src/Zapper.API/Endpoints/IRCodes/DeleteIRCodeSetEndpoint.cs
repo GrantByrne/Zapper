@@ -4,7 +4,7 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class DeleteIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<DeleteIRCodeSetRequest>
+public class DeleteIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<DeleteIrCodeSetRequest>
 {
     public override void Configure()
     {
@@ -12,7 +12,7 @@ public class DeleteIRCodeSetEndpoint(IIRCodeService irCodeService) : Endpoint<De
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(DeleteIRCodeSetRequest req, CancellationToken ct)
+    public override async Task HandleAsync(DeleteIrCodeSetRequest req, CancellationToken ct)
     {
         await irCodeService.DeleteCodeSetAsync(req.Id);
         await SendNoContentAsync(ct);

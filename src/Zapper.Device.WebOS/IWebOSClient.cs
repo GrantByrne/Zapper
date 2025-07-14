@@ -1,6 +1,6 @@
 namespace Zapper.Device.WebOS;
 
-public interface IWebOSClient
+public interface IWebOsClient
 {
     Task<bool> ConnectAsync(string ipAddress, bool useSecure = false, CancellationToken cancellationToken = default);
     Task DisconnectAsync(CancellationToken cancellationToken = default);

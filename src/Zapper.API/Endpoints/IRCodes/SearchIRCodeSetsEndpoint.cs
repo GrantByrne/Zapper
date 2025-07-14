@@ -5,7 +5,7 @@ using Zapper.API.Models.Requests;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class SearchIRCodeSetsEndpoint(IIRCodeService irCodeService) : Endpoint<SearchIRCodeSetsRequest, IEnumerable<IRCodeSet>>
+public class SearchIrCodeSetsEndpoint(IIrCodeService irCodeService) : Endpoint<SearchIrCodeSetsRequest, IEnumerable<IrCodeSet>>
 {
     public override void Configure()
     {
@@ -13,7 +13,7 @@ public class SearchIRCodeSetsEndpoint(IIRCodeService irCodeService) : Endpoint<S
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(SearchIRCodeSetsRequest req, CancellationToken ct)
+    public override async Task HandleAsync(SearchIrCodeSetsRequest req, CancellationToken ct)
     {
         var codeSets = await irCodeService.SearchCodeSetsAsync(req.Brand, req.Model, req.DeviceType);
         await SendOkAsync(codeSets, ct);

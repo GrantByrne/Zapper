@@ -4,7 +4,7 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class GetIRCodeSetsEndpoint(IIRCodeService irCodeService) : EndpointWithoutRequest<IEnumerable<IRCodeSet>>
+public class GetIrCodeSetsEndpoint(IIrCodeService irCodeService) : EndpointWithoutRequest<IEnumerable<IrCodeSet>>
 {
     public override void Configure()
     {
