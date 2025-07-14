@@ -29,6 +29,8 @@ Zapper is an open-source replacement for Logitech Harmony universal remotes buil
 
 7. **FastEndpoints**: Use FastEndpoints instead of traditional ASP.NET controllers
 
+8. **No comments inside methods**: Do not add comments inside method bodies - code should be self-documenting through clear naming and structure
+
 ### General Conventions
 - No Docker deployment - the app runs directly on the host
 - Commit after each feature implementation
