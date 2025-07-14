@@ -3,11 +3,8 @@ using Zapper.Core.Models;
 
 namespace Zapper.Data;
 
-public class  ZapperContext : DbContext
+public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(options)
 {
-    public ZapperContext(DbContextOptions<ZapperContext> options) : base(options)
-    {
-    }
     
     public DbSet<Device> Devices { get; set; }
     public DbSet<DeviceCommand> DeviceCommands { get; set; }
