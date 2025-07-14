@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Zapper.Device.Infrared\Zapper.Device.Infrared.csproj" />
     <ProjectReference Include="..\Zapper.Device.Bluetooth\Zapper.Device.Bluetooth.csproj" />
     <ProjectReference Include="..\Zapper.Device.WebOS\Zapper.Device.WebOS.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Roku\Zapper.Device.Roku.csproj" />
     <ProjectReference Include="..\Zapper.Device.USB\Zapper.Device.USB.csproj" />
     <ProjectReference Include="..\Zapper.Device.Network\Zapper.Device.Network.csproj" />
     <ProjectReference Include="..\Zapper.API\Zapper.API.csproj" />

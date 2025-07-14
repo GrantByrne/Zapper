@@ -15,7 +15,6 @@ public enum HIDKeyCode
 {
     None = 0x00,
     
-    // Letters
     A = 0x04,
     B = 0x05,
     C = 0x06,
@@ -43,7 +42,6 @@ public enum HIDKeyCode
     Y = 0x1C,
     Z = 0x1D,
     
-    // Numbers
     Key1 = 0x1E,
     Key2 = 0x1F,
     Key3 = 0x20,
@@ -55,42 +53,35 @@ public enum HIDKeyCode
     Key9 = 0x26,
     Key0 = 0x27,
     
-    // Control keys
     Enter = 0x28,
     Escape = 0x29,
     Backspace = 0x2A,
     Tab = 0x2B,
     Space = 0x2C,
     
-    // Navigation keys
     DPadUp = 0x52,
     DPadDown = 0x51,
     DPadLeft = 0x50,
     DPadRight = 0x4F,
     DPadCenter = 0x28,
     
-    // Arrow keys (same as DPad for compatibility)
     ArrowUp = DPadUp,
     ArrowDown = DPadDown,
     ArrowLeft = DPadLeft,
     ArrowRight = DPadRight,
     
-    // Page navigation
     PageUp = 0x4B,
     PageDown = 0x4E,
     
-    // System keys
     Back = 0x29,
     Home = 0x4A,
     Menu = 0x76,
     Delete = 0x4C,
     
-    // Volume controls
     VolumeUp = 0x80,
     VolumeDown = 0x81,
     VolumeMute = 0x7F,
     
-    // Media controls
     PlayPause = 0xCD,
     Play = 0xB0,
     Pause = 0xB1,
@@ -100,12 +91,10 @@ public enum HIDKeyCode
     NextTrack = 0xB5,
     PreviousTrack = 0xB6,
     
-    // Android TV specific keys
     Assistant = 0xAE,
     Search = 0x221,
     Settings = 0x222,
     
-    // Function keys
     F1 = 0x3A,
     F2 = 0x3B,
     F3 = 0x3C,

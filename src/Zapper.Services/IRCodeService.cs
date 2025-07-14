@@ -89,7 +89,6 @@ public class IRCodeService(ZapperContext context, ILogger<IRCodeService> logger)
             throw new ArgumentException($"Code set with ID {codeSetId} not found");
         }
 
-        // Set the foreign key
         context.Entry(code).Property("IRCodeSetId").CurrentValue = codeSetId;
         
         context.IRCodes.Add(code);
@@ -192,7 +191,7 @@ public class IRCodeService(ZapperContext context, ILogger<IRCodeService> logger)
     {
         if (await context.IRCodeSets.AnyAsync())
         {
-            return; // Already seeded
+            return;
         }
 
         logger.LogInformation("Seeding default IR codes...");
@@ -259,8 +258,6 @@ public class IRCodeService(ZapperContext context, ILogger<IRCodeService> logger)
                 ]
             },
 
-            // LG TV
-
             new IRCodeSet
             {
                 Brand = "LG",
@@ -308,8 +305,6 @@ public class IRCodeService(ZapperContext context, ILogger<IRCodeService> logger)
                     new IRCode { CommandName = "Home", Protocol = "NEC", HexCode = "0x20DF3EC1", Frequency = 38000 }
                 ]
             },
-
-            // Sony TV
 
             new IRCodeSet
             {

@@ -47,7 +47,6 @@ public class PairWebOSDeviceEndpoint(IDeviceService deviceService, IWebOSDiscove
         var success = await webOSDiscovery.PairWithDeviceAsync(device, ct);
         if (success)
         {
-            // Update the device with the new authentication token
             await deviceService.UpdateDeviceAsync(device.Id, device);
 
             await SendOkAsync(new PairWebOSDeviceResponse

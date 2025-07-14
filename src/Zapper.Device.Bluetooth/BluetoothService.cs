@@ -37,7 +37,6 @@ public class BluetoothService : BackgroundService, IBluetoothService
         var loggerFactoryNotNull = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         _adapter = new BlueZAdapter(loggerFactoryNotNull.CreateLogger<BlueZAdapter>());
         
-        // Forward events from adapter
         _adapter.DeviceFound += (s, e) => DeviceFound?.Invoke(this, e);
         _adapter.DeviceConnected += (s, e) => DeviceConnected?.Invoke(this, e);
         _adapter.DeviceDisconnected += (s, e) => DeviceDisconnected?.Invoke(this, e);
@@ -119,12 +118,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
     {
         try
         {
-            // First disconnect if connected
             await DisconnectDeviceAsync(address, cancellationToken);
-            
-            // Note: Linux.Bluetooth doesn't expose a direct remove method in the current version
-            // This would typically require calling the RemoveDevice method on the adapter
-            // For now, we'll log this limitation
             _logger.LogWarning("Device removal not implemented in current Linux.Bluetooth version. Device {Address} disconnected but not removed.", address);
             return true;
         }
@@ -141,7 +135,6 @@ public class BluetoothService : BackgroundService, IBluetoothService
         {
             await InitializeAsync(stoppingToken);
             
-            // Keep the service running
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);

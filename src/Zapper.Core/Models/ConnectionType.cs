@@ -6,6 +6,7 @@ public enum ConnectionType
     RadioFrequencyRF,
     NetworkTCP,
     NetworkWebSocket,
+    NetworkHTTP,
     Bluetooth,
     USB,
     WebOS

@@ -22,7 +22,6 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
 
         try
         {
-            // Ensure device is connected
             var isConnected = await hidController.IsConnectedAsync(device.MacAddress, cancellationToken);
             if (!isConnected)
             {
@@ -35,7 +34,6 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
                 }
             }
 
-            // Execute the command based on type
             return command.Type switch
             {
                 CommandType.Power => await HandlePowerCommand(device.MacAddress, command, cancellationToken),
@@ -84,14 +82,12 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
 
         try
         {
-            // Try to get device info to test connection
             var deviceInfo = await bluetoothService.GetDeviceAsync(device.MacAddress, cancellationToken);
             if (deviceInfo == null)
             {
                 return false;
             }
 
-            // If not connected, try to connect
             if (!deviceInfo.IsConnected)
             {
                 return await bluetoothService.ConnectDeviceAsync(device.MacAddress, cancellationToken);
@@ -125,27 +121,22 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
 
     private async Task<bool> HandlePowerCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // Android TV doesn't have a direct power button via Bluetooth HID
-        // Send Home button to wake up the device or show home screen
         logger.LogInformation("Power command requested - using Home button to wake/show home screen");
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Home, cancellationToken);
     }
 
     private async Task<bool> HandleChannelUp(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Android TV, channel up can be mapped to page up or arrow up
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.PageUp, cancellationToken);
     }
 
     private async Task<bool> HandleChannelDown(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Android TV, channel down can be mapped to page down or arrow down
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.PageDown, cancellationToken);
     }
 
     private async Task<bool> HandleInputCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // Input switching typically opens the input selection menu
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
     }
 
@@ -188,40 +179,32 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
 
         try
         {
-            // Handle text input
             if (command.NetworkPayload.StartsWith("text:"))
             {
                 var text = command.NetworkPayload.Substring(5);
                 return await hidController.SendTextAsync(deviceAddress, text, cancellationToken);
             }
 
-            // Handle specific Android TV commands
             switch (command.NetworkPayload.ToLowerInvariant())
             {
                 case "netflix":
-                    // Send key combination to open Netflix (example)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.N], 100, cancellationToken);
                 
                 case "youtube":
-                    // Send key combination to open YouTube (example)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.Y], 100, cancellationToken);
                 
                 case "assistant":
-                    // Activate Google Assistant
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Assistant, cancellationToken);
                 
                 case "search":
-                    // Open search
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Search, cancellationToken);
                 
                 case "settings":
-                    // Open settings
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Settings, cancellationToken);
                 
                 default:
-                    // Try to parse as HID key code
                     if (Enum.TryParse<HIDKeyCode>(command.NetworkPayload, true, out var keyCode))
                     {
                         return await hidController.SendKeyAsync(deviceAddress, keyCode, cancellationToken);
@@ -247,7 +230,6 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
 
     private static bool IsAndroidTVDevice(BluetoothDeviceInfo device)
     {
-        // Check if device name suggests it's an Android TV
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
         
@@ -257,18 +239,16 @@ public class AndroidTVBluetoothController(IBluetoothHIDController hidController,
                alias.Contains("android tv") || 
                alias.Contains("chromecast") || 
                alias.Contains("google tv") ||
-               // Check for Android TV service UUIDs if available
                device.UUIDs.Any(uuid => IsAndroidTVServiceUuid(uuid));
     }
 
     private static bool IsAndroidTVServiceUuid(string uuid)
     {
-        // Common Android TV Bluetooth service UUIDs
         var androidTvUuids = new[]
         {
-            "0000fef3-0000-1000-8000-00805f9b34fb", // Google specific service
-            "0000180f-0000-1000-8000-00805f9b34fb", // Battery Service (common on Android TV remotes)
-            "00001812-0000-1000-8000-00805f9b34fb"  // Human Interface Device
+            "0000fef3-0000-1000-8000-00805f9b34fb",
+            "0000180f-0000-1000-8000-00805f9b34fb",
+            "00001812-0000-1000-8000-00805f9b34fb"
         };
 
         return androidTvUuids.Any(tvUuid => string.Equals(uuid, tvUuid, StringComparison.OrdinalIgnoreCase));

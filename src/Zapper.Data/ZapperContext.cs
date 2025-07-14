@@ -16,7 +16,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Device configuration
         modelBuilder.Entity<Device>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -26,7 +25,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.Property(e => e.ConnectionType).HasConversion<string>();
         });
         
-        // DeviceCommand configuration
         modelBuilder.Entity<DeviceCommand>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -38,7 +36,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        // Activity configuration
         modelBuilder.Entity<Activity>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -46,7 +43,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.HasIndex(e => e.SortOrder);
         });
         
-        // ActivityDevice configuration
         modelBuilder.Entity<ActivityDevice>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -61,7 +57,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        // ActivityStep configuration
         modelBuilder.Entity<ActivityStep>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -76,7 +71,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
         
-        // IRCode configuration
         modelBuilder.Entity<IRCode>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -84,7 +78,6 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.Property(e => e.DeviceType).HasConversion<string>();
         });
         
-        // IRCodeSet configuration
         modelBuilder.Entity<IRCodeSet>(entity =>
         {
             entity.HasKey(e => e.Id);

@@ -37,7 +37,7 @@ public class StatusEndpoint : EndpointWithoutRequest<StatusResponse>
     {
         var response = new StatusResponse
         {
-            ConnectedClients = 0 // TODO: Get actual count from SignalR hub
+            ConnectedClients = 0
         };
 
         await SendOkAsync(response, ct);

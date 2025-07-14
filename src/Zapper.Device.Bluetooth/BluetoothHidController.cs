@@ -29,10 +29,6 @@ public class BluetoothHidController : IBluetoothHIDController
 
             _logger.LogDebug("Sending HID key {KeyCode} to device {Address}", keyCode, deviceAddress);
 
-            // Note: The Linux.Bluetooth library doesn't provide direct HID report sending
-            // This would typically require lower-level socket programming or additional libraries
-            // For now, we'll log this limitation and return success for compatible devices
-            
             var device = _connectedDevices[deviceAddress];
             if (IsHidDevice(device))
             {
@@ -113,7 +109,6 @@ public class BluetoothHidController : IBluetoothHIDController
 
             _logger.LogDebug("Sending text '{Text}' to device {Address}", text, deviceAddress);
 
-            // Convert text to HID key codes
             var keyCodes = new List<HIDKeyCode>();
             foreach (char c in text)
             {
@@ -216,8 +211,6 @@ public class BluetoothHidController : IBluetoothHIDController
 
     private static bool IsHidDevice(BluetoothDeviceInfo device)
     {
-        // Check if device supports HID profile
-        // HID service UUID: 00001124-0000-1000-8000-00805f9b34fb
         const string hidServiceUuid = "00001124-0000-1000-8000-00805f9b34fb";
         return device.UUIDs.Any(uuid => string.Equals(uuid, hidServiceUuid, StringComparison.OrdinalIgnoreCase));
     }

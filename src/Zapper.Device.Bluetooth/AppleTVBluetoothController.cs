@@ -22,7 +22,6 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
 
         try
         {
-            // Ensure device is connected
             var isConnected = await hidController.IsConnectedAsync(device.MacAddress, cancellationToken);
             if (!isConnected)
             {
@@ -35,7 +34,6 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
                 }
             }
 
-            // Execute the command based on type
             return command.Type switch
             {
                 CommandType.Power => await HandlePowerCommand(device.MacAddress, command, cancellationToken),
@@ -84,14 +82,12 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
 
         try
         {
-            // Try to get device info to test connection
             var deviceInfo = await bluetoothService.GetDeviceAsync(device.MacAddress, cancellationToken);
             if (deviceInfo == null)
             {
                 return false;
             }
 
-            // If not connected, try to connect
             if (!deviceInfo.IsConnected)
             {
                 return await bluetoothService.ConnectDeviceAsync(device.MacAddress, cancellationToken);
@@ -125,30 +121,22 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
 
     private async Task<bool> HandlePowerCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // Apple TV uses Sleep/Wake button for power control
-        // On Apple TV, this is typically the Menu + TV button combination
         logger.LogInformation("Power command requested - using Menu button to wake/sleep Apple TV");
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
     }
 
     private async Task<bool> HandleChannelUp(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Apple TV, channel navigation can be mapped to swipe gestures or arrow keys
-        // Using right arrow for channel up (next content/app)
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadRight, cancellationToken);
     }
 
     private async Task<bool> HandleChannelDown(string deviceAddress, CancellationToken cancellationToken)
     {
-        // For Apple TV, channel navigation can be mapped to swipe gestures or arrow keys
-        // Using left arrow for channel down (previous content/app)
         return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.DPadLeft, cancellationToken);
     }
 
     private async Task<bool> HandleInputCommand(string deviceAddress, DeviceCommand command, CancellationToken cancellationToken)
     {
-        // On Apple TV, input switching is typically done through Settings or Home screen
-        // Double-tap Home to show app switcher (similar to input switching)
         return await hidController.SendKeySequenceAsync(deviceAddress,
             [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
     }
@@ -192,55 +180,44 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
 
         try
         {
-            // Handle text input
             if (command.NetworkPayload.StartsWith("text:"))
             {
                 var text = command.NetworkPayload.Substring(5);
                 return await hidController.SendTextAsync(deviceAddress, text, cancellationToken);
             }
 
-            // Handle specific Apple TV commands
             switch (command.NetworkPayload.ToLowerInvariant())
             {
                 case "siri":
-                    // Activate Siri (long press on Siri Remote)
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Assistant, cancellationToken);
                 
                 case "app_switcher":
-                    // Show app switcher (double-click Home button)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.Home], 200, cancellationToken);
                 
                 case "control_center":
-                    // Open Control Center (swipe down from top-right, mapped to long Menu press)
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Menu, cancellationToken);
                 
                 case "netflix":
-                    // Open Netflix app (if available)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.N], 100, cancellationToken);
                 
                 case "disney":
                 case "disney+":
-                    // Open Disney+ app (if available)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.D], 100, cancellationToken);
                 
                 case "youtube":
-                    // Open YouTube app (if available)
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HIDKeyCode.Home, HIDKeyCode.Y], 100, cancellationToken);
                 
                 case "search":
-                    // Open search (typically Siri or Search app)
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Search, cancellationToken);
                 
                 case "settings":
-                    // Open Settings app
                     return await hidController.SendKeyAsync(deviceAddress, HIDKeyCode.Settings, cancellationToken);
                 
                 default:
-                    // Try to parse as HID key code
                     if (Enum.TryParse<HIDKeyCode>(command.NetworkPayload, true, out var keyCode))
                     {
                         return await hidController.SendKeyAsync(deviceAddress, keyCode, cancellationToken);
@@ -266,7 +243,6 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
 
     private static bool IsAppleTVDevice(BluetoothDeviceInfo device)
     {
-        // Check if device name suggests it's an Apple TV
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
         
@@ -278,20 +254,18 @@ public class AppleTVBluetoothController(IBluetoothHIDController hidController, I
                alias.Contains("appletv") || 
                alias.Contains("siri remote") ||
                alias.Contains("apple remote") ||
-               // Check for Apple TV service UUIDs if available
                device.UUIDs.Any(uuid => IsAppleTVServiceUuid(uuid));
     }
 
     private static bool IsAppleTVServiceUuid(string uuid)
     {
-        // Common Apple TV / Apple device Bluetooth service UUIDs
         var appleTvUuids = new[]
         {
-            "0000180f-0000-1000-8000-00805f9b34fb", // Battery Service (Siri Remote)
-            "00001812-0000-1000-8000-00805f9b34fb", // Human Interface Device
-            "0000180a-0000-1000-8000-00805f9b34fb", // Device Information Service
-            "89d3502b-0f36-433a-8ef4-c502ad55f8dc", // Apple Media Service
-            "7905f431-b5ce-4e99-a40f-4b1e122d00d0"  // Apple Notification Center Service
+            "0000180f-0000-1000-8000-00805f9b34fb",
+            "00001812-0000-1000-8000-00805f9b34fb",
+            "0000180a-0000-1000-8000-00805f9b34fb",
+            "89d3502b-0f36-433a-8ef4-c502ad55f8dc",
+            "7905f431-b5ce-4e99-a40f-4b1e122d00d0"
         };
 
         return appleTvUuids.Any(tvUuid => string.Equals(uuid, tvUuid, StringComparison.OrdinalIgnoreCase));

@@ -29,11 +29,10 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             _controller = new GpioController();
             _controller.OpenPin(_gpioPin, PinMode.Output);
             
-            // Try to initialize PWM for more accurate timing
             try
             {
-                _pwmChannel = PwmChannel.Create(0, 0, 38000); // 38kHz carrier frequency
-                _pwmChannel.DutyCycle = 0.33; // 33% duty cycle
+                _pwmChannel = PwmChannel.Create(0, 0, 38000);
+                _pwmChannel.DutyCycle = 0.33;
             }
             catch (Exception ex)
             {
@@ -55,7 +54,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
 
-        // Parse IR code (assume it's in Pronto format or similar)
         var pulses = ParseIrCode(irCode);
         
         for (int i = 0; i < repeatCount; i++)
@@ -63,7 +61,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             await TransmitRawAsync(pulses, cancellationToken: cancellationToken);
             if (i < repeatCount - 1)
             {
-                await Task.Delay(100, cancellationToken); // Gap between repeats
+                await Task.Delay(100, cancellationToken);
             }
         }
     }
@@ -78,7 +76,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
         int[] pulses;
         
-        // Use raw data if available, otherwise convert hex code
         if (!string.IsNullOrEmpty(irCode.RawData))
         {
             pulses = ParseIrCode(irCode.RawData);
@@ -93,7 +90,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             await TransmitRawAsync(pulses, irCode.Frequency, cancellationToken);
             if (i < repeatCount - 1)
             {
-                await Task.Delay(100, cancellationToken); // Gap between repeats
+                await Task.Delay(100, cancellationToken);
             }
         }
     }
@@ -111,12 +108,11 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 
-                bool isHigh = i % 2 == 0; // Odd indices are marks (high), even are spaces (low)
+                bool isHigh = i % 2 == 0;
                 int durationMicros = pulses[i];
                 
                 if (isHigh)
                 {
-                    // Transmit carrier frequency
                     if (_pwmChannel != null)
                     {
                         _pwmChannel.Start();
@@ -125,13 +121,11 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
                     }
                     else
                     {
-                        // Fallback: bit-bang the carrier frequency
                         await TransmitCarrierAsync(durationMicros, carrierFrequency, cancellationToken);
                     }
                 }
                 else
                 {
-                    // Space (no signal)
                     _controller!.Write(_gpioPin, PinValue.Low);
                     await Task.Delay(TimeSpan.FromMicroseconds(durationMicros), cancellationToken);
                 }
@@ -139,7 +133,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
         finally
         {
-            // Ensure pin is low after transmission
             _controller!.Write(_gpioPin, PinValue.Low);
         }
     }
@@ -160,8 +153,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ParseIrCode(string irCode)
     {
-        // Simple parser for space-separated microsecond values
-        // In a real implementation, you'd support multiple formats (Pronto, Raw, etc.)
         try
         {
             return irCode.Split(' ', StringSplitOptions.RemoveEmptyEntries)
@@ -177,8 +168,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ConvertHexToPulses(string hexCode, string protocol)
     {
-        // Convert hex codes to pulse arrays based on protocol
-        // This is a simplified implementation - real IR libraries would be more comprehensive
         try
         {
             var code = Convert.ToUInt32(hexCode.Replace("0x", ""), 16);
@@ -201,28 +190,23 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ConvertNecToPulses(uint code)
     {
-        // Basic NEC protocol timing (simplified)
         var pulses = new List<int>();
         
-        // Start burst
-        pulses.Add(9000); // Header mark
-        pulses.Add(4500); // Header space
-        
-        // Data bits (32 bits for NEC)
+        pulses.Add(9000);
+        pulses.Add(4500);
         for (int i = 31; i >= 0; i--)
         {
-            pulses.Add(560); // Mark
+            pulses.Add(560);
             if ((code >> i & 1) == 1)
             {
-                pulses.Add(1690); // '1' space
+                pulses.Add(1690);
             }
             else
             {
-                pulses.Add(560); // '0' space
+                pulses.Add(560);
             }
         }
         
-        // Stop bit
         pulses.Add(560);
         
         return pulses.ToArray();
@@ -230,25 +214,21 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ConvertSonyToPulses(uint code)
     {
-        // Basic Sony SIRC protocol timing (simplified)
         var pulses = new List<int>();
         
-        // Start burst
-        pulses.Add(2400); // Header mark
-        pulses.Add(600);  // Header space
-        
-        // Data bits (12 bits for basic Sony)
+        pulses.Add(2400);
+        pulses.Add(600);
         for (int i = 11; i >= 0; i--)
         {
             if ((code >> i & 1) == 1)
             {
-                pulses.Add(1200); // '1' mark
+                pulses.Add(1200);
             }
             else
             {
-                pulses.Add(600);  // '0' mark
+                pulses.Add(600);
             }
-            pulses.Add(600); // Space
+            pulses.Add(600);
         }
         
         return pulses.ToArray();
@@ -256,9 +236,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ConvertRc5ToPulses(uint code)
     {
-        // RC5 protocol is more complex with Manchester encoding
-        // This is a very simplified version
-        var pulses = new List<int> { 889, 889 }; // Start bits
+        var pulses = new List<int> { 889, 889 };
         
         for (int i = 12; i >= 0; i--)
         {
@@ -279,8 +257,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
     private int[] ConvertRc6ToPulses(uint code)
     {
-        // RC6 protocol timing (simplified)
-        var pulses = new List<int> { 2666, 889 }; // Header
+        var pulses = new List<int> { 2666, 889 };
         
         for (int i = 15; i >= 0; i--)
         {

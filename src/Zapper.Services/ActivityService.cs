@@ -40,7 +40,6 @@ public class ActivityService(
         activity.CreatedAt = DateTime.UtcNow;
         activity.LastUsed = DateTime.UtcNow;
 
-        // Set sort order if not specified
         if (activity.SortOrder == 0)
         {
             var maxSortOrder = await context.Activities.MaxAsync(a => (int?)a.SortOrder) ?? 0;
@@ -96,7 +95,6 @@ public class ActivityService(
 
         logger.LogInformation("Executing activity: {ActivityName}", activity.Name);
         
-        // Notify clients that activity has started
         await notificationService.NotifyActivityStartedAsync(activity.Id, activity.Name);
 
         try
@@ -108,20 +106,17 @@ public class ActivityService(
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                // Delay before step if specified
                 if (step.DelayBeforeMs > 0)
                 {
                     logger.LogDebug("Waiting {DelayMs}ms before step {StepOrder}", step.DelayBeforeMs, step.StepOrder);
                     await Task.Delay(step.DelayBeforeMs, cancellationToken);
                 }
 
-                // Execute the command
                 var success = await deviceService.SendCommandAsync(
                     step.DeviceCommand.DeviceId, 
                     step.DeviceCommand.Name, 
                     cancellationToken);
 
-                // Notify clients of step execution
                 await notificationService.NotifyActivityStepExecutedAsync(
                     activity.Id, activity.Name, step.StepOrder, 
                     $"{step.DeviceCommand.Device.Name} - {step.DeviceCommand.Name}", success);
@@ -131,7 +126,6 @@ public class ActivityService(
                     logger.LogError("Required step failed in activity {ActivityName}: {DeviceName} - {CommandName}", 
                                    activity.Name, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
                     
-                    // Notify clients of activity failure
                     await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
                     return false;
                 }
@@ -148,7 +142,6 @@ public class ActivityService(
                                    step.StepOrder, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
                 }
 
-                // Delay after step if specified
                 if (step.DelayAfterMs > 0)
                 {
                     logger.LogDebug("Waiting {DelayMs}ms after step {StepOrder}", step.DelayAfterMs, step.StepOrder);
@@ -156,14 +149,12 @@ public class ActivityService(
                 }
             }
 
-            // Update last used timestamp
             activity.LastUsed = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
             logger.LogInformation("Activity {ActivityName} completed successfully. Executed {ExecutedSteps}/{TotalSteps} steps", 
                                  activity.Name, executedSteps, steps.Count);
             
-            // Notify clients of successful activity completion
             await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, true);
             return true;
         }
@@ -183,8 +174,6 @@ public class ActivityService(
 
     public async Task<bool> StopActivityAsync(int activityId, CancellationToken cancellationToken = default)
     {
-        // For now, this is a placeholder - in a real implementation you'd track running activities
-        // and provide a way to cancel their execution
         logger.LogInformation("Stop activity requested for activity ID: {ActivityId}", activityId);
         await Task.CompletedTask;
         return true;
@@ -198,7 +187,6 @@ public class ActivityService(
         if (activity == null || device == null)
             return null;
 
-        // Check if device is already in activity
         var existingAssociation = await context.ActivityDevices
             .FirstOrDefaultAsync(ad => ad.ActivityId == activityId && ad.DeviceId == deviceId);
 

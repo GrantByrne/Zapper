@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfraredServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Check if we're running on a platform that supports GPIO
         var useRealGpio = configuration.GetValue<bool>("Infrared:UseRealGpio", false);
         var gpioPin = configuration.GetValue<int>("Infrared:GpioPin", 18);
         
@@ -34,7 +33,6 @@ public static class ServiceCollectionExtensions
             });
         }
         
-        // Register the device controller
         services.AddSingleton<IDeviceController, InfraredDeviceController>();
         
         return services;

@@ -34,9 +34,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 
             logger.LogInformation("Found Bluetooth adapter: {Address}", await _adapter.GetAddressAsync());
 
-            // Note: DeviceFound event not available in this version, using polling approach
-            
-            // Ensure adapter is powered on
+            if (!await _adapter.GetAsync<bool>("Powered"))
             if (!await _adapter.GetAsync<bool>("Powered"))
             {
                 logger.LogInformation("Powering on Bluetooth adapter...");

@@ -100,7 +100,6 @@ public class BluetoothControlEndpoint(IBluetoothHIDController bluetoothControlle
     private async Task<bool> HandleGetConnectedDevices(BluetoothControlRequest req, CancellationToken ct)
     {
         var devices = await bluetoothController.GetConnectedDevicesAsync(ct);
-        // This method returns true if successful, the actual devices would be in the response
         return devices != null;
     }
 }

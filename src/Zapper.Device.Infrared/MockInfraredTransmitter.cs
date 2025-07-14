@@ -28,7 +28,6 @@ public class MockInfraredTransmitter : IInfraredTransmitter
 
         _logger.LogInformation("Mock transmitting IR code: {IrCode} (repeat {RepeatCount}x)", irCode, repeatCount);
         
-        // Simulate transmission time
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
@@ -40,7 +39,6 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         _logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)", 
                               irCode.Brand, irCode.Model, irCode.CommandName, irCode.HexCode, repeatCount);
         
-        // Simulate transmission time
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
@@ -52,7 +50,6 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         _logger.LogInformation("Mock transmitting raw IR signal: {PulseCount} pulses at {Frequency}Hz", 
                               pulses.Length, carrierFrequency);
         
-        // Simulate transmission time based on pulse count
         var totalMicros = pulses.Sum();
         await Task.Delay(Math.Max(1, totalMicros / 10000), cancellationToken);
     }

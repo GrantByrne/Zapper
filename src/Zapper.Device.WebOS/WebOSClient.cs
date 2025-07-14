@@ -33,7 +33,6 @@ public class WebOSClient(ILogger<WebOSClient> logger) : IWebOSClient, IDisposabl
 
             await _webSocket.ConnectAsync(uri, cancellationToken);
 
-            // Start listening for responses
             _ = Task.Run(() => ListenForMessagesAsync(cancellationToken), cancellationToken);
 
             return IsConnected;
@@ -164,7 +163,6 @@ public class WebOSClient(ILogger<WebOSClient> logger) : IWebOSClient, IDisposabl
 
             await _webSocket!.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancellationToken);
 
-            // Wait for response with timeout
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             timeoutCts.CancelAfter(TimeSpan.FromSeconds(10));
 
@@ -205,7 +203,6 @@ public class WebOSClient(ILogger<WebOSClient> logger) : IWebOSClient, IDisposabl
         }
         catch (OperationCanceledException)
         {
-            // Expected when cancellation is requested
         }
         catch (Exception ex)
         {

@@ -4,6 +4,7 @@ using Zapper.Data;
 using Zapper.Device.Infrared;
 using Zapper.Device.Network;
 using Zapper.Device.WebOS;
+using Zapper.Device.Roku;
 using Zapper.Core.Models;
 
 namespace Zapper.Services;
@@ -13,6 +14,7 @@ public class DeviceService(
     IInfraredTransmitter irTransmitter,
     INetworkDeviceController networkController,
     IWebOSDeviceController webOSController,
+    IRokuDeviceController rokuController,
     INotificationService notificationService,
     ILogger<DeviceService> logger) : IDeviceService
 {
@@ -113,12 +115,10 @@ public class DeviceService(
                 device.IsOnline = true;
                 await context.SaveChangesAsync();
                 
-                // Notify clients of successful command execution
                 await notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, true);
             }
             else
             {
-                // Notify clients of failed command execution
                 await notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, false);
             }
 
@@ -145,6 +145,8 @@ public class DeviceService(
             {
                 ConnectionType.NetworkTCP or ConnectionType.NetworkWebSocket => 
                     await TestNetworkDeviceAsync(device),
+                ConnectionType.NetworkHTTP =>
+                    await rokuController.TestConnectionAsync(device),
                 ConnectionType.InfraredIR => 
                     irTransmitter.IsAvailable,
                 ConnectionType.WebOS =>
@@ -156,7 +158,6 @@ public class DeviceService(
             device.LastSeen = DateTime.UtcNow;
             await context.SaveChangesAsync();
             
-            // Notify clients of device status change
             await notificationService.NotifyDeviceStatusChangedAsync(device.Id, device.Name, isOnline);
 
             return isOnline;
@@ -177,8 +178,6 @@ public class DeviceService(
             if (string.IsNullOrEmpty(discoveryResult))
                 return [];
 
-            // Parse discovery results and create device objects
-            // This is a simplified implementation
             var devices = new List<Zapper.Core.Models.Device>();
             
             logger.LogInformation("Device discovery completed for type: {DeviceType}", deviceType);
@@ -200,6 +199,7 @@ public class DeviceService(
             ConnectionType.InfraredIR => await ExecuteIrCommandAsync(command, cancellationToken),
             ConnectionType.NetworkTCP => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
             ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommandAsync(device, command, cancellationToken),
+            ConnectionType.NetworkHTTP => await rokuController.SendCommandAsync(device, command, cancellationToken),
             ConnectionType.WebOS => await webOSController.SendCommandAsync(device, command, cancellationToken),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };

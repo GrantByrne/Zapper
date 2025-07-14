@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Zapper.Core.Interfaces;
 using Zapper.Data;
 using Zapper.Device.Infrared;
+using Zapper.Device.Network;
 using Zapper.Device.WebOS;
+using Zapper.Device.Roku;
 using Zapper.Device.USB;
 using Zapper.Endpoints.Devices;
 using Zapper.Services;
@@ -56,6 +58,12 @@ builder.Services.AddTransient<IWebOSDeviceController>(provider =>
     var client = provider.GetRequiredService<IWebOSClient>();
     return new WebOSHardwareController(client, logger);
 });
+
+// Register network device controller
+builder.Services.AddTransient<INetworkDeviceController, NetworkDeviceController>();
+
+// Register Roku services
+builder.Services.AddRokuServices();
 
 // Register protocol implementations
 builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();

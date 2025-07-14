@@ -17,8 +17,6 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
         logger.LogWarning("USB devices are input-only. Cannot send command {CommandName} to device {DeviceName}", 
             command.Name, device.Name);
         
-        // USB remotes are typically input-only devices
-        // This would only work for bi-directional USB devices
         return await Task.FromResult(false);
     }
 
@@ -27,7 +25,6 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
         if (!SupportsDevice(device))
             return Task.FromResult(false);
 
-        // Check if the device is in the list of connected remotes
         var connectedRemotes = remoteHandler.GetConnectedRemotes();
         var isConnected = connectedRemotes.Any(remote => 
             remote.Contains(device.MacAddress ?? "") || 
