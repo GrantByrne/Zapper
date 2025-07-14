@@ -3,16 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Services;
 
-public class NotificationService : INotificationService
+public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<NotificationService> logger) : INotificationService
 {
-    private readonly IHubContext<ZapperSignalR> _hubContext;
-    private readonly ILogger<NotificationService> _logger;
-
-    public NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<NotificationService> logger)
-    {
-        _hubContext = hubContext;
-        _logger = logger;
-    }
 
     public async Task NotifyDeviceStatusChangedAsync(int deviceId, string deviceName, bool isOnline)
     {
@@ -27,7 +19,7 @@ public class NotificationService : INotificationService
         await SendToDeviceGroupAsync(deviceId, "DeviceStatusChanged", data);
         await SendToAllClientsAsync("DeviceStatusChanged", data);
         
-        _logger.LogInformation("Device status changed: {DeviceName} is now {Status}", 
+        logger.LogInformation("Device status changed: {DeviceName} is now {Status}", 
             deviceName, isOnline ? "online" : "offline");
     }
 
@@ -44,7 +36,7 @@ public class NotificationService : INotificationService
 
         await SendToDeviceGroupAsync(deviceId, "DeviceCommandExecuted", data);
         
-        _logger.LogInformation("Device command executed: {DeviceName} - {CommandName} ({Status})", 
+        logger.LogInformation("Device command executed: {DeviceName} - {CommandName} ({Status})", 
             deviceName, commandName, success ? "success" : "failed");
     }
 
@@ -61,7 +53,7 @@ public class NotificationService : INotificationService
         await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
         
-        _logger.LogInformation("Activity started: {ActivityName}", activityName);
+        logger.LogInformation("Activity started: {ActivityName}", activityName);
     }
 
     public async Task NotifyActivityCompletedAsync(int activityId, string activityName, bool success)
@@ -78,7 +70,7 @@ public class NotificationService : INotificationService
         await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
         
-        _logger.LogInformation("Activity completed: {ActivityName} ({Status})", 
+        logger.LogInformation("Activity completed: {ActivityName} ({Status})", 
             activityName, success ? "success" : "failed");
     }
 
@@ -96,7 +88,7 @@ public class NotificationService : INotificationService
 
         await SendToActivityGroupAsync(activityId, "ActivityStepExecuted", data);
         
-        _logger.LogInformation("Activity step executed: {ActivityName} - Step {StepNumber} ({Status})", 
+        logger.LogInformation("Activity step executed: {ActivityName} - Step {StepNumber} ({Status})", 
             activityName, stepNumber, success ? "success" : "failed");
     }
 
@@ -112,7 +104,7 @@ public class NotificationService : INotificationService
 
         await SendToAllClientsAsync("DeviceDiscovered", data);
         
-        _logger.LogInformation("Device discovered: {DeviceName} ({DeviceType}) at {DeviceAddress}", 
+        logger.LogInformation("Device discovered: {DeviceName} ({DeviceType}) at {DeviceAddress}", 
             deviceName, deviceType, deviceAddress);
     }
 
@@ -128,7 +120,7 @@ public class NotificationService : INotificationService
 
         await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
         
-        _logger.LogInformation("Bluetooth device connected: {DeviceName}", deviceName);
+        logger.LogInformation("Bluetooth device connected: {DeviceName}", deviceName);
     }
 
     public async Task NotifyBluetoothDeviceDisconnectedAsync(string deviceId, string deviceName)
@@ -143,7 +135,7 @@ public class NotificationService : INotificationService
 
         await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
         
-        _logger.LogInformation("Bluetooth device disconnected: {DeviceName}", deviceName);
+        logger.LogInformation("Bluetooth device disconnected: {DeviceName}", deviceName);
     }
 
     public async Task NotifyWebOSDevicePairedAsync(string deviceId, string deviceName, bool success)
@@ -159,7 +151,7 @@ public class NotificationService : INotificationService
 
         await SendToAllClientsAsync("WebOSDevicePaired", data);
         
-        _logger.LogInformation("WebOS device pairing: {DeviceName} ({Status})", 
+        logger.LogInformation("WebOS device pairing: {DeviceName} ({Status})", 
             deviceName, success ? "success" : "failed");
     }
 
@@ -174,18 +166,18 @@ public class NotificationService : INotificationService
 
         await SendToAllClientsAsync("SystemMessage", data);
         
-        _logger.LogInformation("System message sent: {Message} (level: {Level})", message, level);
+        logger.LogInformation("System message sent: {Message} (level: {Level})", message, level);
     }
 
     public async Task SendToAllClientsAsync(string method, object data)
     {
         try
         {
-            await _hubContext.Clients.Group("AllClients").SendAsync(method, data);
+            await hubContext.Clients.Group("AllClients").SendAsync(method, data);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send message to all clients: {Method}", method);
+            logger.LogError(ex, "Failed to send message to all clients: {Method}", method);
         }
     }
 
@@ -193,11 +185,11 @@ public class NotificationService : INotificationService
     {
         try
         {
-            await _hubContext.Clients.Group($"Device_{deviceId}").SendAsync(method, data);
+            await hubContext.Clients.Group($"Device_{deviceId}").SendAsync(method, data);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send message to device group {DeviceId}: {Method}", deviceId, method);
+            logger.LogError(ex, "Failed to send message to device group {DeviceId}: {Method}", deviceId, method);
         }
     }
 
@@ -205,11 +197,11 @@ public class NotificationService : INotificationService
     {
         try
         {
-            await _hubContext.Clients.Group($"Activity_{activityId}").SendAsync(method, data);
+            await hubContext.Clients.Group($"Activity_{activityId}").SendAsync(method, data);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send message to activity group {ActivityId}: {Method}", activityId, method);
+            logger.LogError(ex, "Failed to send message to activity group {ActivityId}: {Method}", activityId, method);
         }
     }
 }

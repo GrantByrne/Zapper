@@ -6,20 +6,12 @@ using Zapper.Core.Models;
 
 namespace Zapper.Services;
 
-public class IRCodeService : IIRCodeService
+public class IRCodeService(ZapperContext context, ILogger<IRCodeService> logger) : IIRCodeService
 {
-    private readonly ZapperContext _context;
-    private readonly ILogger<IRCodeService> _logger;
-
-    public IRCodeService(ZapperContext context, ILogger<IRCodeService> logger)
-    {
-        _context = context;
-        _logger = logger;
-    }
 
     public async Task<IEnumerable<IRCodeSet>> GetCodeSetsAsync()
     {
-        return await _context.IRCodeSets
+        return await context.IRCodeSets
             .Include(cs => cs.Codes)
             .OrderBy(cs => cs.Brand)
             .ThenBy(cs => cs.Model)
@@ -28,7 +20,7 @@ public class IRCodeService : IIRCodeService
 
     public async Task<IEnumerable<IRCodeSet>> SearchCodeSetsAsync(string? brand = null, string? model = null, DeviceType? deviceType = null)
     {
-        var query = _context.IRCodeSets.Include(cs => cs.Codes).AsQueryable();
+        var query = context.IRCodeSets.Include(cs => cs.Codes).AsQueryable();
 
         if (!string.IsNullOrEmpty(brand))
         {
@@ -53,14 +45,14 @@ public class IRCodeService : IIRCodeService
 
     public async Task<IRCodeSet?> GetCodeSetAsync(int id)
     {
-        return await _context.IRCodeSets
+        return await context.IRCodeSets
             .Include(cs => cs.Codes)
             .FirstOrDefaultAsync(cs => cs.Id == id);
     }
 
     public async Task<IRCodeSet?> GetCodeSetAsync(string brand, string model, DeviceType deviceType)
     {
-        return await _context.IRCodeSets
+        return await context.IRCodeSets
             .Include(cs => cs.Codes)
             .FirstOrDefaultAsync(cs => cs.Brand.ToLower() == brand.ToLower() 
                                     && cs.Model.ToLower() == model.ToLower() 
@@ -69,7 +61,7 @@ public class IRCodeService : IIRCodeService
 
     public async Task<IEnumerable<IRCode>> GetCodesAsync(int codeSetId)
     {
-        return await _context.IRCodes
+        return await context.IRCodes
             .Where(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId)
             .OrderBy(c => c.CommandName)
             .ToListAsync();
@@ -77,15 +69,15 @@ public class IRCodeService : IIRCodeService
 
     public async Task<IRCode?> GetCodeAsync(int codeSetId, string commandName)
     {
-        return await _context.IRCodes
+        return await context.IRCodes
             .FirstOrDefaultAsync(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId 
                                    && c.CommandName.ToLower() == commandName.ToLower());
     }
 
     public async Task<IRCodeSet> CreateCodeSetAsync(IRCodeSet codeSet)
     {
-        _context.IRCodeSets.Add(codeSet);
-        await _context.SaveChangesAsync();
+        context.IRCodeSets.Add(codeSet);
+        await context.SaveChangesAsync();
         return codeSet;
     }
 
@@ -98,18 +90,18 @@ public class IRCodeService : IIRCodeService
         }
 
         // Set the foreign key
-        _context.Entry(code).Property("IRCodeSetId").CurrentValue = codeSetId;
+        context.Entry(code).Property("IRCodeSetId").CurrentValue = codeSetId;
         
-        _context.IRCodes.Add(code);
-        await _context.SaveChangesAsync();
+        context.IRCodes.Add(code);
+        await context.SaveChangesAsync();
         return code;
     }
 
     public async Task UpdateCodeSetAsync(IRCodeSet codeSet)
     {
         codeSet.UpdatedAt = DateTime.UtcNow;
-        _context.IRCodeSets.Update(codeSet);
-        await _context.SaveChangesAsync();
+        context.IRCodeSets.Update(codeSet);
+        await context.SaveChangesAsync();
     }
 
     public async Task DeleteCodeSetAsync(int id)
@@ -117,8 +109,8 @@ public class IRCodeService : IIRCodeService
         var codeSet = await GetCodeSetAsync(id);
         if (codeSet != null)
         {
-            _context.IRCodeSets.Remove(codeSet);
-            await _context.SaveChangesAsync();
+            context.IRCodeSets.Remove(codeSet);
+            await context.SaveChangesAsync();
         }
     }
 
@@ -157,7 +149,7 @@ public class IRCodeService : IIRCodeService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to import IR code set from {FilePath}", filePath);
+            logger.LogError(ex, "Failed to import IR code set from {FilePath}", filePath);
             return false;
         }
     }
@@ -198,12 +190,12 @@ public class IRCodeService : IIRCodeService
 
     public async Task SeedDefaultCodesAsync()
     {
-        if (await _context.IRCodeSets.AnyAsync())
+        if (await context.IRCodeSets.AnyAsync())
         {
             return; // Already seeded
         }
 
-        _logger.LogInformation("Seeding default IR codes...");
+        logger.LogInformation("Seeding default IR codes...");
 
         var defaultCodeSets = GetDefaultCodeSets();
         
@@ -212,7 +204,7 @@ public class IRCodeService : IIRCodeService
             await CreateCodeSetAsync(codeSet);
         }
 
-        _logger.LogInformation("Seeded {Count} default IR code sets", defaultCodeSets.Count);
+        logger.LogInformation("Seeded {Count} default IR code sets", defaultCodeSets.Count);
     }
 
     private static List<IRCodeSet> GetDefaultCodeSets()
