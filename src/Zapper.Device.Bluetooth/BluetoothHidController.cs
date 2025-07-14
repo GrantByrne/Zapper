@@ -17,36 +17,36 @@ public class BluetoothHidController : IBluetoothHidController
         _bluetoothService.DeviceDisconnected += OnDeviceDisconnected;
     }
 
-    public Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
+    public async Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
     {
         try
         {
-            if (!_connectedDevices.ContainsKey(deviceAddress))
+            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
-                return Task.FromResult(false);
+                return false;
             }
 
             _logger.LogDebug("Sending HID key {KeyCode} to device {Address}", keyCode, deviceAddress);
 
-            var device = _connectedDevices[deviceAddress];
             if (IsHidDevice(device))
             {
                 _logger.LogInformation("Simulating HID key {KeyCode} sent to device {Address} ({Name})", 
                     keyCode, deviceAddress, device.Name);
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
                 _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
                     deviceAddress, device.Name);
-                return Task.FromResult(false);
+                return false;
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send HID key {KeyCode} to device {Address}", keyCode, deviceAddress);
-            return Task.FromResult(false);
+            return false;
         }
     }
 
@@ -54,9 +54,17 @@ public class BluetoothHidController : IBluetoothHidController
     {
         try
         {
-            if (!_connectedDevices.ContainsKey(deviceAddress))
+            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
+                return false;
+            }
+
+            if (!IsHidDevice(device))
+            {
+                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
+                    deviceAddress, device.Name);
                 return false;
             }
 
@@ -101,9 +109,17 @@ public class BluetoothHidController : IBluetoothHidController
             if (string.IsNullOrEmpty(text))
                 return true;
 
-            if (!_connectedDevices.ContainsKey(deviceAddress))
+            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
+                return false;
+            }
+
+            if (!IsHidDevice(device))
+            {
+                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
+                    deviceAddress, device.Name);
                 return false;
             }
 

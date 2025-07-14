@@ -74,44 +74,98 @@ public class BluetoothService : BackgroundService, IBluetoothService
         }
     }
 
-    public Task<bool> SetPoweredAsync(bool powered, CancellationToken cancellationToken = default)
+    public async Task<bool> SetPoweredAsync(bool powered, CancellationToken cancellationToken = default)
     {
-        return _adapter.SetPoweredAsync(powered, cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot set power state: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.SetPoweredAsync(powered, cancellationToken);
     }
 
-    public Task<bool> StartDiscoveryAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> StartDiscoveryAsync(CancellationToken cancellationToken = default)
     {
-        return _adapter.StartDiscoveryAsync(cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot start discovery: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.StartDiscoveryAsync(cancellationToken);
     }
 
-    public Task<bool> StopDiscoveryAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> StopDiscoveryAsync(CancellationToken cancellationToken = default)
     {
-        return _adapter.StopDiscoveryAsync(cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot stop discovery: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.StopDiscoveryAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<BluetoothDeviceInfo>> GetDevicesAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<BluetoothDeviceInfo>> GetDevicesAsync(CancellationToken cancellationToken = default)
     {
-        return _adapter.GetDevicesAsync(cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot get devices: Bluetooth adapter not initialized");
+            return [];
+        }
+
+        return await _adapter.GetDevicesAsync(cancellationToken);
     }
 
-    public Task<BluetoothDeviceInfo?> GetDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<BluetoothDeviceInfo?> GetDeviceAsync(string address, CancellationToken cancellationToken = default)
     {
-        return _adapter.GetDeviceAsync(address, cancellationToken);
+        if (string.IsNullOrEmpty(address))
+        {
+            _logger.LogWarning("Cannot get device: address is null or empty");
+            return null;
+        }
+
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot get device: Bluetooth adapter not initialized");
+            return null;
+        }
+
+        return await _adapter.GetDeviceAsync(address, cancellationToken);
     }
 
-    public Task<bool> PairDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> PairDeviceAsync(string address, CancellationToken cancellationToken = default)
     {
-        return _adapter.PairDeviceAsync(address, cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot pair device: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.PairDeviceAsync(address, cancellationToken);
     }
 
-    public Task<bool> ConnectDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> ConnectDeviceAsync(string address, CancellationToken cancellationToken = default)
     {
-        return _adapter.ConnectDeviceAsync(address, cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot connect device: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.ConnectDeviceAsync(address, cancellationToken);
     }
 
-    public Task<bool> DisconnectDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> DisconnectDeviceAsync(string address, CancellationToken cancellationToken = default)
     {
-        return _adapter.DisconnectDeviceAsync(address, cancellationToken);
+        if (!IsInitialized)
+        {
+            _logger.LogWarning("Cannot disconnect device: Bluetooth adapter not initialized");
+            return false;
+        }
+
+        return await _adapter.DisconnectDeviceAsync(address, cancellationToken);
     }
 
     public async Task<bool> RemoveDeviceAsync(string address, CancellationToken cancellationToken = default)

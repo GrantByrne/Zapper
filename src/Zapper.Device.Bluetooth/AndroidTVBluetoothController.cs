@@ -3,8 +3,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class AndroidTvBluetoothController(IBluetoothHidController hidController, IBluetoothService bluetoothService, ILogger<AndroidTvBluetoothController> logger) : IBluetoothDeviceController
+public class AndroidTvBluetoothController : IBluetoothDeviceController
 {
+    private readonly IBluetoothHidController hidController;
+    private readonly IBluetoothService bluetoothService;
+    private readonly ILogger<AndroidTvBluetoothController> logger;
+
+    public AndroidTvBluetoothController(IBluetoothHidController hidController, IBluetoothService bluetoothService, ILogger<AndroidTvBluetoothController> logger)
+    {
+        ArgumentNullException.ThrowIfNull(hidController);
+        ArgumentNullException.ThrowIfNull(bluetoothService);
+        ArgumentNullException.ThrowIfNull(logger);
+        
+        this.hidController = hidController;
+        this.bluetoothService = bluetoothService;
+        this.logger = logger;
+    }
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (device.ConnectionType != ConnectionType.Bluetooth)

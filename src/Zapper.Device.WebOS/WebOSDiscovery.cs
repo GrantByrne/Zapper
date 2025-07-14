@@ -24,16 +24,25 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
         try
         {
+            // Create a combined cancellation token with the timeout
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(timeout);
+
             // Start SSDP discovery
-            var ssdpTask = PerformSsdpDiscoveryAsync(timeout, cancellationToken);
+            var ssdpTask = PerformSsdpDiscoveryAsync(timeout, timeoutCts.Token);
             
             // Start mDNS discovery
-            var mdnsTask = PerformMdnsDiscoveryAsync(timeout, cancellationToken);
+            var mdnsTask = PerformMdnsDiscoveryAsync(timeout, timeoutCts.Token);
 
-            // Wait for both discovery methods to complete
+            // Wait for both discovery methods to complete or timeout
             await Task.WhenAll(ssdpTask, mdnsTask);
 
             logger.LogInformation("Discovered {Count} WebOS devices", _discoveredDevices.Count);
+            return _discoveredDevices.ToList();
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogDebug("WebOS device discovery was cancelled or timed out");
             return _discoveredDevices.ToList();
         }
         catch (Exception ex)
@@ -184,6 +193,13 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
     {
         try
         {
+            // For very short timeouts, skip expensive network scanning
+            if (timeout.TotalMilliseconds < 1000)
+            {
+                logger.LogDebug("Skipping mDNS discovery due to short timeout ({TotalMs}ms)", timeout.TotalMilliseconds);
+                return;
+            }
+
             // Simple mDNS-style discovery by checking common hostnames
             var commonHostnames = new[] { "lgsmarttv.local", "webostv.local" };
             
@@ -194,7 +210,10 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
                 try
                 {
-                    var hostEntry = await Dns.GetHostEntryAsync(hostname, cancellationToken);
+                    using var hostnameCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    hostnameCts.CancelAfter(TimeSpan.FromMilliseconds(500)); // Quick DNS lookup
+
+                    var hostEntry = await Dns.GetHostEntryAsync(hostname, hostnameCts.Token);
                     foreach (var address in hostEntry.AddressList)
                     {
                         if (address.AddressFamily == AddressFamily.InterNetwork)
@@ -208,6 +227,10 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
                         }
                     }
                 }
+                catch (OperationCanceledException)
+                {
+                    // DNS lookup timed out - continue with next hostname
+                }
                 catch (SocketException)
                 {
                     // Hostname not found - this is expected
@@ -218,8 +241,11 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
                 }
             }
 
-            // Also try network scanning on local subnet
-            await ScanLocalSubnetAsync(cancellationToken);
+            // For longer timeouts, also try network scanning on local subnet
+            if (timeout.TotalSeconds >= 5)
+            {
+                await ScanLocalSubnetAsync(timeout, cancellationToken);
+            }
         }
         catch (Exception ex)
         {
@@ -227,7 +253,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         }
     }
 
-    private async Task ScanLocalSubnetAsync(CancellationToken cancellationToken)
+    private async Task ScanLocalSubnetAsync(TimeSpan timeout, CancellationToken cancellationToken)
     {
         try
         {
@@ -238,13 +264,19 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
             foreach (var networkInterface in networkInterfaces)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    break;
+
                 var ipProperties = networkInterface.GetIPProperties();
                 foreach (var unicastAddress in ipProperties.UnicastAddresses)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+
                     if (unicastAddress.Address.AddressFamily == AddressFamily.InterNetwork &&
                         !IPAddress.IsLoopback(unicastAddress.Address))
                     {
-                        await ScanSubnetAsync(unicastAddress.Address, unicastAddress.IPv4Mask, cancellationToken);
+                        await ScanSubnetAsync(unicastAddress.Address, unicastAddress.IPv4Mask, timeout, cancellationToken);
                     }
                 }
             }
@@ -255,16 +287,19 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         }
     }
 
-    private async Task ScanSubnetAsync(IPAddress localIp, IPAddress subnetMask, CancellationToken cancellationToken)
+    private async Task ScanSubnetAsync(IPAddress localIp, IPAddress subnetMask, TimeSpan timeout, CancellationToken cancellationToken)
     {
         try
         {
             var network = GetNetworkAddress(localIp, subnetMask);
             var broadcastAddress = GetBroadcastAddress(localIp, subnetMask);
             
-            // Only scan a subset of addresses to avoid being too aggressive
+            // Limit scanning based on available timeout
+            var maxAddresses = Math.Min(20, (int)(timeout.TotalSeconds / 2)); // 2 seconds per address estimate
+            if (maxAddresses < 1) maxAddresses = 1;
+
             var tasks = new List<Task>();
-            var addressesToScan = GenerateAddressesToScan(network, broadcastAddress, 20); // Limit to 20 addresses
+            var addressesToScan = GenerateAddressesToScan(network, broadcastAddress, maxAddresses);
 
             foreach (var address in addressesToScan)
             {
@@ -273,8 +308,8 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
                 tasks.Add(CheckAddressForWebOsAsync(address, cancellationToken));
                 
-                // Limit concurrent scans
-                if (tasks.Count >= 5)
+                // Limit concurrent scans to avoid overwhelming the network
+                if (tasks.Count >= 3)
                 {
                     await Task.WhenAny(tasks);
                     tasks.RemoveAll(t => t.IsCompleted);
@@ -294,14 +329,19 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         try
         {
             using var ping = new Ping();
-            var reply = await ping.SendPingAsync(address, 1000);
+            // Use a much shorter ping timeout for subnet scanning
+            var reply = await ping.SendPingAsync(address, 200);
             
             if (reply.Status == IPStatus.Success)
             {
-                var device = await DiscoverDeviceByIpAsync(address.ToString(), cancellationToken);
-                if (device != null)
+                // Only try WebOS discovery if ping succeeds and we haven't been cancelled
+                if (!cancellationToken.IsCancellationRequested)
                 {
-                    AddDiscoveredDevice(device);
+                    var device = await DiscoverDeviceByIpAsync(address.ToString(), cancellationToken);
+                    if (device != null)
+                    {
+                        AddDiscoveredDevice(device);
+                    }
                 }
             }
         }
