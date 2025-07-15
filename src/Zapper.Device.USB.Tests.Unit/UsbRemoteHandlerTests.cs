@@ -27,7 +27,7 @@ public class UsbRemoteHandlerTests
         // Since we can't actually test real HID devices in unit tests,
         // we'll test the basic state management
         var act = async () => await _handler.StartListeningAsync();
-        
+
         await act.Should().NotThrowAsync();
     }
 
@@ -35,7 +35,7 @@ public class UsbRemoteHandlerTests
     public async Task StopListeningAsync_WhenNotListening_ShouldNotThrow()
     {
         var act = async () => await _handler.StopListeningAsync();
-        
+
         await act.Should().NotThrowAsync();
     }
 
@@ -43,7 +43,7 @@ public class UsbRemoteHandlerTests
     public void GetConnectedRemotes_WhenNoDevices_ShouldReturnEmpty()
     {
         var remotes = _handler.GetConnectedRemotes();
-        
+
         // Without real HID devices, this should return empty
         remotes.Should().NotBeNull();
     }
@@ -52,7 +52,7 @@ public class UsbRemoteHandlerTests
     public void Dispose_ShouldNotThrow()
     {
         var act = () => _handler.Dispose();
-        
+
         act.Should().NotThrow();
     }
 
@@ -64,7 +64,7 @@ public class UsbRemoteHandlerTests
             _handler.Dispose();
             _handler.Dispose();
         };
-        
+
         act.Should().NotThrow();
     }
 
@@ -74,7 +74,7 @@ public class UsbRemoteHandlerTests
         // Test basic lifecycle without real devices
         await _handler.StartListeningAsync();
         await _handler.StopListeningAsync();
-        
+
         // Should be able to start again
         await _handler.StartListeningAsync();
         _handler.Dispose();
@@ -92,11 +92,11 @@ public class UsbRemoteHandlerTests
     public void MapKeyCodeToButton_ShouldReturnCorrectButtonName(byte keyCode, string expectedButton)
     {
         // Use reflection to test the private method
-        var method = typeof(UsbRemoteHandler).GetMethod("MapKeyCodeToButton", 
+        var method = typeof(UsbRemoteHandler).GetMethod("MapKeyCodeToButton",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
+
         var result = (string)method!.Invoke(_handler, [keyCode])!;
-        
+
         result.Should().Be(expectedButton);
     }
 
@@ -106,10 +106,10 @@ public class UsbRemoteHandlerTests
         // Since we can't easily mock HidDevice, we'll test the concept
         // In a real scenario, you would mock the HidDevice interface
         // For now, we'll test that the method exists and doesn't throw during reflection
-        
-        var method = typeof(UsbRemoteHandler).GetMethod("GetDeviceId", 
+
+        var method = typeof(UsbRemoteHandler).GetMethod("GetDeviceId",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
+
         method.Should().NotBeNull();
     }
 
@@ -117,9 +117,9 @@ public class UsbRemoteHandlerTests
     public void IsRemoteDevice_Method_ShouldExist()
     {
         // Test that the private method exists for device filtering
-        var method = typeof(UsbRemoteHandler).GetMethod("IsRemoteDevice", 
+        var method = typeof(UsbRemoteHandler).GetMethod("IsRemoteDevice",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
+
         method.Should().NotBeNull();
     }
 
@@ -128,10 +128,10 @@ public class UsbRemoteHandlerTests
     {
         // Start first (though it may not actually start without real devices)
         await _handler.StartListeningAsync();
-        
+
         // Stop should always work
         await _handler.StopListeningAsync();
-        
+
         // After stopping, IsListening should be false
         _handler.IsListening.Should().BeFalse();
     }

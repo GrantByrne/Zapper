@@ -16,27 +16,27 @@ public static class ServiceCollectionExtensions
     /// <param name="configuration">Client configuration</param>
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddZapperApiClient(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         ZapperClientConfiguration configuration)
     {
         // Register configuration
         services.AddSingleton(configuration);
-        
+
         // Register Refit API interfaces
         services.AddRefitClient<IDeviceApi>()
-            .ConfigureHttpClient(c => 
+            .ConfigureHttpClient(c =>
             {
                 c.BaseAddress = new Uri(configuration.BaseUrl);
                 c.Timeout = TimeSpan.FromSeconds(configuration.TimeoutSeconds);
             });
-        
+
         // Register client implementations
         services.AddScoped<IDeviceClient, DeviceClient>();
         services.AddScoped<IZapperApiClient, ZapperApiClient>();
-        
+
         return services;
     }
-    
+
     /// <summary>
     /// Add Zapper API client services with default configuration
     /// </summary>
@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
     /// <param name="baseUrl">Base URL for the API (optional, defaults to localhost:5000)</param>
     /// <returns>The service collection for chaining</returns>
     public static IServiceCollection AddZapperApiClient(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         string? baseUrl = null)
     {
         var configuration = new ZapperClientConfiguration();
@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
         {
             configuration.BaseUrl = baseUrl;
         }
-        
+
         return services.AddZapperApiClient(configuration);
     }
 }

@@ -28,7 +28,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         {
             _controller = new GpioController();
             _controller.OpenPin(_gpioPin, PinMode.Output);
-            
+
             try
             {
                 _pwmChannel = PwmChannel.Create(0, 0, 38000);
@@ -38,7 +38,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             {
                 _logger.LogWarning(ex, "PWM not available, falling back to GPIO timing");
             }
-            
+
             _isInitialized = true;
             _logger.LogInformation("IR transmitter initialized on GPIO pin {Pin}", _gpioPin);
         }
@@ -55,7 +55,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             throw new InvalidOperationException("IR transmitter not initialized");
 
         var pulses = ParseIrCode(irCode);
-        
+
         for (int i = 0; i < repeatCount; i++)
         {
             await TransmitRawAsync(pulses, cancellationToken: cancellationToken);
@@ -71,11 +71,11 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
 
-        _logger.LogInformation("Transmitting IR code for {Brand} {Model} command {Command}", 
+        _logger.LogInformation("Transmitting IR code for {Brand} {Model} command {Command}",
                               irCode.Brand, irCode.Model, irCode.CommandName);
 
         int[] pulses;
-        
+
         if (!string.IsNullOrEmpty(irCode.RawData))
         {
             pulses = ParseIrCode(irCode.RawData);
@@ -84,7 +84,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         {
             pulses = ConvertHexToPulses(irCode.HexCode, irCode.Protocol);
         }
-        
+
         for (int i = 0; i < repeatCount; i++)
         {
             await TransmitRawAsync(pulses, irCode.Frequency, cancellationToken);
@@ -107,10 +107,10 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             for (int i = 0; i < pulses.Length; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 bool isHigh = i % 2 == 0;
                 int durationMicros = pulses[i];
-                
+
                 if (isHigh)
                 {
                     if (_pwmChannel != null)
@@ -141,7 +141,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
     {
         var halfPeriodMicros = 1_000_000 / (frequency * 2);
         var endTime = DateTime.UtcNow.AddMicroseconds(durationMicros);
-        
+
         while (DateTime.UtcNow < endTime && !cancellationToken.IsCancellationRequested)
         {
             _controller!.Write(_gpioPin, PinValue.High);
@@ -171,7 +171,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         try
         {
             var code = Convert.ToUInt32(hexCode.Replace("0x", ""), 16);
-            
+
             return protocol.ToUpper() switch
             {
                 "NEC" => ConvertNecToPulses(code),
@@ -191,7 +191,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
     private int[] ConvertNecToPulses(uint code)
     {
         var pulses = new List<int>();
-        
+
         pulses.Add(9000);
         pulses.Add(4500);
         for (int i = 31; i >= 0; i--)
@@ -206,16 +206,16 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
                 pulses.Add(560);
             }
         }
-        
+
         pulses.Add(560);
-        
+
         return pulses.ToArray();
     }
 
     private int[] ConvertSonyToPulses(uint code)
     {
         var pulses = new List<int>();
-        
+
         pulses.Add(2400);
         pulses.Add(600);
         for (int i = 11; i >= 0; i--)
@@ -230,14 +230,14 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             }
             pulses.Add(600);
         }
-        
+
         return pulses.ToArray();
     }
 
     private int[] ConvertRc5ToPulses(uint code)
     {
         var pulses = new List<int> { 889, 889 };
-        
+
         for (int i = 12; i >= 0; i--)
         {
             if ((code >> i & 1) == 1)
@@ -251,14 +251,14 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
                 pulses.Add(889);
             }
         }
-        
+
         return pulses.ToArray();
     }
 
     private int[] ConvertRc6ToPulses(uint code)
     {
         var pulses = new List<int> { 2666, 889 };
-        
+
         for (int i = 15; i >= 0; i--)
         {
             if ((code >> i & 1) == 1)
@@ -272,18 +272,18 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
                 pulses.Add(444);
             }
         }
-        
+
         return pulses.ToArray();
     }
 
     public void Dispose()
     {
         if (_disposed) return;
-        
+
         _pwmChannel?.Dispose();
         _controller?.Dispose();
         _disposed = true;
-        
+
         _logger.LogInformation("IR transmitter disposed");
     }
 }

@@ -14,7 +14,7 @@ public interface IBluetoothHidController
 public enum HidKeyCode
 {
     None = 0x00,
-    
+
     A = 0x04,
     B = 0x05,
     C = 0x06,
@@ -41,7 +41,7 @@ public enum HidKeyCode
     X = 0x1B,
     Y = 0x1C,
     Z = 0x1D,
-    
+
     Key1 = 0x1E,
     Key2 = 0x1F,
     Key3 = 0x20,
@@ -52,36 +52,36 @@ public enum HidKeyCode
     Key8 = 0x25,
     Key9 = 0x26,
     Key0 = 0x27,
-    
+
     Enter = 0x28,
     Escape = 0x29,
     Backspace = 0x2A,
     Tab = 0x2B,
     Space = 0x2C,
-    
+
     DPadUp = 0x52,
     DPadDown = 0x51,
     DPadLeft = 0x50,
     DPadRight = 0x4F,
     DPadCenter = 0x28,
-    
+
     ArrowUp = DPadUp,
     ArrowDown = DPadDown,
     ArrowLeft = DPadLeft,
     ArrowRight = DPadRight,
-    
+
     PageUp = 0x4B,
     PageDown = 0x4E,
-    
+
     Back = 0x29,
     Home = 0x4A,
     Menu = 0x76,
     Delete = 0x4C,
-    
+
     VolumeUp = 0x80,
     VolumeDown = 0x81,
     VolumeMute = 0x7F,
-    
+
     PlayPause = 0xCD,
     Play = 0xB0,
     Pause = 0xB1,
@@ -90,11 +90,11 @@ public enum HidKeyCode
     Rewind = 0xB4,
     NextTrack = 0xB5,
     PreviousTrack = 0xB6,
-    
+
     Assistant = 0xAE,
     Search = 0x221,
     Settings = 0x222,
-    
+
     F1 = 0x3A,
     F2 = 0x3B,
     F3 = 0x3C,

@@ -21,16 +21,16 @@ public class SendCommandEndpoint(IDeviceService deviceService) : Endpoint<SendCo
         var success = await deviceService.SendCommandAsync(req.Id, req.CommandName, ct);
         if (!success)
         {
-            await SendAsync(new SendCommandResponse 
-            { 
-                Message = $"Failed to send command '{req.CommandName}' to device {req.Id}" 
+            await SendAsync(new SendCommandResponse
+            {
+                Message = $"Failed to send command '{req.CommandName}' to device {req.Id}"
             }, 400, ct);
             return;
         }
 
-        await SendOkAsync(new SendCommandResponse 
-        { 
-            Message = $"Command '{req.CommandName}' sent successfully" 
+        await SendOkAsync(new SendCommandResponse
+        {
+            Message = $"Command '{req.CommandName}' sent successfully"
         }, ct);
     }
 }

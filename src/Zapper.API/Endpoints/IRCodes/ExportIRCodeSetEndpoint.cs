@@ -17,10 +17,10 @@ public class ExportIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<Ex
         try
         {
             var json = await irCodeService.ExportCodeSetAsync(req.Id);
-            
+
             HttpContext.Response.ContentType = "application/json";
             HttpContext.Response.Headers["Content-Disposition"] = $"attachment; filename=\"ir-codes-{req.Id}.json\"";
-            
+
             await SendStringAsync(json, cancellation: ct);
         }
         catch (ArgumentException ex)

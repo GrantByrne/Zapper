@@ -79,9 +79,9 @@ public class InfraredDeviceControllerTests
             Name = "Samsung TV",
             ConnectionType = ConnectionType.InfraredIr
         };
-        var command = new DeviceCommand 
-        { 
-            Name = "Power", 
+        var command = new DeviceCommand
+        {
+            Name = "Power",
             IrCode = "9000 4500 560 560",
             IsRepeatable = false,
             DelayMs = 0
@@ -106,9 +106,9 @@ public class InfraredDeviceControllerTests
             Name = "Samsung TV",
             ConnectionType = ConnectionType.InfraredIr
         };
-        var command = new DeviceCommand 
-        { 
-            Name = "VolumeUp", 
+        var command = new DeviceCommand
+        {
+            Name = "VolumeUp",
             IrCode = "9000 4500 560 560",
             IsRepeatable = true,
             DelayMs = 0
@@ -132,9 +132,9 @@ public class InfraredDeviceControllerTests
             Name = "Samsung TV",
             ConnectionType = ConnectionType.InfraredIr
         };
-        var command = new DeviceCommand 
-        { 
-            Name = "Power", 
+        var command = new DeviceCommand
+        {
+            Name = "Power",
             IrCode = "9000 4500 560 560",
             IsRepeatable = false,
             DelayMs = 100
@@ -160,9 +160,9 @@ public class InfraredDeviceControllerTests
             Name = "Samsung TV",
             ConnectionType = ConnectionType.InfraredIr
         };
-        var command = new DeviceCommand 
-        { 
-            Name = "Power", 
+        var command = new DeviceCommand
+        {
+            Name = "Power",
             IrCode = "9000 4500 560 560"
         };
 

@@ -30,7 +30,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
             // Start SSDP discovery
             var ssdpTask = PerformSsdpDiscoveryAsync(timeout, timeoutCts.Token);
-            
+
             // Start mDNS discovery
             var mdnsTask = PerformMdnsDiscoveryAsync(timeout, timeoutCts.Token);
 
@@ -147,9 +147,9 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
             _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             var multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
-            
+
             // Send SSDP M-SEARCH request for WebOS devices
-            var searchMessage = 
+            var searchMessage =
                 "M-SEARCH * HTTP/1.1\r\n" +
                 "HOST: 239.255.255.250:1900\r\n" +
                 "MX: 30\r\n" +
@@ -202,7 +202,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
             // Simple mDNS-style discovery by checking common hostnames
             var commonHostnames = new[] { "lgsmarttv.local", "webostv.local" };
-            
+
             foreach (var hostname in commonHostnames)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -259,7 +259,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         {
             // Get local IP addresses
             var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces()
-                .Where(ni => ni.OperationalStatus == OperationalStatus.Up && 
+                .Where(ni => ni.OperationalStatus == OperationalStatus.Up &&
                            ni.NetworkInterfaceType != NetworkInterfaceType.Loopback);
 
             foreach (var networkInterface in networkInterfaces)
@@ -293,7 +293,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         {
             var network = GetNetworkAddress(localIp, subnetMask);
             var broadcastAddress = GetBroadcastAddress(localIp, subnetMask);
-            
+
             // Limit scanning based on available timeout
             var maxAddresses = Math.Min(20, (int)(timeout.TotalSeconds / 2)); // 2 seconds per address estimate
             if (maxAddresses < 1) maxAddresses = 1;
@@ -307,7 +307,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
                     break;
 
                 tasks.Add(CheckAddressForWebOsAsync(address, cancellationToken));
-                
+
                 // Limit concurrent scans to avoid overwhelming the network
                 if (tasks.Count >= 3)
                 {
@@ -331,7 +331,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
             using var ping = new Ping();
             // Use a much shorter ping timeout for subnet scanning
             var reply = await ping.SendPingAsync(address, 200);
-            
+
             if (reply.Status == IPStatus.Success)
             {
                 // Only try WebOS discovery if ping succeeds and we haven't been cancelled
@@ -356,7 +356,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         try
         {
             var response = Encoding.UTF8.GetString(responseBytes);
-            
+
             // Check if this is a WebOS device response
             if (response.Contains("urn:lge-com:service:webos-second-screen") ||
                 response.Contains("LG Electronics"))
@@ -438,7 +438,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
     {
         var networkBytes = network.GetAddressBytes();
         var broadcastBytes = broadcast.GetAddressBytes();
-        
+
         var count = 0;
         for (int i = networkBytes[3] + 1; i < broadcastBytes[3] && count < maxAddresses; i++)
         {

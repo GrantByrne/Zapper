@@ -21,16 +21,16 @@ public class ExecuteActivityEndpoint(IActivityService activityService) : Endpoin
         var success = await activityService.ExecuteActivityAsync(req.Id, ct);
         if (!success)
         {
-            await SendAsync(new ExecuteActivityResponse 
-            { 
-                Message = $"Failed to execute activity {req.Id}" 
+            await SendAsync(new ExecuteActivityResponse
+            {
+                Message = $"Failed to execute activity {req.Id}"
             }, 400, ct);
             return;
         }
 
-        await SendOkAsync(new ExecuteActivityResponse 
-        { 
-            Message = "Activity executed successfully" 
+        await SendOkAsync(new ExecuteActivityResponse
+        {
+            Message = "Activity executed successfully"
         }, ct);
     }
 }

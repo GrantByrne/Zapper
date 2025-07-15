@@ -158,8 +158,8 @@ public class AndroidTvBluetoothControllerTests
     {
         // Arrange
         var device = CreateTestBluetoothDevice();
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.Number,
             NetworkPayload = "5"
         };
@@ -182,8 +182,8 @@ public class AndroidTvBluetoothControllerTests
     {
         // Arrange
         var device = CreateTestBluetoothDevice();
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.Custom,
             NetworkPayload = "text:Hello World"
         };
@@ -206,8 +206,8 @@ public class AndroidTvBluetoothControllerTests
     {
         // Arrange
         var device = CreateTestBluetoothDevice();
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.Custom,
             NetworkPayload = "netflix"
         };
@@ -215,7 +215,7 @@ public class AndroidTvBluetoothControllerTests
         _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
         _mockHidController.SendKeySequenceAsync(
-            device.MacAddress!, 
+            device.MacAddress!,
             Arg.Is<HidKeyCode[]>(keys => keys.SequenceEqual(new[] { HidKeyCode.Home, HidKeyCode.N })),
             100,
             Arg.Any<CancellationToken>())
@@ -227,7 +227,7 @@ public class AndroidTvBluetoothControllerTests
         // Assert
         result.Should().BeTrue();
         await _mockHidController.Received(1).SendKeySequenceAsync(
-            device.MacAddress!, 
+            device.MacAddress!,
             Arg.Is<HidKeyCode[]>(keys => keys.SequenceEqual(new[] { HidKeyCode.Home, HidKeyCode.N })),
             100,
             Arg.Any<CancellationToken>());

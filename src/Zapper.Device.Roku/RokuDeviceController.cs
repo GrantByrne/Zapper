@@ -82,13 +82,13 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
             var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
-            
+
             if (success)
             {
                 logger.LogDebug("Successfully retrieved device info from Roku at {IpAddress}", ipAddress);
                 return "Roku Device"; // In a real implementation, we'd parse the XML response
             }
-            
+
             return null;
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
             var endpoint = $"/launch/{appId}";
-            
+
             return await networkController.SendHttpCommandAsync(baseUrl, endpoint, "POST", null, null, cancellationToken);
         }
         catch (Exception ex)
@@ -120,7 +120,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
             var endpoint = $"/keypress/{keyCode}";
-            
+
             return await networkController.SendHttpCommandAsync(baseUrl, endpoint, "POST", null, null, cancellationToken);
         }
         catch (Exception ex)

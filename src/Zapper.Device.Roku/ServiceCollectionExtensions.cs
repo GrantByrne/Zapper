@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IRokuDeviceController, RokuDeviceController>();
         services.AddSingleton<IRokuDiscovery, RokuDiscovery>();
-        
+
         return services;
     }
 }

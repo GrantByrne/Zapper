@@ -36,7 +36,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         var loggerFactoryNotNull = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         _adapter = new BlueZAdapter(loggerFactoryNotNull.CreateLogger<BlueZAdapter>());
-        
+
         _adapter.DeviceFound += (s, e) => DeviceFound?.Invoke(this, e);
         _adapter.DeviceConnected += (s, e) => DeviceConnected?.Invoke(this, e);
         _adapter.DeviceDisconnected += (s, e) => DeviceDisconnected?.Invoke(this, e);
@@ -188,7 +188,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         try
         {
             await InitializeAsync(stoppingToken);
-            
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);

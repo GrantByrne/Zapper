@@ -22,10 +22,10 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
 
             await using var stream = client.GetStream();
             var commandData = Encoding.UTF8.GetBytes(command + (payload ?? ""));
-            
+
             await stream.WriteAsync(commandData, cancellationToken);
             await stream.FlushAsync(cancellationToken);
-            
+
             logger.LogDebug("Sent TCP command to {IpAddress}:{Port}: {Command}", ipAddress, port, command);
             return true;
         }
@@ -41,7 +41,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         try
         {
             var request = new HttpRequestMessage(new HttpMethod(method), $"{baseUrl.TrimEnd('/')}/{endpoint.TrimStart('/')}");
-            
+
             if (headers != null)
             {
                 foreach (var header in headers)
@@ -49,15 +49,15 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
                     request.Headers.Add(header.Key, header.Value);
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(payload))
             {
                 request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
             }
-            
+
             var response = await httpClient.SendAsync(request, cancellationToken);
             var success = response.IsSuccessStatusCode;
-            
+
             logger.LogDebug("Sent HTTP {Method} to {Url}: {Success}", method, request.RequestUri, success);
             return success;
         }
@@ -92,20 +92,20 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to send WebSocket command to {WsUrl}", wsUrl);
-            
+
             // Clean up failed connection
             if (_webSocketConnections.TryRemove(wsUrl, out var failedSocket))
             {
                 failedSocket.Dispose();
             }
-            
+
             return false;
         }
     }
 
     private async Task<ClientWebSocket?> GetOrCreateWebSocketAsync(string wsUrl, CancellationToken cancellationToken)
     {
-        if (_webSocketConnections.TryGetValue(wsUrl, out var existingSocket) && 
+        if (_webSocketConnections.TryGetValue(wsUrl, out var existingSocket) &&
             existingSocket.State == WebSocketState.Open)
         {
             return existingSocket;
@@ -122,13 +122,13 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         {
             var newSocket = new ClientWebSocket();
             await newSocket.ConnectAsync(new Uri(wsUrl), cancellationToken);
-            
+
             if (_webSocketConnections.TryAdd(wsUrl, newSocket))
             {
                 logger.LogDebug("Established WebSocket connection to {WsUrl}", wsUrl);
                 return newSocket;
             }
-            
+
             // Another thread created the connection
             newSocket.Dispose();
             return _webSocketConnections.TryGetValue(wsUrl, out var socket) ? socket : null;
@@ -145,38 +145,38 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         try
         {
             logger.LogInformation("Starting device discovery for {DeviceType}", deviceType);
-            
+
             // Simple SSDP-style discovery
             using var client = new UdpClient();
             var multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
-            
+
             var searchMessage = $"M-SEARCH * HTTP/1.1\r\n" +
                                $"HOST: 239.255.255.250:1900\r\n" +
                                $"MAN: \"ssdp:discover\"\r\n" +
                                $"ST: {deviceType}\r\n" +
                                $"MX: 3\r\n\r\n";
-            
+
             var searchBytes = Encoding.UTF8.GetBytes(searchMessage);
             await client.SendAsync(searchBytes, multicastEndpoint, cancellationToken);
-            
+
             logger.LogDebug("Sent SSDP discovery message for {DeviceType}", deviceType);
-            
+
             // Wait for responses
             var endTime = DateTime.UtcNow.Add(timeout);
             var discoveredDevices = new List<string>();
-            
+
             while (DateTime.UtcNow < endTime && !cancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     var receiveTask = client.ReceiveAsync();
                     var timeoutTask = Task.Delay(1000, cancellationToken);
-                    
+
                     var completedTask = await Task.WhenAny(receiveTask, timeoutTask);
 
-                    if (completedTask != receiveTask) 
+                    if (completedTask != receiveTask)
                         continue;
-                    
+
                     var result = await receiveTask;
                     var response = Encoding.UTF8.GetString(result.Buffer);
                     discoveredDevices.Add($"{result.RemoteEndPoint}: {response}");
@@ -187,7 +187,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
                     logger.LogWarning(ex, "Error during device discovery");
                 }
             }
-            
+
             logger.LogInformation("Device discovery completed. Found {Count} devices", discoveredDevices.Count);
             return discoveredDevices.Count > 0 ? JsonSerializer.Serialize(discoveredDevices) : null;
         }

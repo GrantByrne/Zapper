@@ -18,19 +18,19 @@ public class WebOsProtocolController(IWebOsDeviceController webOsController, ILo
         try
         {
             var result = await webOsController.SendCommandAsync(device, command);
-            
+
             if (command.DelayMs > 0)
             {
                 await Task.Delay(command.DelayMs);
             }
 
-            logger.LogDebug("Successfully sent WebOS command {CommandName} to device {DeviceName}", 
+            logger.LogDebug("Successfully sent WebOS command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send WebOS command {CommandName} to device {DeviceName}", 
+            logger.LogError(ex, "Failed to send WebOS command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return false;
         }

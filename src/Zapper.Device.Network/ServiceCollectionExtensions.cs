@@ -8,10 +8,10 @@ public static class ServiceCollectionExtensions
     {
         // Register HTTP client for network operations
         services.AddHttpClient<INetworkDeviceController, NetworkDeviceController>();
-        
+
         // Register the network device controller
         services.AddSingleton<INetworkDeviceController, NetworkDeviceController>();
-        
+
         return services;
     }
 }

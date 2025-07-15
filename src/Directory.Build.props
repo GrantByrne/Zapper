@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <!-- Treat warnings as errors -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    
+    <!-- Enable nullable reference types -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Set language version to latest -->
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Enable implicit usings -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Generate documentation file for all projects -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Suppress warning CS1591: Missing XML comment for publicly visible type or member -->
+    <!-- We'll suppress this for now to avoid having to document everything immediately -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>

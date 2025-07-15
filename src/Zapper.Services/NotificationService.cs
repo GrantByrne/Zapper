@@ -18,8 +18,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
 
         await SendToDeviceGroupAsync(deviceId, "DeviceStatusChanged", data);
         await SendToAllClientsAsync("DeviceStatusChanged", data);
-        
-        logger.LogInformation("Device status changed: {DeviceName} is now {Status}", 
+
+        logger.LogInformation("Device status changed: {DeviceName} is now {Status}",
             deviceName, isOnline ? "online" : "offline");
     }
 
@@ -35,8 +35,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToDeviceGroupAsync(deviceId, "DeviceCommandExecuted", data);
-        
-        logger.LogInformation("Device command executed: {DeviceName} - {CommandName} ({Status})", 
+
+        logger.LogInformation("Device command executed: {DeviceName} - {CommandName} ({Status})",
             deviceName, commandName, success ? "success" : "failed");
     }
 
@@ -52,7 +52,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
 
         await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
-        
+
         logger.LogInformation("Activity started: {ActivityName}", activityName);
     }
 
@@ -69,8 +69,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
 
         await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
-        
-        logger.LogInformation("Activity completed: {ActivityName} ({Status})", 
+
+        logger.LogInformation("Activity completed: {ActivityName} ({Status})",
             activityName, success ? "success" : "failed");
     }
 
@@ -87,8 +87,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToActivityGroupAsync(activityId, "ActivityStepExecuted", data);
-        
-        logger.LogInformation("Activity step executed: {ActivityName} - Step {StepNumber} ({Status})", 
+
+        logger.LogInformation("Activity step executed: {ActivityName} - Step {StepNumber} ({Status})",
             activityName, stepNumber, success ? "success" : "failed");
     }
 
@@ -103,8 +103,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToAllClientsAsync("DeviceDiscovered", data);
-        
-        logger.LogInformation("Device discovered: {DeviceName} ({DeviceType}) at {DeviceAddress}", 
+
+        logger.LogInformation("Device discovered: {DeviceName} ({DeviceType}) at {DeviceAddress}",
             deviceName, deviceType, deviceAddress);
     }
 
@@ -119,7 +119,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
-        
+
         logger.LogInformation("Bluetooth device connected: {DeviceName}", deviceName);
     }
 
@@ -134,7 +134,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
-        
+
         logger.LogInformation("Bluetooth device disconnected: {DeviceName}", deviceName);
     }
 
@@ -150,8 +150,8 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToAllClientsAsync("WebOSDevicePaired", data);
-        
-        logger.LogInformation("WebOS device pairing: {DeviceName} ({Status})", 
+
+        logger.LogInformation("WebOS device pairing: {DeviceName} ({Status})",
             deviceName, success ? "success" : "failed");
     }
 
@@ -165,7 +165,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToAllClientsAsync("SystemMessage", data);
-        
+
         logger.LogInformation("System message sent: {Message} (level: {Level})", message, level);
     }
 

@@ -25,7 +25,7 @@ public class MockUsbRemoteHandlerTests
     public async Task StartListeningAsync_ShouldSetIsListeningToTrue()
     {
         await _handler.StartListeningAsync();
-        
+
         _handler.IsListening.Should().BeTrue();
     }
 
@@ -33,9 +33,9 @@ public class MockUsbRemoteHandlerTests
     public async Task StartListeningAsync_WhenAlreadyListening_ShouldNotThrow()
     {
         await _handler.StartListeningAsync();
-        
+
         var act = async () => await _handler.StartListeningAsync();
-        
+
         await act.Should().NotThrowAsync();
         _handler.IsListening.Should().BeTrue();
     }
@@ -45,7 +45,7 @@ public class MockUsbRemoteHandlerTests
     {
         await _handler.StartListeningAsync();
         await _handler.StopListeningAsync();
-        
+
         _handler.IsListening.Should().BeFalse();
     }
 
@@ -53,7 +53,7 @@ public class MockUsbRemoteHandlerTests
     public async Task StopListeningAsync_WhenNotListening_ShouldNotThrow()
     {
         var act = async () => await _handler.StopListeningAsync();
-        
+
         await act.Should().NotThrowAsync();
     }
 
@@ -61,7 +61,7 @@ public class MockUsbRemoteHandlerTests
     public void GetConnectedRemotes_ShouldReturnMockDevices()
     {
         var remotes = _handler.GetConnectedRemotes();
-        
+
         remotes.Should().NotBeEmpty();
         remotes.Should().Contain("MOCK:0001:remote1");
         remotes.Should().Contain("MOCK:0002:remote2");
@@ -71,12 +71,12 @@ public class MockUsbRemoteHandlerTests
     public async Task SimulateButtonPress_WhenListening_ShouldRaiseButtonPressedEvent()
     {
         await _handler.StartListeningAsync();
-        
+
         RemoteButtonEventArgs? capturedArgs = null;
         _handler.ButtonPressed += (sender, args) => capturedArgs = args;
-        
+
         _handler.SimulateButtonPress("TEST:001", "Power", 0x01);
-        
+
         capturedArgs.Should().NotBeNull();
         capturedArgs!.DeviceId.Should().Be("TEST:001");
         capturedArgs.ButtonName.Should().Be("Power");
@@ -89,9 +89,9 @@ public class MockUsbRemoteHandlerTests
     {
         var eventRaised = false;
         _handler.ButtonPressed += (sender, args) => eventRaised = true;
-        
+
         _handler.SimulateButtonPress("TEST:001", "Power", 0x01);
-        
+
         eventRaised.Should().BeFalse();
     }
 
@@ -99,14 +99,14 @@ public class MockUsbRemoteHandlerTests
     public async Task ButtonPressedEvent_ShouldContainCorrectTimestamp()
     {
         await _handler.StartListeningAsync();
-        
+
         var before = DateTime.UtcNow;
         RemoteButtonEventArgs? capturedArgs = null;
         _handler.ButtonPressed += (sender, args) => capturedArgs = args;
-        
+
         _handler.SimulateButtonPress("TEST:001", "VolumeUp", 0x02);
         var after = DateTime.UtcNow;
-        
+
         capturedArgs.Should().NotBeNull();
         capturedArgs!.Timestamp.Should().BeAfter(before).And.BeBefore(after);
     }
@@ -115,15 +115,15 @@ public class MockUsbRemoteHandlerTests
     public async Task MultipleEventSubscribers_ShouldAllReceiveEvents()
     {
         await _handler.StartListeningAsync();
-        
+
         var subscriber1Called = false;
         var subscriber2Called = false;
-        
+
         _handler.ButtonPressed += (sender, args) => subscriber1Called = true;
         _handler.ButtonPressed += (sender, args) => subscriber2Called = true;
-        
+
         _handler.SimulateButtonPress("TEST:001", "Menu", 0x0C);
-        
+
         subscriber1Called.Should().BeTrue();
         subscriber2Called.Should().BeTrue();
     }
@@ -132,15 +132,15 @@ public class MockUsbRemoteHandlerTests
     public async Task EventUnsubscription_ShouldPreventEventDelivery()
     {
         await _handler.StartListeningAsync();
-        
+
         var eventReceived = false;
         EventHandler<RemoteButtonEventArgs> handler = (sender, args) => eventReceived = true;
-        
+
         _handler.ButtonPressed += handler;
         _handler.ButtonPressed -= handler;
-        
+
         _handler.SimulateButtonPress("TEST:001", "Back", 0x0D);
-        
+
         eventReceived.Should().BeFalse();
     }
 }

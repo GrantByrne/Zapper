@@ -12,7 +12,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -35,7 +35,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -45,7 +45,7 @@ public class ServiceCollectionExtensionsTests
             .Build();
 
         services.AddInfraredServices(configuration);
-        
+
         // We can't actually test real GPIO in a test environment,
         // but we can verify the service registration logic
         var serviceDescriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IInfraredTransmitter));
@@ -58,7 +58,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -68,7 +68,7 @@ public class ServiceCollectionExtensionsTests
             .Build();
 
         services.AddInfraredServices(configuration);
-        
+
         // We can't actually test real GPIO in a test environment,
         // but we can verify the service registration is set up correctly
         var serviceDescriptor = services.FirstOrDefault(s => s.ServiceType == typeof(IInfraredTransmitter));
@@ -81,7 +81,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build();
 
         services.AddInfraredServices(configuration);
@@ -97,7 +97,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -119,7 +119,7 @@ public class ServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        
+
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {

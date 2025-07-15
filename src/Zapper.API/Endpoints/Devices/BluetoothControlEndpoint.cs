@@ -80,7 +80,7 @@ public class BluetoothControlEndpoint(IBluetoothHidController bluetoothControlle
 
     private async Task<bool> HandleSendKey(BluetoothControlRequest req, CancellationToken ct)
     {
-        if (string.IsNullOrEmpty(req.DeviceId) || string.IsNullOrEmpty(req.KeyCode) || 
+        if (string.IsNullOrEmpty(req.DeviceId) || string.IsNullOrEmpty(req.KeyCode) ||
             !Enum.TryParse<HidKeyCode>(req.KeyCode, true, out var keyCode))
         {
             return false;

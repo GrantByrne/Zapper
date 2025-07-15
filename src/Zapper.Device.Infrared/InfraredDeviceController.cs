@@ -32,19 +32,19 @@ public class InfraredDeviceController : IDeviceController
         try
         {
             await _transmitter.TransmitAsync(command.IrCode, command.IsRepeatable ? 3 : 1);
-            
+
             if (command.DelayMs > 0)
             {
                 await Task.Delay(command.DelayMs);
             }
 
-            _logger.LogDebug("Successfully sent IR command {CommandName} to device {DeviceName}", 
+            _logger.LogDebug("Successfully sent IR command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send IR command {CommandName} to device {DeviceName}", 
+            _logger.LogError(ex, "Failed to send IR command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return false;
         }

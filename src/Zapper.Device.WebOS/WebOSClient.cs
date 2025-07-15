@@ -112,11 +112,11 @@ public class WebOsClient(ILogger<WebOsClient> logger) : IWebOsClient, IDisposabl
             };
 
             var response = await SendCommandAsync("ssap://com.webos.service.pairing/register", authPayload, cancellationToken);
-            
+
             if (response != null)
             {
                 var responseObj = JsonSerializer.Deserialize<JsonElement>(response);
-                if (responseObj.TryGetProperty("payload", out var payload) && 
+                if (responseObj.TryGetProperty("payload", out var payload) &&
                     payload.TryGetProperty("client-key", out var clientKeyElement))
                 {
                     _clientKey = clientKeyElement.GetString();
@@ -193,7 +193,7 @@ public class WebOsClient(ILogger<WebOsClient> logger) : IWebOsClient, IDisposabl
             while (_webSocket?.State == WebSocketState.Open && !cancellationToken.IsCancellationRequested)
             {
                 var result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
-                
+
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
@@ -215,7 +215,7 @@ public class WebOsClient(ILogger<WebOsClient> logger) : IWebOsClient, IDisposabl
         try
         {
             var messageObj = JsonSerializer.Deserialize<JsonElement>(message);
-            
+
             if (messageObj.TryGetProperty("id", out var idElement))
             {
                 var id = idElement.GetString();

@@ -14,9 +14,9 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
             return false;
         }
 
-        logger.LogWarning("USB devices are input-only. Cannot send command {CommandName} to device {DeviceName}", 
+        logger.LogWarning("USB devices are input-only. Cannot send command {CommandName} to device {DeviceName}",
             command.Name, device.Name);
-        
+
         return await Task.FromResult(false);
     }
 
@@ -26,11 +26,11 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
             return Task.FromResult(false);
 
         var connectedRemotes = remoteHandler.GetConnectedRemotes();
-        var isConnected = connectedRemotes.Any(remote => 
-            remote.Contains(device.MacAddress ?? "") || 
+        var isConnected = connectedRemotes.Any(remote =>
+            remote.Contains(device.MacAddress ?? "") ||
             remote.Contains(device.Name));
 
-        logger.LogDebug("USB device {DeviceName} connection test: {IsConnected}", 
+        logger.LogDebug("USB device {DeviceName} connection test: {IsConnected}",
             device.Name, isConnected);
 
         return Task.FromResult(isConnected);
@@ -48,15 +48,15 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
         }
 
         var connectedRemotes = remoteHandler.GetConnectedRemotes();
-        var isConnected = connectedRemotes.Any(remote => 
-            remote.Contains(device.MacAddress ?? "") || 
+        var isConnected = connectedRemotes.Any(remote =>
+            remote.Contains(device.MacAddress ?? "") ||
             remote.Contains(device.Name));
 
         var status = new DeviceStatus
         {
             IsOnline = isConnected,
-            StatusMessage = isConnected 
-                ? $"USB remote connected via {device.MacAddress}" 
+            StatusMessage = isConnected
+                ? $"USB remote connected via {device.MacAddress}"
                 : "USB remote not found"
         };
 
