@@ -1,0 +1,36 @@
+@page "/settings/hardware"
+@layout SettingsLayout
+
+<PageTitle>IR Settings - Zapper</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">IR Settings</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.Memory" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudSwitch @bind-Value="_enableGpio" Color="Color.Primary" Label="Enable GPIO" Class="mb-3" />
+        <MudNumericField @bind-Value="_irTransmitterPin" Label="IR Transmitter GPIO Pin" Min="0" Max="40" Disabled="@(!_enableGpio)" Class="mb-3" />
+        <MudNumericField @bind-Value="_irReceiverPin" Label="IR Receiver GPIO Pin" Min="0" Max="40" Disabled="@(!_enableGpio)" Class="mb-3" />
+        <MudNumericField @bind-Value="_carrierFrequency" Label="Carrier Frequency (Hz)" Min="30000" Max="50000" Disabled="@(!_enableGpio)" Class="mb-3" />
+        <MudNumericField @bind-Value="_dutyCycle" Label="Duty Cycle" Min="0.1" Max="0.9" Step="0.01" Format="F2" Disabled="@(!_enableGpio)" Class="mb-3" />
+    </MudCardContent>
+</MudCard>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-4" />
+}
+else
+{
+    <MudFab Color="Color.Primary" 
+           StartIcon="@(_isSaving ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Save)" 
+           Label="@(_isSaving ? "Saving..." : "Save Settings")" 
+           Class="mt-4" 
+           OnClick="SaveSettings"
+           Disabled="@_isSaving" />
+}

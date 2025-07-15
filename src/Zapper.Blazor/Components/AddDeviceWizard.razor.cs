@@ -22,6 +22,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         WebOsScan,
         PlayStationScan,
         XboxScan,
+        RokuScan,
         IrCodeSelection,
         Configuration
     }
@@ -60,6 +61,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private List<XboxDevice> _discoveredXboxDevices = new();
     private XboxDevice? _selectedXboxDevice;
     private string _manualXboxIpAddress = "";
+
+    // Roku scanning variables
+    private bool _isRokuScanning;
+    private string _rokuScanError = "";
+    private List<RokuDevice> _discoveredRokuDevices = new();
+    private RokuDevice? _selectedRokuDevice;
+    private string _manualRokuIpAddress = "";
 
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
@@ -133,6 +141,11 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
+            }
+            else if (_isRokuDevice)
+            {
+                _currentStep = WizardStep.RokuScan;
+                await StartRokuScan();
             }
             else
             {
@@ -222,6 +235,33 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.RokuScan && (_selectedRokuDevice != null || !string.IsNullOrWhiteSpace(_manualRokuIpAddress)))
+        {
+            // Pre-populate device info with selected Roku
+            if (_selectedRokuDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedRokuDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedRokuDevice.IpAddress;
+                _newDevice.Brand = "Roku";
+                _newDevice.Model = _selectedRokuDevice.Model ?? "Roku Device";
+                _newDevice.Type = Contracts.DeviceType.StreamingDevice;
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualRokuIpAddress))
+            {
+                _newDevice.IpAddress = _manualRokuIpAddress.Trim();
+                _newDevice.Brand = "Roku";
+                _newDevice.Model = "Roku Device";
+                _newDevice.Type = Contracts.DeviceType.StreamingDevice;
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"Roku ({_manualRokuIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
         else if (_currentStep == WizardStep.IrCodeSelection && _selectedIrCodeSetData != null)
         {
             // Store the selected IR code set ID
@@ -258,6 +298,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             {
                 _currentStep = WizardStep.XboxScan;
             }
+            else if (_isRokuDevice)
+            {
+                _currentStep = WizardStep.RokuScan;
+            }
             else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
@@ -285,6 +329,11 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.XboxScan)
         {
             await StopXboxScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.RokuScan)
+        {
+            await StopRokuScan();
             _currentStep = WizardStep.DeviceType;
         }
         else if (_currentStep == WizardStep.IrCodeSelection)
@@ -684,6 +733,84 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         StateHasChanged();
     }
 
+    private async Task StartRokuScan()
+    {
+        if (apiClient == null)
+        {
+            _rokuScanError = "API client not available. Cannot scan for Roku devices.";
+            return;
+        }
+
+        try
+        {
+            _isRokuScanning = true;
+            _rokuScanError = "";
+            _discoveredRokuDevices.Clear();
+            _selectedRokuDevice = null;
+            _manualRokuIpAddress = "";
+            StateHasChanged();
+
+            // Start the scanning process via API
+            try
+            {
+                var request = new DiscoverRokuDevicesRequest { TimeoutSeconds = 10 };
+                var response = await apiClient.Devices.DiscoverRokuDevicesAsync(request);
+
+                if (response != null && response.Any())
+                {
+                    foreach (var device in response)
+                    {
+                        _discoveredRokuDevices.Add(new RokuDevice
+                        {
+                            Name = device.Name,
+                            IpAddress = device.IpAddress,
+                            Model = device.Model,
+                            SerialNumber = device.SerialNumber,
+                            Port = device.Port
+                        });
+                    }
+                }
+
+                _isRokuScanning = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _rokuScanError = $"Failed to scan for Roku devices: {ex.Message}";
+                _isRokuScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _rokuScanError = $"Failed to scan for Roku devices: {ex.Message}";
+            _isRokuScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectRokuDevice(RokuDevice device)
+    {
+        _selectedRokuDevice = device;
+        _manualRokuIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualRokuIp()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualRokuIpAddress))
+        {
+            _selectedRokuDevice = null; // Clear selected device when using manual IP
+        }
+    }
+
+    private async Task StopRokuScan()
+    {
+        _isRokuScanning = false;
+        _rokuScanError = "";
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+
     private async Task StartWebOsScan()
     {
         if (apiClient == null)
@@ -804,6 +931,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _discoveredXboxDevices.Clear();
         _selectedXboxDevice = null;
         _manualXboxIpAddress = "";
+
+        // Reset Roku scanning state
+        _isRokuScanning = false;
+        _rokuScanError = "";
+        _discoveredRokuDevices.Clear();
+        _selectedRokuDevice = null;
+        _manualRokuIpAddress = "";
     }
 
     private void ResetWizard()
@@ -831,6 +965,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.XboxScan && _isXboxScanning)
         {
             await StopXboxScan();
+        }
+        else if (_currentStep == WizardStep.RokuScan && _isRokuScanning)
+        {
+            await StopRokuScan();
         }
 
         ResetWizard();
@@ -958,5 +1096,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         public string LiveId { get; set; } = "";
         public string ConsoleType { get; set; } = "";
         public bool IsAuthenticated { get; set; }
+    }
+
+    private class RokuDevice
+    {
+        public string Name { get; set; } = "";
+        public string IpAddress { get; set; } = "";
+        public string? Model { get; set; }
+        public string? SerialNumber { get; set; }
+        public int Port { get; set; } = 8060;
     }
 }

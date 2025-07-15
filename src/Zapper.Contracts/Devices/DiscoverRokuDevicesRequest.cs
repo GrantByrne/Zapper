@@ -1,4 +1,4 @@
-namespace Zapper.API.Models.Requests;
+namespace Zapper.Contracts.Devices;
 
 public class DiscoverRokuDevicesRequest
 {

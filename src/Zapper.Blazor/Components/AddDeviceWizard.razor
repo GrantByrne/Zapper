@@ -24,6 +24,10 @@
             {
                 <span>Add New Device - Scan for Xbox Consoles</span>
             }
+            else if (_currentStep == WizardStep.RokuScan)
+            {
+                <span>Add New Device - Scan for Roku Devices</span>
+            }
             else if (_currentStep == WizardStep.IrCodeSelection)
             {
                 <span>Add New Device - Select IR Codes</span>
@@ -64,8 +68,8 @@
                     </MudCard>
                 </MudItem>
                 <MudItem xs="6" sm="4">
-                    <MudCard Class="@GetCardClass(ConnectionType.NetworkWebSocket, true)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.NetworkWebSocket, "Roku", true))">
+                    <MudCard Class="@GetCardClass(ConnectionType.NetworkHttp, true)" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.NetworkHttp, "Roku", true))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Cast" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">Roku</MudText>
@@ -393,6 +397,80 @@
                 Use This IP Address
             </MudButton>
         }
+        else if (_currentStep == WizardStep.RokuScan)
+        {
+            <MudText Class="mb-4">Scanning for available Roku devices on your network...</MudText>
+            
+            @if (_isRokuScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for Roku devices...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your Roku is powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_rokuScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_rokuScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartRokuScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredRokuDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredRokuDevices.Count() device(s). Select the device you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredRokuDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedRokuDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedRokuDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectRokuDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Cast" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    @if (!string.IsNullOrEmpty(device.Model))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.Model</MudText>
+                                    }
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartRokuScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No Roku devices found on your network. Make sure your Roku is powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartRokuScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualRokuIpAddress" Label="Roku IP Address" 
+                         HelperText="Enter the IP address of your Roku device (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualRokuIp" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualRokuIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.IrCodeSelection)
         {
             <MudText Class="mb-4">Select or search for IR codes for your device:</MudText>
@@ -419,7 +497,7 @@
                 <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
             </MudSelect>
 
-            @if (_selectedConnectionType == ConnectionType.NetworkTcp || _selectedConnectionType == ConnectionType.NetworkWebSocket || _selectedConnectionType == ConnectionType.WebOs)
+            @if (_selectedConnectionType == ConnectionType.NetworkTcp || _selectedConnectionType == ConnectionType.NetworkWebSocket || _selectedConnectionType == ConnectionType.NetworkHttp || _selectedConnectionType == ConnectionType.WebOs)
             {
                 <MudTextField @bind-Value="_newDevice.IpAddress" Label="IP Address" Required="true" Class="mb-4" 
                               HelperText="Enter the device's IP address (e.g., 192.168.1.100)" />
@@ -474,6 +552,14 @@
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedXboxDevice == null && string.IsNullOrWhiteSpace(_manualXboxIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.RokuScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedRokuDevice == null && string.IsNullOrWhiteSpace(_manualRokuIpAddress))">
                 Next
             </MudButton>
         }

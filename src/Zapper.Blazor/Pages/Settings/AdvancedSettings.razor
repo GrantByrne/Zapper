@@ -1,0 +1,41 @@
+@page "/settings/advanced"
+@layout SettingsLayout
+
+<PageTitle>Advanced Settings - Zapper</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Advanced Settings</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.Tune" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudSwitch @bind-Value="_enableDebugLogging" Color="Color.Primary" Label="Enable Debug Logging" Class="mb-3" />
+        <MudSwitch @bind-Value="_enableTelemetry" Color="Color.Primary" Label="Enable Telemetry" Class="mb-3" />
+        <MudDivider Class="my-4" />
+        <MudText Typo="Typo.subtitle1" Class="mb-3">Import/Export Settings</MudText>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Backup" Class="mb-2 mr-2">
+            Export Settings
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Restore" Class="mb-2">
+            Import Settings
+        </MudButton>
+    </MudCardContent>
+</MudCard>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-4" />
+}
+else
+{
+    <MudFab Color="Color.Primary" 
+           StartIcon="@(_isSaving ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Save)" 
+           Label="@(_isSaving ? "Saving..." : "Save Settings")" 
+           Class="mt-4" 
+           OnClick="SaveSettings"
+           Disabled="@_isSaving" />
+}

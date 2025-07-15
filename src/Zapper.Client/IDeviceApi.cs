@@ -87,4 +87,10 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.XboxDiscovery)]
     Task<DiscoverXboxDevicesResponse> DiscoverXboxDevicesAsync([Body] DiscoverXboxDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Roku devices on the network
+    /// </summary>
+    [Post(ApiRoutes.Devices.DiscoverRoku)]
+    Task<IEnumerable<RokuDeviceDto>> DiscoverRokuDevicesAsync([Body] DiscoverRokuDevicesRequest request, CancellationToken cancellationToken = default);
 }

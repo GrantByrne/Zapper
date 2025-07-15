@@ -79,4 +79,9 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
     {
         return await deviceApi.DiscoverXboxDevicesAsync(request, cancellationToken);
     }
+
+    public async Task<IEnumerable<RokuDeviceDto>> DiscoverRokuDevicesAsync(DiscoverRokuDevicesRequest request, CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.DiscoverRokuDevicesAsync(request, cancellationToken);
+    }
 }

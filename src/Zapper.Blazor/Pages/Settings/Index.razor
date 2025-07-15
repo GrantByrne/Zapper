@@ -1,0 +1,108 @@
+@page "/settings"
+@page "/settings/index"
+
+<PageTitle>Settings - Zapper</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Settings</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/about">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">About</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Version information and project details
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/general">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Settings" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">General</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Basic app preferences, notifications, and default settings
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/hardware">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Memory" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">IR Settings</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            GPIO pin configuration and IR hardware troubleshooting
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/device">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Devices" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">Device</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Device timeout, retry attempts, and power settings
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/network">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">Network</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            API timeout, discovery port, and SSDP settings
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/troubleshooting">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.BugReport" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">Troubleshooting</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            IR hardware testing and system diagnostics
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="/settings/advanced">
+                <MudCard Class="pa-4 ma-2" Style="height: 200px; cursor: pointer;">
+                    <MudCardContent Class="d-flex flex-column align-center justify-center text-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Tune" Size="Size.Large" Color="Color.Primary"
+                                 Class="mb-2"/>
+                        <MudText Typo="Typo.h6" Class="mb-1">Advanced</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Import/export settings and device type controls
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </a>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

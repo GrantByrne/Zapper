@@ -71,4 +71,9 @@ public interface IDeviceClient
     /// Discover available Xbox devices on the network
     /// </summary>
     Task<DiscoverXboxDevicesResponse> DiscoverXboxDevicesAsync(DiscoverXboxDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Roku devices on the network
+    /// </summary>
+    Task<IEnumerable<RokuDeviceDto>> DiscoverRokuDevicesAsync(DiscoverRokuDevicesRequest request, CancellationToken cancellationToken = default);
 }

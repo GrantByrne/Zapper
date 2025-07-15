@@ -1,0 +1,21 @@
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Routing
+
+<MudGrid>
+    <MudItem xs="12" sm="3" md="2">
+        <MudPaper Class="pa-4" Elevation="0">
+            <MudNavMenu>
+                <MudNavLink Href="/settings/general" Icon="@Icons.Material.Filled.Settings">General</MudNavLink>
+                <MudNavLink Href="/settings/device" Icon="@Icons.Material.Filled.Devices">Device</MudNavLink>
+                <MudNavLink Href="/settings/network" Icon="@Icons.Material.Filled.Wifi">Network</MudNavLink>
+                <MudNavLink Href="/settings/hardware" Icon="@Icons.Material.Filled.Memory">Hardware</MudNavLink>
+                <MudNavLink Href="/settings/advanced" Icon="@Icons.Material.Filled.Tune">Advanced</MudNavLink>
+                <MudNavLink Href="/settings/troubleshooting" Icon="@Icons.Material.Filled.BugReport">Troubleshooting</MudNavLink>
+                <MudNavLink Href="/settings/about" Icon="@Icons.Material.Filled.Info">About</MudNavLink>
+            </MudNavMenu>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="9" md="10">
+        @Body
+    </MudItem>
+</MudGrid>

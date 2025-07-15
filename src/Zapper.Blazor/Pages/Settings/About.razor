@@ -1,0 +1,29 @@
+@page "/settings/about"
+@layout SettingsLayout
+
+<PageTitle>About - Zapper</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">About Zapper</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.Info" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Class="mb-2"><strong>Version:</strong> 1.0.0</MudText>
+        <MudText Class="mb-2"><strong>Build:</strong> @DateTime.Now.ToString("yyyy.MM.dd")</MudText>
+        <MudText Class="mb-2"><strong>Platform:</strong> Raspberry Pi / ASP.NET Core</MudText>
+        <MudDivider Class="my-3" />
+        <MudText Class="mb-3">
+            Zapper is an open-source universal remote control system built on Raspberry Pi, 
+            designed as a replacement for Logitech Harmony remotes.
+        </MudText>
+        <MudDivider Class="my-3" />
+        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Code" Href="https://github.com/GrantByrne/zapper" Target="_blank">
+            View on GitHub
+        </MudButton>
+    </MudCardContent>
+</MudCard>
