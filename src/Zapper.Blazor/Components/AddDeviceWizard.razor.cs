@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using MudBlazor;
+using Refit;
 using Zapper.Client;
 using Zapper.Contracts.Devices;
 using Zapper.Core.Models;
@@ -463,9 +464,19 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 _isPlayStationScanning = false;
                 StateHasChanged();
             }
+            catch (Refit.ApiException apiEx)
+            {
+                _playStationScanError = $"API Error: {apiEx.StatusCode} - {apiEx.Message}. Content: {apiEx.Content}";
+                _isPlayStationScanning = false;
+                StateHasChanged();
+            }
             catch (Exception ex)
             {
                 _playStationScanError = $"Failed to scan for PlayStation devices: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    _playStationScanError += $" Inner: {ex.InnerException.Message}";
+                }
                 _isPlayStationScanning = false;
                 StateHasChanged();
             }
