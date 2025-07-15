@@ -15,6 +15,7 @@ jobs:
   build-and-test:
     name: Build, Test, and Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     
     steps:
     - name: Checkout code
