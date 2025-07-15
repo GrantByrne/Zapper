@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Zapper.Device.Bluetooth;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class BluetoothDiscoveryEndpoint(
     AndroidTvBluetoothController androidTvController,

@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.Roku;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverRokuDevicesEndpoint(IRokuDiscovery rokuDiscovery) : Endpoint<DiscoverRokuDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {

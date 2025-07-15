@@ -3,7 +3,7 @@ using Zapper.API.Models.Requests;
 using Zapper.API.Models.Responses;
 using Zapper.Device.Bluetooth;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class BluetoothControlEndpoint(IBluetoothHidController bluetoothController) : Endpoint<BluetoothControlRequest, BluetoothControlResponse>
 {

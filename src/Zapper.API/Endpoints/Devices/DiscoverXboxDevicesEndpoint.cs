@@ -1,10 +1,9 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.SignalR;
 using Zapper.Device.Xbox;
-using Zapper.Device.Xbox.Models;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverXboxDevicesEndpoint(IXboxDiscovery xboxDiscovery, IHubContext<ZapperSignalR> hubContext) : Endpoint<DiscoverXboxDevicesRequest, DiscoverXboxDevicesResponse>
 {

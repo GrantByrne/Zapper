@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class GetAllDevicesEndpoint(IDeviceService deviceService) : EndpointWithoutRequest<IEnumerable<Zapper.Core.Models.Device>>
 {

@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.Sonos;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverSonosDevicesEndpoint(ISonosDiscovery sonosDiscovery) : Endpoint<DiscoverSonosDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {

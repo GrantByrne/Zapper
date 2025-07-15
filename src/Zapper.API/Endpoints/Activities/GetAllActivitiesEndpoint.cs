@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.Core.Models;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Activities;
+namespace Zapper.API.Endpoints.Activities;
 
 public class GetAllActivitiesEndpoint(IActivityService activityService) : EndpointWithoutRequest<IEnumerable<Activity>>
 {

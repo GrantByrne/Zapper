@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.Bluetooth;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverSteamDeckDevicesEndpoint(SteamDeckBluetoothController steamDeckController) : Endpoint<DiscoverSteamDeckDevicesRequest, IEnumerable<string>>
 {

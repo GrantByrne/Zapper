@@ -2,7 +2,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.SignalR;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class StopWebOsScanEndpoint(
     IHubContext<ZapperSignalR> hubContext) : EndpointWithoutRequest<StopWebOsScanResponse>

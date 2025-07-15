@@ -1,4 +1,4 @@
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class SendCommandRequest
 {

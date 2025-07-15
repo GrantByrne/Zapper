@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.PlayStation;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStationDiscovery) : Endpoint<DiscoverPlayStationDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {

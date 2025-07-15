@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class SendCommandEndpoint(IDeviceService deviceService) : Endpoint<SendCommandRequest, SendCommandResponse>
 {

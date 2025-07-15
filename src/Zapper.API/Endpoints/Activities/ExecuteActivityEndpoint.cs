@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Activities;
+namespace Zapper.API.Endpoints.Activities;
 
 public class ExecuteActivityEndpoint(IActivityService activityService) : Endpoint<ExecuteActivityRequest, ExecuteActivityResponse>
 {

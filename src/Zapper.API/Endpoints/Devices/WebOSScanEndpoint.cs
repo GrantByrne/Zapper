@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Zapper.Device.WebOS;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class WebOsScanEndpoint(
     IWebOsDiscovery webOsDiscovery,

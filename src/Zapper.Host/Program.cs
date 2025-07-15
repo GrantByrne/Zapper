@@ -1,6 +1,7 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
+using Zapper.API.Endpoints.Devices;
 using Zapper.Core.Interfaces;
 using Zapper.Data;
 using Zapper.Device.Infrared;
@@ -13,7 +14,6 @@ using Zapper.Device.Xbox;
 using Zapper.Device.PlayStation;
 using Zapper.Device.Sonos;
 using Zapper.Device.Yamaha;
-using Zapper.Endpoints.Devices;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace Zapper.Endpoints.System;
+namespace Zapper.API.Endpoints.System;
 
 public class StatusEndpoint : EndpointWithoutRequest<StatusResponse>
 {

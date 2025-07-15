@@ -3,7 +3,7 @@ using Zapper.API.Models.Requests;
 using Zapper.API.Models.Responses;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<CreateDeviceRequest, CreateDeviceResponse>
 {

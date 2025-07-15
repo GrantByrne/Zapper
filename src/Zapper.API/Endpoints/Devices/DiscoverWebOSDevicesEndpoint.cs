@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.WebOS;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverWebOsDevicesEndpoint(IWebOsDiscovery webOsDiscovery) : Endpoint<DiscoverWebOsDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {

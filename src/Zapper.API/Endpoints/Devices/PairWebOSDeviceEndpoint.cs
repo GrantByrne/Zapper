@@ -5,7 +5,7 @@ using Zapper.Core.Models;
 using Zapper.Device.WebOS;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class PairWebOsDeviceEndpoint(IDeviceService deviceService, IWebOsDiscovery webOsDiscovery) : Endpoint<PairWebOsDeviceRequest, PairWebOsDeviceResponse>
 {

@@ -1,4 +1,4 @@
-namespace Zapper.Endpoints.Activities;
+namespace Zapper.API.Endpoints.Activities;
 
 public class ExecuteActivityResponse
 {

@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Device.Yamaha;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class DiscoverYamahaDevicesEndpoint(IYamahaDiscovery yamahaDiscovery) : Endpoint<DiscoverYamahaDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
 {

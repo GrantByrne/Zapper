@@ -2,7 +2,7 @@ using FastEndpoints;
 using Zapper.API.Models.Requests;
 using Zapper.Services;
 
-namespace Zapper.Endpoints.Devices;
+namespace Zapper.API.Endpoints.Devices;
 
 public class UpdateDeviceEndpoint(IDeviceService deviceService) : Endpoint<UpdateDeviceRequest>
 {

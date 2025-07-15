@@ -1,4 +1,4 @@
-namespace Zapper.Endpoints.System;
+namespace Zapper.API.Endpoints.System;
 
 public class SystemInfo
 {
