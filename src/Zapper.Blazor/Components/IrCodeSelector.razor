@@ -147,9 +147,95 @@
             </MudTabPanel>
 
             <MudTabPanel Text="Learn from Remote">
-                <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info" Class="mb-4">
-                    This feature will be available in a future update. It will allow you to point your existing remote at the IR receiver and learn the commands.
-                </MudAlert>
+                @if (!_isReceiverAvailable)
+                {
+                    <MudAlert Severity="Severity.Warning" Icon="@Icons.Material.Filled.Warning" Class="mb-4">
+                        IR receiver not available. Please ensure the IR receiver is properly connected to GPIO pin 19.
+                    </MudAlert>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info" Class="mb-4">
+                        Point your existing remote at the IR receiver and press buttons to learn commands. Each learned command will be captured and can be used to create a custom code set.
+                    </MudAlert>
+
+                    <MudGrid>
+                        <MudItem xs="12" md="8">
+                            <MudTextField @bind-Value="_learningCommandName" 
+                                        Label="Command Name" 
+                                        Placeholder="e.g., Power, Volume Up, Channel Down"
+                                        Disabled="@_isLearning"
+                                        Adornment="Adornment.Start" 
+                                        AdornmentIcon="@Icons.Material.Filled.Label" />
+                        </MudItem>
+                        <MudItem xs="12" md="4">
+                            <MudButton Color="Color.Primary" 
+                                     Variant="Variant.Filled" 
+                                     OnClick="LearnCommand"
+                                     Disabled="@(_isLearning || string.IsNullOrWhiteSpace(_learningCommandName))"
+                                     StartIcon="@Icons.Material.Filled.RadioButtonChecked"
+                                     FullWidth="true">
+                                @if (_isLearning)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                    <span>Learning...</span>
+                                }
+                                else
+                                {
+                                    <span>Learn Command</span>
+                                }
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+
+                    @if (!string.IsNullOrEmpty(_learningMessage))
+                    {
+                        <MudAlert Severity="@(_learningMessage.Contains("success", StringComparison.OrdinalIgnoreCase) ? Severity.Success : Severity.Info)" 
+                                Class="mt-4">
+                            @_learningMessage
+                        </MudAlert>
+                    }
+
+                    @if (_learnedCodes.Any())
+                    {
+                        <MudDivider Class="my-4" />
+                        <div class="d-flex align-center justify-space-between mb-3">
+                            <MudText Typo="Typo.h6">Learned Commands (@_learnedCodes.Count)</MudText>
+                            <MudButton Color="Color.Success" 
+                                     Variant="Variant.Filled"
+                                     OnClick="CreateCodeSetFromLearned"
+                                     StartIcon="@Icons.Material.Filled.Create"
+                                     Size="Size.Small">
+                                Create Code Set
+                            </MudButton>
+                        </div>
+                        
+                        <div class="learned-codes-list">
+                            @foreach (var learnedCode in _learnedCodes)
+                            {
+                                <MudCard Class="mb-2">
+                                    <MudCardContent>
+                                        <div class="d-flex align-center justify-space-between">
+                                            <div>
+                                                <MudText Typo="Typo.subtitle1">@learnedCode.CommandName</MudText>
+                                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                                    Protocol: @learnedCode.Protocol | Frequency: @learnedCode.Frequency Hz
+                                                </MudText>
+                                            </div>
+                                            <MudButton Color="Color.Error" 
+                                                     Size="Size.Small" 
+                                                     Variant="Variant.Text"
+                                                     OnClick="@(() => RemoveLearnedCode(learnedCode))"
+                                                     StartIcon="@Icons.Material.Filled.Delete">
+                                                Remove
+                                            </MudButton>
+                                        </div>
+                                    </MudCardContent>
+                                </MudCard>
+                            }
+                        </div>
+                    }
+                }
             </MudTabPanel>
         </MudTabs>
 
@@ -236,5 +322,20 @@
     .hover-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .learned-codes-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 1rem;
+    }
+
+    .learned-codes-list .mud-card {
+        transition: all 0.2s ease;
+    }
+
+    .learned-codes-list .mud-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 </style>

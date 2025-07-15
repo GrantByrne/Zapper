@@ -19,8 +19,7 @@ using Zapper.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddDbContext<ZapperContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddZapperDatabase();
 
 // Register hardware abstractions
 builder.Services.AddSingleton<IInfraredTransmitter>(provider =>
@@ -36,6 +35,21 @@ builder.Services.AddSingleton<IInfraredTransmitter>(provider =>
 
     var gpioPin = config.GetValue<int>("Hardware:IRTransmitter:GpioPin", 18);
     return new GpioInfraredTransmitter(gpioPin, logger);
+});
+
+builder.Services.AddSingleton<IInfraredReceiver>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<GpioInfraredReceiver>>();
+    var config = provider.GetRequiredService<IConfiguration>();
+
+    // Use mock receiver if GPIO is disabled
+    if (!config.GetValue<bool>("Hardware:EnableGPIO", true))
+    {
+        return new MockInfraredReceiver(provider.GetRequiredService<ILogger<MockInfraredReceiver>>());
+    }
+
+    var gpioPin = config.GetValue<int>("Hardware:IRReceiver:GpioPin", 19);
+    return new GpioInfraredReceiver(gpioPin, logger);
 });
 
 builder.Services.AddSingleton<IUsbRemoteHandler>(provider =>
@@ -105,6 +119,7 @@ builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IIrCodeService, IrCodeService>();
 builder.Services.AddScoped<IExternalIrCodeService, IrdbService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IIrLearningService, IrLearningService>();
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -153,11 +168,7 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
-// Ensure database is created
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ZapperContext>();
-    context.Database.EnsureCreated();
-}
+// Ensure database is created and migrations are applied
+await app.Services.EnsureDatabaseAsync();
 
 app.Run();
