@@ -7,15 +7,17 @@
 
 <PageTitle>Zapper - Devices</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Devices</MudText>
-<MudText Class="mb-4">Manage your connected devices</MudText>
-
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
     <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
 }
 
-<MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add Device" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
+@if (_devices.Any())
+{
+    <div class="d-flex justify-end mb-4">
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Add Device" OnClick="@(() => _showAddDialog = true)" />
+    </div>
+}
 
 @if (_isLoading)
 {
