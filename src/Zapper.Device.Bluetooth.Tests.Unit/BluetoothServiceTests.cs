@@ -59,9 +59,11 @@ public class BluetoothServiceTests
                 Arg.Any<Exception>(),
                 Arg.Any<Func<object, Exception?, string>>());
         }
-        catch (InvalidOperationException)
+        catch (Exception ex) when (ex.GetType().Name == "DBusException" || ex is InvalidOperationException)
         {
             // Expected when BlueZ is not available in test environment
+            // DBusException: org.freedesktop.DBus.Error.ServiceUnknown occurs in CI
+            // InvalidOperationException: No Bluetooth adapters found occurs locally
             // This is acceptable for unit tests
         }
     }
