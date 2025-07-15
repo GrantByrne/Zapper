@@ -41,7 +41,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
         try
         {
             var baseUrl = $"http://{ipAddress}:8060";
-            var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
+            var success = await networkController.SendHttpCommand(baseUrl, "/", "GET", null, null, cancellationToken);
 
             if (success)
             {
@@ -158,7 +158,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
                 try
                 {
                     var baseUrl = $"http://{ipAddress}:8060";
-                    var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
+                    var success = await networkController.SendHttpCommand(baseUrl, "/", "GET", null, null, cancellationToken);
 
                     if (success)
                     {

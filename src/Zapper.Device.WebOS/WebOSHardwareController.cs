@@ -6,7 +6,7 @@ namespace Zapper.Device.WebOS;
 public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHardwareController> logger) : IWebOsDeviceController
 {
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (device.ConnectionType != ConnectionType.WebOs)
         {
@@ -122,10 +122,10 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
         return false;
     }
 
-    public Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         // For WebOS devices, testing connection means trying to connect and authenticate
-        return SendCommandAsync(device, new DeviceCommand
+        return SendCommand(device, new DeviceCommand
         {
             Type = CommandType.Custom,
             NetworkPayload = "Connection test from ZapperHub",

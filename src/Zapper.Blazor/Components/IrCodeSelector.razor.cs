@@ -33,7 +33,7 @@ public partial class IrCodeSelector(IZapperApiClient? apiClient, HttpClient http
 
     private async Task LoadLocalCodeSets()
     {
-        if (ApiClient == null) return;
+        if (apiClient == null) return;
 
         try
         {
@@ -56,7 +56,7 @@ public partial class IrCodeSelector(IZapperApiClient? apiClient, HttpClient http
 
     private async Task SearchLocalCodes()
     {
-        if (ApiClient == null) return;
+        if (apiClient == null) return;
 
         try
         {

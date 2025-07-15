@@ -15,6 +15,8 @@ public class Activity
 
     public string? IconUrl { get; set; }
 
+    public ActivityType Type { get; set; } = ActivityType.Composite;
+
     public bool IsEnabled { get; set; } = true;
 
     public int SortOrder { get; set; }

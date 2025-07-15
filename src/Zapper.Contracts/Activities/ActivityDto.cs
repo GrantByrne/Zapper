@@ -3,8 +3,9 @@ namespace Zapper.Contracts.Activities;
 public class ActivityDto
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
     public string? Description { get; set; }
+    public string Type { get; set; } = "Composite";
     public string? IconUrl { get; set; }
     public bool IsEnabled { get; set; }
     public int SortOrder { get; set; }

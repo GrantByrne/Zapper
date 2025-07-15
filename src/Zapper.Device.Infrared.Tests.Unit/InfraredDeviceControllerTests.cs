@@ -87,13 +87,13 @@ public class InfraredDeviceControllerTests
             DelayMs = 0
         };
 
-        _mockTransmitter.TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>())
+        _mockTransmitter.Transmit(command.IrCode, 1, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var result = await _controller.SendCommandAsync(device, command);
 
         result.Should().BeTrue();
-        await _mockTransmitter.Received(1).TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>());
+        await _mockTransmitter.Received(1).Transmit(command.IrCode, 1, Arg.Any<CancellationToken>());
         // Logger assertions removed - using NullLogger for simplicity
     }
 
@@ -114,13 +114,13 @@ public class InfraredDeviceControllerTests
             DelayMs = 0
         };
 
-        _mockTransmitter.TransmitAsync(command.IrCode, 3, Arg.Any<CancellationToken>())
+        _mockTransmitter.Transmit(command.IrCode, 3, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var result = await _controller.SendCommandAsync(device, command);
 
         result.Should().BeTrue();
-        await _mockTransmitter.Received(1).TransmitAsync(command.IrCode, 3, Arg.Any<CancellationToken>());
+        await _mockTransmitter.Received(1).Transmit(command.IrCode, 3, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -140,7 +140,7 @@ public class InfraredDeviceControllerTests
             DelayMs = 100
         };
 
-        _mockTransmitter.TransmitAsync(command.IrCode, 1, Arg.Any<CancellationToken>())
+        _mockTransmitter.Transmit(command.IrCode, 1, Arg.Any<CancellationToken>())
                        .Returns(Task.CompletedTask);
 
         var startTime = DateTime.UtcNow;
@@ -166,7 +166,7 @@ public class InfraredDeviceControllerTests
             IrCode = "9000 4500 560 560"
         };
 
-        _mockTransmitter.TransmitAsync(command.IrCode, Arg.Any<int>(), Arg.Any<CancellationToken>())
+        _mockTransmitter.Transmit(command.IrCode, Arg.Any<int>(), Arg.Any<CancellationToken>())
                        .Returns(Task.FromException(new InvalidOperationException("Transmitter error")));
 
         var result = await _controller.SendCommandAsync(device, command);

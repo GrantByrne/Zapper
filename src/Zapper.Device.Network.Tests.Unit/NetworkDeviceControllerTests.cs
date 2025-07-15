@@ -26,21 +26,21 @@ public class NetworkDeviceControllerTests : IDisposable
     }
 
     [Fact]
-    public async Task SendHttpCommandAsync_WithInvalidUrl_ShouldReturnFalse()
+    public async Task SendHttpCommand_WithInvalidUrl_ShouldReturnFalse()
     {
         // Arrange
         var baseUrl = "invalid-url";
         var endpoint = "api/test";
 
         // Act
-        var result = await _controller.SendHttpCommandAsync(baseUrl, endpoint);
+        var result = await _controller.SendHttpCommand(baseUrl, endpoint);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public async Task SendHttpCommandAsync_WithValidParameters_ShouldNotThrow()
+    public async Task SendHttpCommand_WithValidParameters_ShouldNotThrow()
     {
         // Arrange
         const string baseUrl = "https://httpbin.org";
@@ -48,19 +48,19 @@ public class NetworkDeviceControllerTests : IDisposable
         const string method = "GET";
 
         // Act & Assert
-        var act = async () => await _controller.SendHttpCommandAsync(baseUrl, endpoint, method);
+        var act = async () => await _controller.SendHttpCommand(baseUrl, endpoint, method);
         await act.Should().NotThrowAsync();
     }
 
     [Fact]
-    public async Task DiscoverDevicesAsync_WithValidParameters_ShouldReturnDevicesJson()
+    public async Task DiscoverDevices_WithValidParameters_ShouldReturnDevicesJson()
     {
         // Arrange
         const string deviceType = "ssdp:all";
         var timeout = TimeSpan.FromSeconds(1);
 
         // Act
-        var result = await _controller.DiscoverDevicesAsync(deviceType, timeout);
+        var result = await _controller.DiscoverDevices(deviceType, timeout);
 
         // Assert - Since we can't easily mock UDP sockets, we just verify it doesn't throw
         // In a real network environment, this might return actual discovered devices
@@ -68,7 +68,7 @@ public class NetworkDeviceControllerTests : IDisposable
     }
 
     [Fact]
-    public async Task DiscoverDevicesAsync_WithShortTimeout_ShouldCompleteQuickly()
+    public async Task DiscoverDevices_WithShortTimeout_ShouldCompleteQuickly()
     {
         // Arrange
         const string deviceType = "ssdp:all";
@@ -76,7 +76,7 @@ public class NetworkDeviceControllerTests : IDisposable
         var startTime = DateTime.UtcNow;
 
         // Act
-        var result = await _controller.DiscoverDevicesAsync(deviceType, timeout);
+        var result = await _controller.DiscoverDevices(deviceType, timeout);
         var elapsed = DateTime.UtcNow - startTime;
 
         // Assert

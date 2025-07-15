@@ -371,7 +371,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
             throw new InvalidOperationException("Code set already exists in local database");
         }
 
-        var externalCodeSet = await externalIrCodeService.GetCodeSetAsync(manufacturer, deviceType, device, subdevice);
+        var externalCodeSet = await externalIrCodeService.GetCodeSet(manufacturer, deviceType, device, subdevice);
         if (externalCodeSet == null)
         {
             throw new InvalidOperationException("Code set not found in external database");

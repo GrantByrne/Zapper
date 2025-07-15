@@ -31,7 +31,7 @@ public class InfraredDeviceController : IDeviceController
 
         try
         {
-            await _transmitter.TransmitAsync(command.IrCode, command.IsRepeatable ? 3 : 1);
+            await _transmitter.Transmit(command.IrCode, command.IsRepeatable ? 3 : 1);
 
             if (command.DelayMs > 0)
             {

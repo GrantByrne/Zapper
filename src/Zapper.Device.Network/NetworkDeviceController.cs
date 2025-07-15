@@ -13,7 +13,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
     private readonly ConcurrentDictionary<string, ClientWebSocket> _webSocketConnections = new();
     private bool _disposed;
 
-    public async Task<bool> SendCommandAsync(string ipAddress, int port, string command, string? payload = null, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(string ipAddress, int port, string command, string? payload = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -36,7 +36,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         }
     }
 
-    public async Task<bool> SendHttpCommandAsync(string baseUrl, string endpoint, string method = "POST", string? payload = null, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    public async Task<bool> SendHttpCommand(string baseUrl, string endpoint, string method = "POST", string? payload = null, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -68,7 +68,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         }
     }
 
-    public async Task<bool> SendWebSocketCommandAsync(string wsUrl, string command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendWebSocketCommand(string wsUrl, string command, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -140,7 +140,7 @@ public class NetworkDeviceController(HttpClient httpClient, ILogger<NetworkDevic
         }
     }
 
-    public async Task<string?> DiscoverDevicesAsync(string deviceType, TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<string?> DiscoverDevices(string deviceType, TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         try
         {

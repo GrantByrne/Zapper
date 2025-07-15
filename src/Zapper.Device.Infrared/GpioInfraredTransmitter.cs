@@ -49,7 +49,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
     }
 
-    public async Task TransmitAsync(string irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task Transmit(string irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
@@ -58,7 +58,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
         for (int i = 0; i < repeatCount; i++)
         {
-            await TransmitRawAsync(pulses, cancellationToken: cancellationToken);
+            await TransmitRaw(pulses, cancellationToken: cancellationToken);
             if (i < repeatCount - 1)
             {
                 await Task.Delay(100, cancellationToken);
@@ -66,7 +66,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
     }
 
-    public async Task TransmitAsync(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task Transmit(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
@@ -87,7 +87,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
         for (int i = 0; i < repeatCount; i++)
         {
-            await TransmitRawAsync(pulses, irCode.Frequency, cancellationToken);
+            await TransmitRaw(pulses, irCode.Frequency, cancellationToken);
             if (i < repeatCount - 1)
             {
                 await Task.Delay(100, cancellationToken);
@@ -95,7 +95,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
     }
 
-    public async Task TransmitRawAsync(int[] pulses, int carrierFrequency = 38000, CancellationToken cancellationToken = default)
+    public async Task TransmitRaw(int[] pulses, int carrierFrequency = 38000, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");

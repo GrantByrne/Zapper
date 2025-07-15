@@ -167,7 +167,7 @@ public class DeviceService(
 
         try
         {
-            var success = await ExecuteCommandAsync(device, command, cancellationToken);
+            var success = await ExecuteCommand(device, command, cancellationToken);
 
             if (success)
             {
@@ -204,13 +204,13 @@ public class DeviceService(
             bool isOnline = device.ConnectionType switch
             {
                 ConnectionType.NetworkTcp or ConnectionType.NetworkWebSocket =>
-                    await TestNetworkDeviceAsync(device),
+                    await TestNetworkDevice(device),
                 ConnectionType.NetworkHttp =>
-                    await rokuController.TestConnectionAsync(device),
+                    await rokuController.TestConnection(device),
                 ConnectionType.InfraredIr =>
                     irTransmitter.IsAvailable,
                 ConnectionType.WebOs =>
-                    await webOsController.TestConnectionAsync(device),
+                    await webOsController.TestConnection(device),
                 _ => false
             };
 
@@ -250,22 +250,22 @@ public class DeviceService(
         }
     }
 
-    private async Task<bool> ExecuteCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteCommand(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         logger.LogDebug("Executing command {CommandName} on device {DeviceName}", command.Name, device.Name);
 
         return device.ConnectionType switch
         {
-            ConnectionType.InfraredIr => await ExecuteIrCommandAsync(command, cancellationToken),
-            ConnectionType.NetworkTcp => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
-            ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommandAsync(device, command, cancellationToken),
+            ConnectionType.InfraredIr => await ExecuteIrCommand(command, cancellationToken),
+            ConnectionType.NetworkTcp => await ExecuteNetworkCommand(device, command, cancellationToken),
+            ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommand(device, command, cancellationToken),
             ConnectionType.NetworkHttp => await rokuController.SendCommand(device, command, cancellationToken),
             ConnectionType.WebOs => await webOsController.SendCommand(device, command, cancellationToken),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };
     }
 
-    private async Task<bool> ExecuteIrCommandAsync(DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteIrCommand(DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(command.IrCode))
         {
@@ -273,7 +273,7 @@ public class DeviceService(
             return false;
         }
 
-        await irTransmitter.TransmitAsync(command.IrCode, command.IsRepeatable ? 3 : 1, cancellationToken);
+        await irTransmitter.Transmit(command.IrCode, command.IsRepeatable ? 3 : 1, cancellationToken);
 
         if (command.DelayMs > 0)
         {
@@ -283,7 +283,7 @@ public class DeviceService(
         return true;
     }
 
-    private async Task<bool> ExecuteNetworkCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteNetworkCommand(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(device.IpAddress) || !device.Port.HasValue)
         {
@@ -299,7 +299,7 @@ public class DeviceService(
             cancellationToken);
     }
 
-    private async Task<bool> ExecuteWebSocketCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> ExecuteWebSocketCommand(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -308,10 +308,10 @@ public class DeviceService(
         }
 
         var wsUrl = $"ws://{device.IpAddress}:{device.Port ?? 3000}";
-        return await networkController.SendWebSocketCommandAsync(wsUrl, command.NetworkPayload ?? command.Name, cancellationToken);
+        return await networkController.SendWebSocketCommand(wsUrl, command.NetworkPayload ?? command.Name, cancellationToken);
     }
 
-    private async Task<bool> TestNetworkDeviceAsync(Zapper.Core.Models.Device device)
+    private async Task<bool> TestNetworkDevice(Zapper.Core.Models.Device device)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;

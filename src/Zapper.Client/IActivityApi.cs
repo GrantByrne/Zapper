@@ -20,4 +20,16 @@ public interface IActivityApi
     /// </summary>
     [Post(ApiRoutes.Activities.Execute)]
     Task<ExecuteActivityResponse> ExecuteActivityAsync(int id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Create a new activity
+    /// </summary>
+    [Post(ApiRoutes.Activities.Create)]
+    Task<ActivityDto> CreateActivityAsync([Body] CreateActivityRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Delete an activity
+    /// </summary>
+    [Delete(ApiRoutes.Activities.Delete)]
+    Task DeleteActivityAsync(int id, CancellationToken cancellationToken = default);
 }

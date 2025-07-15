@@ -17,7 +17,7 @@ public class WebOsProtocolController(IWebOsDeviceController webOsController, ILo
 
         try
         {
-            var result = await webOsController.SendCommandAsync(device, command);
+            var result = await webOsController.SendCommand(device, command);
 
             if (command.DelayMs > 0)
             {
@@ -43,7 +43,7 @@ public class WebOsProtocolController(IWebOsDeviceController webOsController, ILo
 
         try
         {
-            return await webOsController.TestConnectionAsync(device);
+            return await webOsController.TestConnection(device);
         }
         catch (Exception ex)
         {

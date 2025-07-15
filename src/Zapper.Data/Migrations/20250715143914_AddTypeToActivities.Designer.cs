@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zapper.Data;
 
@@ -10,9 +11,11 @@ using Zapper.Data;
 namespace Zapper.Data.Migrations
 {
     [DbContext(typeof(ZapperContext))]
-    partial class ZapperContextModelSnapshot : ModelSnapshot
+    [Migration("20250715143914_AddTypeToActivities")]
+    partial class AddTypeToActivities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");

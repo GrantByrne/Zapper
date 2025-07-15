@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Zapper.Data;
 using Zapper.Core.Models;
 using Zapper.Contracts;
+using Zapper.Contracts.Activities;
 
 namespace Zapper.Services;
 
@@ -118,7 +119,7 @@ public class ActivityService(
                     step.DeviceCommand.Name,
                     cancellationToken);
 
-                await notificationService.NotifyActivityStepExecutedAsync(
+                await notificationService.NotifyActivityStepExecuted(
                     activity.Id, activity.Name, step.StepOrder,
                     $"{step.DeviceCommand.Device.Name} - {step.DeviceCommand.Name}", success);
 
@@ -127,7 +128,7 @@ public class ActivityService(
                     logger.LogError("Required step failed in activity {ActivityName}: {DeviceName} - {CommandName}",
                                    activity.Name, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
 
-                    await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
+                    await notificationService.NotifyActivityCompleted(activity.Id, activity.Name, false);
                     return false;
                 }
 
@@ -156,19 +157,19 @@ public class ActivityService(
             logger.LogInformation("Activity {ActivityName} completed successfully. Executed {ExecutedSteps}/{TotalSteps} steps",
                                  activity.Name, executedSteps, steps.Count);
 
-            await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, true);
+            await notificationService.NotifyActivityCompleted(activity.Id, activity.Name, true);
             return true;
         }
         catch (OperationCanceledException)
         {
             logger.LogInformation("Activity execution cancelled: {ActivityName}", activity.Name);
-            await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
+            await notificationService.NotifyActivityCompleted(activity.Id, activity.Name, false);
             return false;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to execute activity: {ActivityName}", activity.Name);
-            await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
+            await notificationService.NotifyActivityCompleted(activity.Id, activity.Name, false);
             return false;
         }
     }
@@ -210,7 +211,7 @@ public class ActivityService(
         await context.SaveChangesAsync();
 
         logger.LogInformation("Added device {DeviceName} to activity {ActivityName}", device.Name, activity.Name);
-        return await GetActivityAsync(activityId);
+        return await GetActivity(activityId);
     }
 
     public async Task<bool> RemoveDeviceFromActivity(int activityId, int deviceId)
@@ -290,26 +291,35 @@ public class ActivityService(
         return true;
     }
 
-    public async Task<ActivityDto?> GetActivityDto(int id)
+    public async Task<Contracts.Activities.ActivityDto?> GetActivityDto(int id)
     {
         var activity = await GetActivity(id);
         if (activity == null)
             return null;
 
-        return new ActivityDto
+        return new Contracts.Activities.ActivityDto
         {
             Id = activity.Id,
             Name = activity.Name,
             Description = activity.Description,
             Type = activity.Type.ToString(),
+            SortOrder = activity.SortOrder,
             IsEnabled = activity.IsEnabled,
             LastUsed = activity.LastUsed,
             CreatedAt = activity.CreatedAt,
-            UpdatedAt = activity.UpdatedAt
+            Steps = activity.Steps?.Select(s => new Contracts.Activities.ActivityStepDto
+            {
+                Id = s.Id,
+                DeviceId = s.DeviceCommand.DeviceId,
+                DeviceName = s.DeviceCommand.Device?.Name ?? "",
+                Command = s.DeviceCommand.Name,
+                SortOrder = s.StepOrder,
+                DelayMs = s.DelayBeforeMs
+            }).ToList() ?? new()
         };
     }
 
-    public async Task<ActivityDto> CreateActivity(CreateActivityRequest request)
+    public async Task<Contracts.Activities.ActivityDto> CreateActivity(CreateActivityRequest request)
     {
         var activity = new Activity
         {
@@ -335,20 +345,10 @@ public class ActivityService(
             }
         }
 
-        return new ActivityDto
-        {
-            Id = createdActivity.Id,
-            Name = createdActivity.Name,
-            Description = createdActivity.Description,
-            Type = createdActivity.Type.ToString(),
-            IsEnabled = createdActivity.IsEnabled,
-            LastUsed = createdActivity.LastUsed,
-            CreatedAt = createdActivity.CreatedAt,
-            UpdatedAt = createdActivity.UpdatedAt
-        };
+        return await GetActivityDto(createdActivity.Id) ?? new Contracts.Activities.ActivityDto();
     }
 
-    public async Task<ActivityDto?> UpdateActivity(UpdateActivityRequest request)
+    public async Task<Contracts.Activities.ActivityDto?> UpdateActivity(UpdateActivityRequest request)
     {
         var activity = await GetActivity(request.Id);
         if (activity == null)
@@ -363,16 +363,6 @@ public class ActivityService(
         if (updated == null)
             return null;
 
-        return new ActivityDto
-        {
-            Id = updated.Id,
-            Name = updated.Name,
-            Description = updated.Description,
-            Type = updated.Type.ToString(),
-            IsEnabled = updated.IsEnabled,
-            LastUsed = updated.LastUsed,
-            CreatedAt = updated.CreatedAt,
-            UpdatedAt = updated.UpdatedAt
-        };
+        return await GetActivityDto(updated.Id) ?? new Contracts.Activities.ActivityDto();
     }
 }

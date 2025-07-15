@@ -1,4 +1,5 @@
 using Zapper.Client.Abstractions;
+using Zapper.Contracts;
 using Zapper.Contracts.Activities;
 
 namespace Zapper.Client;
@@ -16,5 +17,15 @@ public class ActivityClient(IActivityApi activityApi) : IActivityClient
     public async Task<ExecuteActivityResponse> ExecuteActivityAsync(int id, CancellationToken cancellationToken = default)
     {
         return await activityApi.ExecuteActivityAsync(id, cancellationToken);
+    }
+
+    public async Task<ActivityDto> CreateActivityAsync(CreateActivityRequest request, CancellationToken cancellationToken = default)
+    {
+        return await activityApi.CreateActivityAsync(request, cancellationToken);
+    }
+
+    public async Task DeleteActivityAsync(int id, CancellationToken cancellationToken = default)
+    {
+        await activityApi.DeleteActivityAsync(id, cancellationToken);
     }
 }

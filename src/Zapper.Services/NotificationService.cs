@@ -51,7 +51,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToActivityGroup(activityId, "ActivityStatusChanged", data);
-        await SendToAllClientsAsync("ActivityStatusChanged", data);
+        await SendToAllClients("ActivityStatusChanged", data);
 
         logger.LogInformation("Activity started: {ActivityName}", activityName);
     }
@@ -68,7 +68,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         };
 
         await SendToActivityGroup(activityId, "ActivityStatusChanged", data);
-        await SendToAllClientsAsync("ActivityStatusChanged", data);
+        await SendToAllClients("ActivityStatusChanged", data);
 
         logger.LogInformation("Activity completed: {ActivityName} ({Status})",
             activityName, success ? "success" : "failed");

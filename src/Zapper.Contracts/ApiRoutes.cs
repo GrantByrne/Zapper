@@ -28,6 +28,10 @@ public static class ApiRoutes
     {
         public const string Base = $"{BaseUrl}/activities";
         public const string GetAll = Base;
+        public const string GetById = $"{Base}/{{id}}";
+        public const string Create = Base;
+        public const string Update = $"{Base}/{{id}}";
+        public const string Delete = $"{Base}/{{id}}";
         public const string Execute = $"{Base}/{{id}}/execute";
     }
 

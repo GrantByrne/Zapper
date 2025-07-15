@@ -180,7 +180,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
 
     private async Task StartBluetoothScan()
     {
-        if (ApiClient == null)
+        if (apiClient == null)
         {
             _scanError = "API client not available. Cannot scan for Bluetooth devices.";
             return;
@@ -355,7 +355,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
 
     private async Task StartWebOsScan()
     {
-        if (ApiClient == null)
+        if (apiClient == null)
         {
             _webOsScanError = "API client not available. Cannot scan for WebOS TVs.";
             return;
@@ -485,7 +485,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
 
     private async Task StopBluetoothScan()
     {
-        if (_isScanning && ApiClient != null)
+        if (_isScanning && apiClient != null)
         {
             try
             {
@@ -521,7 +521,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
 
     private async Task StopWebOsScan()
     {
-        if (_isWebOsScanning && ApiClient != null)
+        if (_isWebOsScanning && apiClient != null)
         {
             try
             {

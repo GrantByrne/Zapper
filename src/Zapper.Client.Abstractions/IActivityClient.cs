@@ -1,3 +1,4 @@
+using Zapper.Contracts;
 using Zapper.Contracts.Activities;
 
 namespace Zapper.Client.Abstractions;
@@ -16,4 +17,14 @@ public interface IActivityClient
     /// Execute an activity
     /// </summary>
     Task<ExecuteActivityResponse> ExecuteActivityAsync(int id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Create a new activity
+    /// </summary>
+    Task<ActivityDto> CreateActivityAsync(CreateActivityRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Delete an activity
+    /// </summary>
+    Task DeleteActivityAsync(int id, CancellationToken cancellationToken = default);
 }

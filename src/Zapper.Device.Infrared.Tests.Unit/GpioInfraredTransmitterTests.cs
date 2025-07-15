@@ -23,18 +23,18 @@ public class GpioInfraredTransmitterTests
     }
 
     [Fact]
-    public async Task TransmitAsync_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task Transmit_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var transmitter = new GpioInfraredTransmitter(18, _logger);
 
-        var act = async () => await transmitter.TransmitAsync("test code", 1);
+        var act = async () => await transmitter.Transmit("test code", 1);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");
     }
 
     [Fact]
-    public async Task TransmitAsync_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task Transmit_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var transmitter = new GpioInfraredTransmitter(18, _logger);
         var irCode = new IrCode
@@ -46,19 +46,19 @@ public class GpioInfraredTransmitterTests
             Protocol = "NEC"
         };
 
-        var act = async () => await transmitter.TransmitAsync(irCode, 1);
+        var act = async () => await transmitter.Transmit(irCode, 1);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");
     }
 
     [Fact]
-    public async Task TransmitRawAsync_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task TransmitRaw_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var transmitter = new GpioInfraredTransmitter(18, _logger);
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        var act = async () => await transmitter.TransmitRawAsync(pulses, 38000);
+        var act = async () => await transmitter.TransmitRaw(pulses, 38000);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Zapper.Client.Abstractions;
+using Zapper.Contracts;
 using Zapper.Contracts.Activities;
 
 namespace Zapper.Blazor.Pages;
@@ -96,11 +97,11 @@ public partial class Activities(IZapperApiClient? apiClient) : ComponentBase
                     }).ToList()
                 };
 
-                var createdActivity = await apiClient.Activities.CreateActivityAsync(createRequest);
+                var createdActivity = await apiClient!.Activities.CreateActivityAsync(createRequest);
                 _activities.Add(createdActivity);
 
                 _errorMessage = null;
-                _newActivity = new CreateActivityModel();
+                _newActivity = new ActivityModel();
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -151,7 +152,7 @@ public partial class Activities(IZapperApiClient? apiClient) : ComponentBase
     {
         try
         {
-            await apiClient.Activities.DeleteActivityAsync(activity.Id);
+            await apiClient!.Activities.DeleteActivityAsync(activity.Id);
             _activities.Remove(activity);
             StateHasChanged();
 
@@ -188,6 +189,7 @@ public partial class Activities(IZapperApiClient? apiClient) : ComponentBase
 
     public class ActivityStep
     {
+        public int DeviceId { get; set; }
         public string Device { get; set; } = "";
         public string Command { get; set; } = "";
     }

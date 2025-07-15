@@ -24,8 +24,8 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
         var device = new Zapper.Core.Models.Device
         {
             Name = req.Name,
-            Brand = req.Brand ?? string.Empty,
-            Model = req.Model ?? string.Empty,
+            Brand = req.Brand ?? "",
+            Model = req.Model ?? "",
             Type = req.Type,
             ConnectionType = req.ConnectionType,
             IpAddress = req.IpAddress,

@@ -40,21 +40,21 @@ public class MockInfraredTransmitterTests
     }
 
     [Fact]
-    public async Task TransmitAsync_WithString_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task Transmit_WithString_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
-        var act = async () => await _transmitter.TransmitAsync("test code", 1);
+        var act = async () => await _transmitter.Transmit("test code", 1);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
     }
 
     [Fact]
-    public async Task TransmitAsync_WithString_WhenInitialized_ShouldSimulateTransmission()
+    public async Task Transmit_WithString_WhenInitialized_ShouldSimulateTransmission()
     {
         _transmitter.Initialize();
         var startTime = DateTime.UtcNow;
 
-        await _transmitter.TransmitAsync("test code", 2);
+        await _transmitter.Transmit("test code", 2);
 
         var elapsed = DateTime.UtcNow - startTime;
         elapsed.Should().BeGreaterThan(TimeSpan.FromMilliseconds(150)); // 2 * 100ms - some tolerance
@@ -63,7 +63,7 @@ public class MockInfraredTransmitterTests
     }
 
     [Fact]
-    public async Task TransmitAsync_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task Transmit_WithIRCode_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var irCode = new IrCode
         {
@@ -73,14 +73,14 @@ public class MockInfraredTransmitterTests
             HexCode = "0x123456"
         };
 
-        var act = async () => await _transmitter.TransmitAsync(irCode, 1);
+        var act = async () => await _transmitter.Transmit(irCode, 1);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
     }
 
     [Fact]
-    public async Task TransmitAsync_WithIRCode_WhenInitialized_ShouldSimulateTransmission()
+    public async Task Transmit_WithIRCode_WhenInitialized_ShouldSimulateTransmission()
     {
         _transmitter.Initialize();
         var irCode = new IrCode
@@ -91,29 +91,29 @@ public class MockInfraredTransmitterTests
             HexCode = "0xE0E040BF"
         };
 
-        await _transmitter.TransmitAsync(irCode, 1);
+        await _transmitter.Transmit(irCode, 1);
 
         // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
-    public async Task TransmitRawAsync_WhenNotInitialized_ShouldThrowInvalidOperationException()
+    public async Task TransmitRaw_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        var act = async () => await _transmitter.TransmitRawAsync(pulses, 38000);
+        var act = async () => await _transmitter.TransmitRaw(pulses, 38000);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
     }
 
     [Fact]
-    public async Task TransmitRawAsync_WhenInitialized_ShouldSimulateTransmission()
+    public async Task TransmitRaw_WhenInitialized_ShouldSimulateTransmission()
     {
         _transmitter.Initialize();
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        await _transmitter.TransmitRawAsync(pulses, 38000);
+        await _transmitter.TransmitRaw(pulses, 38000);
 
         // Logger assertions removed - using NullLogger for simplicity
     }

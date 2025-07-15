@@ -8,7 +8,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
 {
     private const int RokuPort = 8060;
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (device.ConnectionType != ConnectionType.NetworkHttp)
         {
@@ -26,25 +26,25 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         {
             return command.Type switch
             {
-                CommandType.Power => await SendKeyAsync(device.IpAddress, "Power", cancellationToken),
-                CommandType.VolumeUp => await SendKeyAsync(device.IpAddress, "VolumeUp", cancellationToken),
-                CommandType.VolumeDown => await SendKeyAsync(device.IpAddress, "VolumeDown", cancellationToken),
-                CommandType.Mute => await SendKeyAsync(device.IpAddress, "VolumeMute", cancellationToken),
-                CommandType.ChannelUp => await SendKeyAsync(device.IpAddress, "ChannelUp", cancellationToken),
-                CommandType.ChannelDown => await SendKeyAsync(device.IpAddress, "ChannelDown", cancellationToken),
-                CommandType.Menu => await SendKeyAsync(device.IpAddress, "Home", cancellationToken),
-                CommandType.Back => await SendKeyAsync(device.IpAddress, "Back", cancellationToken),
-                CommandType.DirectionalUp => await SendKeyAsync(device.IpAddress, "Up", cancellationToken),
-                CommandType.DirectionalDown => await SendKeyAsync(device.IpAddress, "Down", cancellationToken),
-                CommandType.DirectionalLeft => await SendKeyAsync(device.IpAddress, "Left", cancellationToken),
-                CommandType.DirectionalRight => await SendKeyAsync(device.IpAddress, "Right", cancellationToken),
-                CommandType.Ok => await SendKeyAsync(device.IpAddress, "Select", cancellationToken),
-                CommandType.PlayPause => await SendKeyAsync(device.IpAddress, "Play", cancellationToken),
-                CommandType.Stop => await SendKeyAsync(device.IpAddress, "Stop", cancellationToken),
-                CommandType.FastForward => await SendKeyAsync(device.IpAddress, "Fwd", cancellationToken),
-                CommandType.Rewind => await SendKeyAsync(device.IpAddress, "Rev", cancellationToken),
+                CommandType.Power => await SendKey(device.IpAddress, "Power", cancellationToken),
+                CommandType.VolumeUp => await SendKey(device.IpAddress, "VolumeUp", cancellationToken),
+                CommandType.VolumeDown => await SendKey(device.IpAddress, "VolumeDown", cancellationToken),
+                CommandType.Mute => await SendKey(device.IpAddress, "VolumeMute", cancellationToken),
+                CommandType.ChannelUp => await SendKey(device.IpAddress, "ChannelUp", cancellationToken),
+                CommandType.ChannelDown => await SendKey(device.IpAddress, "ChannelDown", cancellationToken),
+                CommandType.Menu => await SendKey(device.IpAddress, "Home", cancellationToken),
+                CommandType.Back => await SendKey(device.IpAddress, "Back", cancellationToken),
+                CommandType.DirectionalUp => await SendKey(device.IpAddress, "Up", cancellationToken),
+                CommandType.DirectionalDown => await SendKey(device.IpAddress, "Down", cancellationToken),
+                CommandType.DirectionalLeft => await SendKey(device.IpAddress, "Left", cancellationToken),
+                CommandType.DirectionalRight => await SendKey(device.IpAddress, "Right", cancellationToken),
+                CommandType.Ok => await SendKey(device.IpAddress, "Select", cancellationToken),
+                CommandType.PlayPause => await SendKey(device.IpAddress, "Play", cancellationToken),
+                CommandType.Stop => await SendKey(device.IpAddress, "Stop", cancellationToken),
+                CommandType.FastForward => await SendKey(device.IpAddress, "Fwd", cancellationToken),
+                CommandType.Rewind => await SendKey(device.IpAddress, "Rev", cancellationToken),
                 CommandType.Number => await HandleNumberCommand(device.IpAddress, command, cancellationToken),
-                CommandType.Input => await SendKeyAsync(device.IpAddress, "InputTuner", cancellationToken),
+                CommandType.Input => await SendKey(device.IpAddress, "InputTuner", cancellationToken),
                 CommandType.Custom => await HandleCustomCommand(device.IpAddress, command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
@@ -56,7 +56,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -65,7 +65,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
 
         try
         {
-            var deviceInfo = await GetDeviceInfoAsync(device.IpAddress, cancellationToken);
+            var deviceInfo = await GetDeviceInfo(device.IpAddress, cancellationToken);
             return !string.IsNullOrEmpty(deviceInfo);
         }
         catch (Exception ex)
@@ -75,12 +75,12 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         }
     }
 
-    public async Task<string?> GetDeviceInfoAsync(string ipAddress, CancellationToken cancellationToken = default)
+    public async Task<string?> GetDeviceInfo(string ipAddress, CancellationToken cancellationToken = default)
     {
         try
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
-            var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
+            var success = await networkController.SendHttpCommand(baseUrl, "/", "GET", null, null, cancellationToken);
 
             if (success)
             {
@@ -97,14 +97,14 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         }
     }
 
-    public async Task<bool> LaunchAppAsync(string ipAddress, string appId, CancellationToken cancellationToken = default)
+    public async Task<bool> LaunchApp(string ipAddress, string appId, CancellationToken cancellationToken = default)
     {
         try
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
             var endpoint = $"/launch/{appId}";
 
-            return await networkController.SendHttpCommandAsync(baseUrl, endpoint, "POST", null, null, cancellationToken);
+            return await networkController.SendHttpCommand(baseUrl, endpoint, "POST", null, null, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -113,14 +113,14 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
         }
     }
 
-    public async Task<bool> SendKeyAsync(string ipAddress, string keyCode, CancellationToken cancellationToken = default)
+    public async Task<bool> SendKey(string ipAddress, string keyCode, CancellationToken cancellationToken = default)
     {
         try
         {
             var baseUrl = $"http://{ipAddress}:{RokuPort}";
             var endpoint = $"/keypress/{keyCode}";
 
-            return await networkController.SendHttpCommandAsync(baseUrl, endpoint, "POST", null, null, cancellationToken);
+            return await networkController.SendHttpCommand(baseUrl, endpoint, "POST", null, null, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -150,7 +150,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
 
             if (!string.IsNullOrEmpty(keyCode))
             {
-                return await SendKeyAsync(ipAddress, keyCode, cancellationToken);
+                return await SendKey(ipAddress, keyCode, cancellationToken);
             }
         }
 
@@ -172,7 +172,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
             if (command.NetworkPayload.StartsWith("launch:"))
             {
                 var appId = command.NetworkPayload.Substring(7);
-                return await LaunchAppAsync(ipAddress, appId, cancellationToken);
+                return await LaunchApp(ipAddress, appId, cancellationToken);
             }
 
             // Handle specific app shortcuts
@@ -195,11 +195,11 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
 
             if (!string.IsNullOrEmpty(shortcutAppId))
             {
-                return await LaunchAppAsync(ipAddress, shortcutAppId, cancellationToken);
+                return await LaunchApp(ipAddress, shortcutAppId, cancellationToken);
             }
 
             // Try as direct key code
-            return await SendKeyAsync(ipAddress, command.NetworkPayload, cancellationToken);
+            return await SendKey(ipAddress, command.NetworkPayload, cancellationToken);
         }
         catch (Exception ex)
         {

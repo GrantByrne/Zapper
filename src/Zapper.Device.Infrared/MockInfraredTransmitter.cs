@@ -21,7 +21,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         _logger.LogInformation("Mock IR transmitter initialized");
     }
 
-    public async Task TransmitAsync(string irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task Transmit(string irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
@@ -31,7 +31,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
-    public async Task TransmitAsync(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
+    public async Task Transmit(IrCode irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
@@ -42,7 +42,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
-    public async Task TransmitRawAsync(int[] pulses, int carrierFrequency = 38000, CancellationToken cancellationToken = default)
+    public async Task TransmitRaw(int[] pulses, int carrierFrequency = 38000, CancellationToken cancellationToken = default)
     {
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");

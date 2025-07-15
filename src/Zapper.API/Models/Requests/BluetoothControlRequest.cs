@@ -2,7 +2,7 @@ namespace Zapper.API.Models.Requests;
 
 public class BluetoothControlRequest
 {
-    public string Action { get; set; } = string.Empty;
+    public string Action { get; set; } = "";
     public string? DeviceId { get; set; }
     public string? KeyCode { get; set; }
     public string? Text { get; set; }
