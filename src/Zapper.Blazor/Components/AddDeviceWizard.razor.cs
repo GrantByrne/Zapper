@@ -169,7 +169,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             // Start the scanning process via API
             try
             {
-                var scanRequest = new BluetoothScanRequest { DurationSeconds = 30 };
+                var scanRequest = new Client.Abstractions.BluetoothScanRequest { DurationSeconds = 30 };
                 var response = await ApiClient.Devices.StartBluetoothScanAsync(scanRequest);
 
                 if (!response.Success)
@@ -440,29 +440,6 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
-    public class BluetoothScanRequest
-    {
-        public int DurationSeconds { get; set; } = 30;
-    }
-
-    public class BluetoothScanResponse
-    {
-        public bool Success { get; set; }
-        public string? Message { get; set; }
-        public bool IsScanning { get; set; }
-    }
-
-    public class WebOSScanRequest
-    {
-        public int DurationSeconds { get; set; } = 15;
-    }
-
-    public class WebOSScanResponse
-    {
-        public bool Success { get; set; }
-        public string? Message { get; set; }
-        public bool IsScanning { get; set; }
-    }
 }
 
 public class WebOSDevice

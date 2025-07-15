@@ -46,6 +46,7 @@ public partial class Activities : ComponentBase
 
                 // For now, fall back to sample data since the client doesn't have activities yet
                 LoadSampleActivities();
+                await Task.CompletedTask;
             }
             catch (NotImplementedException)
             {
@@ -159,6 +160,8 @@ public partial class Activities : ComponentBase
                 _newActivity = new ActivityModel();
                 _showAddDialog = false;
                 StateHasChanged();
+
+                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -212,6 +215,8 @@ public partial class Activities : ComponentBase
             // For now, remove from local list
             _activities.Remove(activity);
             StateHasChanged();
+
+            await Task.CompletedTask;
         }
         catch (Exception ex)
         {

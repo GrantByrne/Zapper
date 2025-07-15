@@ -10,7 +10,7 @@ public partial class Home : ComponentBase
     [Inject] public IZapperApiClient? ApiClient { get; set; }
 
     private List<DeviceDto> _devices = new();
-    private string? _selectedDeviceId;
+    private int? _selectedDeviceId;
     private bool _isLoading = true;
     private string? _errorMessage;
 
@@ -38,7 +38,7 @@ public partial class Home : ComponentBase
             // Select first device by default
             if (_devices.Any())
             {
-                _selectedDeviceId = _devices.First().Id.ToString();
+                _selectedDeviceId = _devices.First().Id;
             }
         }
         catch (Exception ex)
@@ -54,7 +54,7 @@ public partial class Home : ComponentBase
 
     private async Task SendCommand(string command)
     {
-        if (ApiClient == null || string.IsNullOrEmpty(_selectedDeviceId) || !Guid.TryParse(_selectedDeviceId, out var deviceId))
+        if (ApiClient == null || !_selectedDeviceId.HasValue)
         {
             return;
         }
@@ -62,7 +62,7 @@ public partial class Home : ComponentBase
         try
         {
             var request = new SendCommandRequest { Command = command };
-            await ApiClient.Devices.SendCommandAsync(deviceId, request);
+            await ApiClient.Devices.SendCommandAsync(_selectedDeviceId.Value, request);
         }
         catch (Exception ex)
         {
@@ -83,10 +83,10 @@ public partial class Home : ComponentBase
 
     private DeviceDto? GetSelectedDevice()
     {
-        if (string.IsNullOrEmpty(_selectedDeviceId) || !Guid.TryParse(_selectedDeviceId, out var deviceId))
+        if (!_selectedDeviceId.HasValue)
         {
             return null;
         }
-        return _devices.FirstOrDefault(d => d.Id == deviceId);
+        return _devices.FirstOrDefault(d => d.Id == _selectedDeviceId.Value);
     }
 }

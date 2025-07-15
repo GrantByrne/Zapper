@@ -35,10 +35,10 @@ else
 <MudGrid Justify="Justify.Center">
     <MudItem xs="12" Class="text-center">
         <MudText Typo="Typo.h6" Class="mb-4">Select Device</MudText>
-        <MudSelect T="string" Label="Choose Device" @bind-Value="_selectedDeviceId" Class="mb-4">
+        <MudSelect T="int?" Label="Choose Device" @bind-Value="_selectedDeviceId" Class="mb-4">
             @foreach (var device in _devices)
             {
-                <MudSelectItem Value="@device.Id.ToString()">@device.Name</MudSelectItem>
+                <MudSelectItem Value="@device.Id">@device.Name</MudSelectItem>
             }
         </MudSelect>
         @if (GetSelectedDevice() != null)
@@ -52,7 +52,7 @@ else
     <MudItem xs="12" Class="text-center">
         <MudText Typo="Typo.h6" Class="mb-4">Power Controls</MudText>
         <MudButtonGroup Class="mb-4">
-            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.PowerSettingsNew" Size="Size.Large" OnClick="SendPowerCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.PowerSettingsNew" Size="Size.Large" OnClick="SendPowerCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                 Power
             </MudButton>
         </MudButtonGroup>
@@ -62,23 +62,23 @@ else
         <MudText Typo="Typo.h6" Class="mb-4">Navigation</MudText>
         <MudGrid Justify="Justify.Center">
             <MudItem xs="12" Class="text-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Large" Class="nav-btn" OnClick="SendUpCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Large" Class="nav-btn" OnClick="SendUpCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                     Up
                 </MudButton>
             </MudItem>
             <MudItem xs="12" Class="d-flex justify-center align-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Large" Class="nav-btn mr-4" OnClick="SendLeftCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Large" Class="nav-btn mr-4" OnClick="SendLeftCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                     Left
                 </MudButton>
-                <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" Class="nav-btn mx-4" OnClick="SendOkCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+                <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" Class="nav-btn mx-4" OnClick="SendOkCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                     OK
                 </MudButton>
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Large" Class="nav-btn ml-4" OnClick="SendRightCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Large" Class="nav-btn ml-4" OnClick="SendRightCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                     Right
                 </MudButton>
             </MudItem>
             <MudItem xs="12" Class="text-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large" Class="nav-btn" OnClick="SendDownCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large" Class="nav-btn" OnClick="SendDownCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                     Down
                 </MudButton>
             </MudItem>
@@ -88,13 +88,13 @@ else
     <MudItem xs="12" Class="text-center">
         <MudText Typo="Typo.h6" Class="mb-4">Volume</MudText>
         <MudButtonGroup Class="mb-4">
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeDown" Size="Size.Large" OnClick="SendVolumeDownCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeDown" Size="Size.Large" OnClick="SendVolumeDownCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                 Vol -
             </MudButton>
-            <MudButton Color="Color.Warning" StartIcon="@Icons.Material.Filled.VolumeOff" Size="Size.Large" OnClick="SendMuteCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+            <MudButton Color="Color.Warning" StartIcon="@Icons.Material.Filled.VolumeOff" Size="Size.Large" OnClick="SendMuteCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                 Mute
             </MudButton>
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeUp" Size="Size.Large" OnClick="SendVolumeUpCommand" Disabled="@(string.IsNullOrEmpty(_selectedDeviceId))">
+            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeUp" Size="Size.Large" OnClick="SendVolumeUpCommand" Disabled="@(!_selectedDeviceId.HasValue)">
                 Vol +
             </MudButton>
         </MudButtonGroup>

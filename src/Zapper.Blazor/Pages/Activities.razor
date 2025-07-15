@@ -39,10 +39,7 @@ else
                         <MudChip T="string" Color="@(activity.IsEnabled ? Color.Success : Color.Default)" Size="Size.Small">
                             @(activity.IsEnabled ? "Enabled" : "Disabled")
                         </MudChip>
-                        @if (activity.LastUsed.HasValue)
-                        {
-                            <MudText Class="mt-2" Typo="Typo.caption">Last used: @activity.LastUsed.Value.ToString("MM/dd/yyyy HH:mm")</MudText>
-                        }
+                        <MudText Class="mt-2" Typo="Typo.caption">Last used: @activity.LastUsed.ToString("MM/dd/yyyy HH:mm")</MudText>
                     </MudCardContent>
                     <MudCardActions>
                         <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => RunActivity(activity))" StartIcon="@Icons.Material.Filled.PlayArrow" Disabled="@(!activity.IsEnabled)">
