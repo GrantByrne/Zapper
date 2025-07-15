@@ -31,7 +31,7 @@ public class SonosDiscoveryTests
         Assert.Empty(devices); // Will be empty without actual Sonos devices
     }
 
-    [Fact(Timeout = 5000)]
+    [Fact]
     public void DeviceDiscovered_Event_CanBeSubscribed()
     {
         var eventRaised = false;

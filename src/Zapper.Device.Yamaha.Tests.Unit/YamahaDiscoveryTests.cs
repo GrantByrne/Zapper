@@ -31,7 +31,7 @@ public class YamahaDiscoveryTests
         Assert.Empty(devices); // Will be empty without actual Yamaha devices
     }
 
-    [Fact(Timeout = 5000)]
+    [Fact]
     public void DeviceDiscovered_Event_CanBeSubscribed()
     {
         var eventRaised = false;

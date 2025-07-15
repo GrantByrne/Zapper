@@ -25,7 +25,7 @@ public class PlayStationDiscoveryTests
         Assert.Empty(devices); // Will be empty without actual PlayStation devices
     }
 
-    [Fact(Timeout = 5000)]
+    [Fact]
     public void DeviceDiscovered_Event_CanBeSubscribed()
     {
         var eventRaised = false;

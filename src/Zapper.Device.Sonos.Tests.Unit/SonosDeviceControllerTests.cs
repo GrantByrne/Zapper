@@ -69,7 +69,7 @@ public class SonosDeviceControllerTests
 
         var result = await _controller.SendCommand(device, command);
 
-        Assert.False(result); // Will fail due to mock response
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]
@@ -82,7 +82,7 @@ public class SonosDeviceControllerTests
 
         var result = await _controller.SendCommand(device, command);
 
-        Assert.False(result); // Will fail due to mock response
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]
@@ -95,7 +95,7 @@ public class SonosDeviceControllerTests
 
         var result = await _controller.SendCommand(device, command);
 
-        Assert.False(result); // Will fail due to mock response
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]

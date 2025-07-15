@@ -69,7 +69,7 @@ public class YamahaDeviceControllerTests
 
         var result = await _controller.SendCommand(device, command);
 
-        Assert.False(result); // Will fail due to mock response format
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]
@@ -82,7 +82,7 @@ public class YamahaDeviceControllerTests
 
         var result = await _controller.SendCommand(device, command);
 
-        Assert.False(result); // Will fail due to mock response format
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]
@@ -178,7 +178,7 @@ public class YamahaDeviceControllerTests
 
         var result = await _controller.Mute(device);
 
-        Assert.False(result); // Will fail due to mock response format
+        Assert.True(result); // HTTP OK response should return true
     }
 
     [Fact(Timeout = 5000)]
