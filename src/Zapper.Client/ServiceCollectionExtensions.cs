@@ -30,8 +30,16 @@ public static class ServiceCollectionExtensions
                 c.Timeout = TimeSpan.FromSeconds(configuration.TimeoutSeconds);
             });
 
+        services.AddRefitClient<IActivityApi>()
+            .ConfigureHttpClient(c =>
+            {
+                c.BaseAddress = new Uri(configuration.BaseUrl);
+                c.Timeout = TimeSpan.FromSeconds(configuration.TimeoutSeconds);
+            });
+
         // Register client implementations
         services.AddScoped<IDeviceClient, DeviceClient>();
+        services.AddScoped<IActivityClient, ActivityClient>();
         services.AddScoped<IZapperApiClient, ZapperApiClient>();
 
         return services;

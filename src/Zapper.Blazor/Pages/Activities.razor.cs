@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Zapper.Client.Abstractions;
-using Zapper.Core.Models;
+using Zapper.Contracts.Activities;
 
 namespace Zapper.Blazor.Pages;
 
@@ -9,7 +9,7 @@ public partial class Activities : ComponentBase
 {
     [Inject] public IZapperApiClient? ApiClient { get; set; }
 
-    private List<Activity> _activities = new();
+    private List<ActivityDto> _activities = new();
     private bool _showAddDialog = false;
     private bool _isLoading = true;
     private string? _errorMessage;
@@ -36,28 +36,13 @@ public partial class Activities : ComponentBase
                 return;
             }
 
-            // Note: This assumes the activities endpoint exists in the API client
-            // If not, we'll fall back to sample data for now
-            try
-            {
-                // TODO: Once IActivityClient is implemented, use:
-                // var activities = await ApiClient.Activities.GetAllActivitiesAsync();
-                // _activities = activities.ToList();
-
-                // For now, fall back to sample data since the client doesn't have activities yet
-                LoadSampleActivities();
-                await Task.CompletedTask;
-            }
-            catch (NotImplementedException)
-            {
-                // Activities API client not implemented yet, use sample data
-                LoadSampleActivities();
-            }
+            var activities = await ApiClient.Activities.GetAllActivitiesAsync();
+            _activities = activities.ToList();
         }
         catch (Exception ex)
         {
             _errorMessage = $"Failed to load activities: {ex.Message}";
-            LoadSampleActivities(); // Fallback to sample data
+            _activities.Clear();
         }
         finally
         {
@@ -66,42 +51,6 @@ public partial class Activities : ComponentBase
         }
     }
 
-    private void LoadSampleActivities()
-    {
-        _activities = new List<Activity>
-        {
-            new()
-            {
-                Id = 1,
-                Name = "Watch Movie",
-                Description = "Turn on TV, sound bar, and switch to movie input",
-                IsEnabled = true,
-                SortOrder = 1,
-                CreatedAt = DateTime.Now.AddDays(-5),
-                LastUsed = DateTime.Now.AddHours(-2)
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Listen to Music",
-                Description = "Turn on sound bar and set to music mode",
-                IsEnabled = true,
-                SortOrder = 2,
-                CreatedAt = DateTime.Now.AddDays(-3),
-                LastUsed = DateTime.Now.AddDays(-1)
-            },
-            new()
-            {
-                Id = 3,
-                Name = "Gaming Setup",
-                Description = "Configure all devices for gaming",
-                IsEnabled = true,
-                SortOrder = 3,
-                CreatedAt = DateTime.Now.AddDays(-1),
-                LastUsed = DateTime.Now.AddMinutes(-30)
-            }
-        };
-    }
 
     private string GetActivityIcon(string activityName)
     {
@@ -133,32 +82,25 @@ public partial class Activities : ComponentBase
         {
             try
             {
-                // TODO: Once IActivityClient is implemented, use:
-                // var newActivity = new Activity
+                // TODO: Implement create activity API endpoint
+                // var createRequest = new CreateActivityRequest
                 // {
                 //     Name = _newActivity.Name,
                 //     Description = _newActivity.Description,
                 //     IsEnabled = true,
-                //     SortOrder = _activities.Count + 1,
-                //     CreatedAt = DateTime.Now
+                //     Steps = _newActivity.Steps.Select((step, index) => new CreateActivityStepRequest
+                //     {
+                //         DeviceId = step.DeviceId,
+                //         Command = step.Command,
+                //         DelayMs = 500,
+                //         SortOrder = index
+                //     }).ToList()
                 // };
-                // var createdActivity = await ApiClient.Activities.CreateActivityAsync(newActivity);
+                // var createdActivity = await ApiClient.Activities.CreateActivityAsync(createRequest);
                 // _activities.Add(createdActivity);
 
-                // For now, add to local list since API client is not complete
-                var newActivity = new Activity
-                {
-                    Id = _activities.Count + 1,
-                    Name = _newActivity.Name,
-                    Description = _newActivity.Description,
-                    IsEnabled = true,
-                    SortOrder = _activities.Count + 1,
-                    CreatedAt = DateTime.Now
-                };
-                _activities.Add(newActivity);
-
-                _newActivity = new ActivityModel();
-                _showAddDialog = false;
+                // For now, show a message that this feature is not implemented
+                _errorMessage = "Creating activities is not yet implemented in the API.";
                 StateHasChanged();
 
                 await Task.CompletedTask;
@@ -171,7 +113,7 @@ public partial class Activities : ComponentBase
         }
     }
 
-    private async Task RunActivity(Activity activity)
+    private async Task RunActivity(ActivityDto activity)
     {
         try
         {
@@ -181,17 +123,18 @@ public partial class Activities : ComponentBase
                 return;
             }
 
-            // TODO: Once IActivityClient is implemented, use:
-            // await ApiClient.Activities.ExecuteActivityAsync(activity.Id);
-
-            // For now, simulate execution
-            activity.LastUsed = DateTime.Now;
-            StateHasChanged();
-
-            // Simulate activity execution time
-            await Task.Delay(2000);
-
-            StateHasChanged();
+            var response = await ApiClient.Activities.ExecuteActivityAsync(activity.Id);
+            
+            if (response.Success)
+            {
+                activity.LastUsed = DateTime.Now;
+                StateHasChanged();
+            }
+            else
+            {
+                _errorMessage = response.Message ?? "Failed to execute activity";
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -200,16 +143,16 @@ public partial class Activities : ComponentBase
         }
     }
 
-    private void EditActivity(Activity activity)
+    private void EditActivity(ActivityDto activity)
     {
         // TODO: Implement activity editing dialog
     }
 
-    private async Task DeleteActivity(Activity activity)
+    private async Task DeleteActivity(ActivityDto activity)
     {
         try
         {
-            // TODO: Once IActivityClient is implemented, use:
+            // TODO: Implement delete activity API endpoint
             // await ApiClient.Activities.DeleteActivityAsync(activity.Id);
 
             // For now, remove from local list
@@ -225,16 +168,15 @@ public partial class Activities : ComponentBase
         }
     }
 
-    private int GetDeviceCount(Activity activity)
+    private int GetDeviceCount(ActivityDto activity)
     {
-        // TODO: Calculate based on actual activity devices when available
-        return 2; // Default placeholder
+        // Count unique device IDs from steps
+        return activity.Steps.Select(s => s.DeviceId).Distinct().Count();
     }
 
-    private int GetStepCount(Activity activity)
+    private int GetStepCount(ActivityDto activity)
     {
-        // TODO: Calculate based on actual activity steps when available
-        return 3; // Default placeholder
+        return activity.Steps.Count;
     }
 
     public class ActivityModel

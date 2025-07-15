@@ -9,4 +9,9 @@ public interface IZapperApiClient
     /// Device management client
     /// </summary>
     IDeviceClient Devices { get; }
+
+    /// <summary>
+    /// Activity management client
+    /// </summary>
+    IActivityClient Activities { get; }
 }
