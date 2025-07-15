@@ -31,23 +31,23 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     private bool _isRokuDevice = false;
     private CreateDeviceRequest _newDevice = new();
     private string _selectedIrCodeSet = "";
-    
+
     // Bluetooth scanning variables
     private bool _isScanning = false;
     private string _scanError = "";
     private List<string> _discoveredBluetoothDevices = new();
     private string _selectedBluetoothDevice = "";
-    
+
     // WebOS scanning variables
     private bool _isWebOSScanning = false;
     private string _webOSScanError = "";
     private List<WebOSDevice> _discoveredWebOSDevices = new();
     private WebOSDevice? _selectedWebOSDevice = null;
     private string _manualWebOSIpAddress = "";
-    
+
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
-    
+
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
     private void SelectDeviceType(ConnectionType connectionType, string typeName, bool isRoku = false)
@@ -171,7 +171,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             {
                 var scanRequest = new BluetoothScanRequest { DurationSeconds = 30 };
                 var response = await ApiClient.Devices.StartBluetoothScanAsync(scanRequest);
-                
+
                 if (!response.Success)
                 {
                     _scanError = response.Message ?? "Failed to start Bluetooth scan";
@@ -186,7 +186,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                 _scanError = $"New scanning failed ({ex.Message}), using fallback method...";
                 StateHasChanged();
                 await Task.Delay(500);
-                
+
                 var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
                 _discoveredBluetoothDevices = devices.ToList();
                 _isScanning = false;
@@ -347,7 +347,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             {
                 var scanRequest = new WebOSScanRequest { DurationSeconds = 15 };
                 var response = await ApiClient.Devices.StartWebOSScanAsync(scanRequest);
-                
+
                 if (!response.Success)
                 {
                     _webOSScanError = response.Message ?? "Failed to start WebOS TV scan";
@@ -402,13 +402,13 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _isRokuDevice = false;
         _newDevice = new CreateDeviceRequest();
         _selectedIrCodeSet = "";
-        
+
         // Reset Bluetooth scanning state
         _isScanning = false;
         _scanError = "";
         _discoveredBluetoothDevices.Clear();
         _selectedBluetoothDevice = "";
-        
+
         // Reset WebOS scanning state
         _isWebOSScanning = false;
         _webOSScanError = "";

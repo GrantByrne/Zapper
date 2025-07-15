@@ -28,18 +28,18 @@ public partial class Devices : ComponentBase
             _isLoading = true;
             _errorMessage = null;
             _loadingStep = "initializing";
-            
+
             if (ApiClient == null)
             {
                 _errorMessage = "API client not configured. Please check the application setup.";
                 return;
             }
-            
+
             _loadingStep = "connecting";
             await Task.Delay(100); // Brief delay to show connection step
-            
+
             _loadingStep = "fetching";
-            
+
             // Add timeout to prevent hanging
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             var devices = await ApiClient.Devices.GetAllDevicesAsync();
@@ -90,7 +90,7 @@ public partial class Devices : ComponentBase
             {
                 var createdDevice = await ApiClient.Devices.CreateDeviceAsync(newDevice);
                 _devices.Add(createdDevice);
-                
+
                 _showAddDialog = false;
             }
             catch (Exception ex)

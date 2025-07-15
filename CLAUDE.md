@@ -50,6 +50,7 @@ Zapper is an open-source replacement for Logitech Harmony universal remotes buil
 
 ### General Conventions
 - No Docker deployment - the app runs directly on the host
+- **ALWAYS format code before committing**: Run `dotnet format src/zapper-next-gen.sln` before every commit
 - Commit after each feature implementation
 - Build and fix errors before committing
 - Run lint and typecheck commands when available
@@ -73,7 +74,9 @@ src/
 
 ## Development Workflow
 1. Implement feature
-2. Commit changes
-3. Build solution
-4. Fix any build errors
-5. Commit fixes
+2. **Format code**: Run `dotnet format src/zapper-next-gen.sln` 
+3. Build solution and fix any build errors
+4. Commit changes
+5. Push to remote repository
+
+**CRITICAL**: Never commit without formatting code first. The CI will fail if code formatting is not applied.

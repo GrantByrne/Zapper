@@ -14,7 +14,7 @@ public partial class Activities : ComponentBase
     private bool _isLoading = true;
     private string? _errorMessage;
     private ActivityModel _newActivity = new();
-    
+
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
     protected override async Task OnInitializedAsync()
@@ -43,7 +43,7 @@ public partial class Activities : ComponentBase
                 // TODO: Once IActivityClient is implemented, use:
                 // var activities = await ApiClient.Activities.GetAllActivitiesAsync();
                 // _activities = activities.ToList();
-                
+
                 // For now, fall back to sample data since the client doesn't have activities yet
                 LoadSampleActivities();
             }
@@ -69,30 +69,30 @@ public partial class Activities : ComponentBase
     {
         _activities = new List<Activity>
         {
-            new() 
-            { 
+            new()
+            {
                 Id = 1,
-                Name = "Watch Movie", 
+                Name = "Watch Movie",
                 Description = "Turn on TV, sound bar, and switch to movie input",
                 IsEnabled = true,
                 SortOrder = 1,
                 CreatedAt = DateTime.Now.AddDays(-5),
                 LastUsed = DateTime.Now.AddHours(-2)
             },
-            new() 
-            { 
+            new()
+            {
                 Id = 2,
-                Name = "Listen to Music", 
+                Name = "Listen to Music",
                 Description = "Turn on sound bar and set to music mode",
                 IsEnabled = true,
                 SortOrder = 2,
                 CreatedAt = DateTime.Now.AddDays(-3),
                 LastUsed = DateTime.Now.AddDays(-1)
             },
-            new() 
-            { 
+            new()
+            {
                 Id = 3,
-                Name = "Gaming Setup", 
+                Name = "Gaming Setup",
                 Description = "Configure all devices for gaming",
                 IsEnabled = true,
                 SortOrder = 3,
@@ -155,7 +155,7 @@ public partial class Activities : ComponentBase
                     CreatedAt = DateTime.Now
                 };
                 _activities.Add(newActivity);
-                
+
                 _newActivity = new ActivityModel();
                 _showAddDialog = false;
                 StateHasChanged();
@@ -184,10 +184,10 @@ public partial class Activities : ComponentBase
             // For now, simulate execution
             activity.LastUsed = DateTime.Now;
             StateHasChanged();
-            
+
             // Simulate activity execution time
             await Task.Delay(2000);
-            
+
             StateHasChanged();
         }
         catch (Exception ex)
