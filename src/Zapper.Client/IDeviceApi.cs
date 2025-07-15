@@ -63,4 +63,16 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.WebOSScan)]
     Task<WebOSScanResponse> StartWebOSScanAsync([Body] WebOSScanRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stop Bluetooth device scanning
+    /// </summary>
+    [Post(ApiRoutes.Devices.BluetoothScanStop)]
+    Task<StopBluetoothScanResponse> StopBluetoothScanAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stop WebOS TV scanning
+    /// </summary>
+    [Post(ApiRoutes.Devices.WebOSScanStop)]
+    Task<StopWebOSScanResponse> StopWebOSScanAsync(CancellationToken cancellationToken = default);
 }

@@ -51,6 +51,16 @@ public interface IDeviceClient
     /// Start WebOS TV scanning with real-time updates
     /// </summary>
     Task<WebOSScanResponse> StartWebOSScanAsync(WebOSScanRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stop Bluetooth device scanning
+    /// </summary>
+    Task<StopBluetoothScanResponse> StopBluetoothScanAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stop WebOS TV scanning
+    /// </summary>
+    Task<StopWebOSScanResponse> StopWebOSScanAsync(CancellationToken cancellationToken = default);
 }
 
 public class BluetoothScanRequest

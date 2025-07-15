@@ -447,18 +447,23 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
 
     private async Task StopBluetoothScan()
     {
-        if (_isScanning)
+        if (_isScanning && ApiClient != null)
         {
             try
             {
-                // TODO: Implement stop scan API endpoint when available
-                // await ApiClient.Devices.StopBluetoothScanAsync();
+                var response = await ApiClient.Devices.StopBluetoothScanAsync();
                 
-                // For now, just reset the scanning state
-                _isScanning = false;
-                _scanError = "";
+                if (response.Success)
+                {
+                    _isScanning = false;
+                    _scanError = "";
+                }
+                else
+                {
+                    _scanError = response.Message ?? "Failed to stop Bluetooth scan";
+                    _isScanning = false;
+                }
                 StateHasChanged();
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -467,22 +472,34 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                 StateHasChanged();
             }
         }
+        else if (_isScanning)
+        {
+            // Fallback if API client is not available
+            _isScanning = false;
+            _scanError = "";
+            StateHasChanged();
+        }
     }
 
     private async Task StopWebOSScan()
     {
-        if (_isWebOSScanning)
+        if (_isWebOSScanning && ApiClient != null)
         {
             try
             {
-                // TODO: Implement stop scan API endpoint when available
-                // await ApiClient.Devices.StopWebOSScanAsync();
+                var response = await ApiClient.Devices.StopWebOSScanAsync();
                 
-                // For now, just reset the scanning state
-                _isWebOSScanning = false;
-                _webOSScanError = "";
+                if (response.Success)
+                {
+                    _isWebOSScanning = false;
+                    _webOSScanError = "";
+                }
+                else
+                {
+                    _webOSScanError = response.Message ?? "Failed to stop WebOS scan";
+                    _isWebOSScanning = false;
+                }
                 StateHasChanged();
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -490,6 +507,13 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                 _isWebOSScanning = false;
                 StateHasChanged();
             }
+        }
+        else if (_isWebOSScanning)
+        {
+            // Fallback if API client is not available
+            _isWebOSScanning = false;
+            _webOSScanError = "";
+            StateHasChanged();
         }
     }
 

@@ -19,7 +19,9 @@ public static class ApiRoutes
         public const string BluetoothControl = $"{Base}/bluetooth/control";
         public const string BluetoothDiscovery = $"{Base}/discover/bluetooth";
         public const string BluetoothScan = $"{Base}/scan/bluetooth";
+        public const string BluetoothScanStop = $"{Base}/scan/bluetooth/stop";
         public const string WebOSScan = $"{Base}/scan/webos";
+        public const string WebOSScanStop = $"{Base}/scan/webos/stop";
     }
 
     public static class Activities
