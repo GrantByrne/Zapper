@@ -1,0 +1,29 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 1%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
+    patch:
+      default:
+        target: 70%
+        threshold: 1%
+        if_no_uploads: error
+        if_not_found: success
+        if_ci_failed: error
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+
+ignore:
+  - "**/*.Tests.Unit/**"
+  - "**/TestResults/**"
+  - "**/bin/**"
+  - "**/obj/**"

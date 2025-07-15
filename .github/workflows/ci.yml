@@ -62,5 +62,7 @@ jobs:
       uses: codecov/codecov-action@v4
       if: success() && github.event_name == 'push'
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         file: '**/coverage.cobertura.xml'
         fail_ci_if_error: false
+        verbose: true
