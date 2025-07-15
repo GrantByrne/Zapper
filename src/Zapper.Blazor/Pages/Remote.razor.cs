@@ -5,7 +5,7 @@ using Zapper.Contracts;
 
 namespace Zapper.Blazor.Pages;
 
-public partial class Home : ComponentBase
+public partial class Remote : ComponentBase
 {
     [Inject] public IZapperApiClient? ApiClient { get; set; }
 
