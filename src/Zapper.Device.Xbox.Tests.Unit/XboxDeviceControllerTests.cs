@@ -86,7 +86,7 @@ public class XboxDeviceControllerTests
             Name = "Test Xbox",
             AuthToken = "test-live-id"
         };
-        var command = new Zapper.Core.Models.DeviceCommand { Type = Zapper.Core.Models.CommandType.Power };
+        var command = new Zapper.Core.Models.DeviceCommand { Type = Core.Models.CommandType.Power };
 
         var result = await _controller.SendCommandAsync(device, command);
 
@@ -99,10 +99,10 @@ public class XboxDeviceControllerTests
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
         var directions = new[]
         {
-            Zapper.Core.Models.CommandType.DirectionalUp,
-            Zapper.Core.Models.CommandType.DirectionalDown,
-            Zapper.Core.Models.CommandType.DirectionalLeft,
-            Zapper.Core.Models.CommandType.DirectionalRight
+            Core.Models.CommandType.DirectionalUp,
+            Core.Models.CommandType.DirectionalDown,
+            Core.Models.CommandType.DirectionalLeft,
+            Core.Models.CommandType.DirectionalRight
         };
 
         foreach (var direction in directions)
@@ -117,7 +117,7 @@ public class XboxDeviceControllerTests
     public async Task SendCommandAsync_WithoutIpAddress_ReturnsFalse()
     {
         var device = new Zapper.Core.Models.Device { Name = "Test Xbox" };
-        var command = new Zapper.Core.Models.DeviceCommand { Type = Zapper.Core.Models.CommandType.Ok };
+        var command = new Zapper.Core.Models.DeviceCommand { Type = Core.Models.CommandType.Ok };
 
         var result = await _controller.SendCommandAsync(device, command);
 

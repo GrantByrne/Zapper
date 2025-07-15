@@ -17,4 +17,8 @@ public interface IIrCodeService
     Task<bool> ImportCodeSetAsync(string filePath);
     Task<string> ExportCodeSetAsync(int id);
     Task SeedDefaultCodesAsync();
+    Task<IEnumerable<string>> GetExternalManufacturersAsync();
+    Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchExternalDevicesAsync(string? manufacturer = null, string? deviceType = null);
+    Task<IrCodeSet?> GetExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice);
+    Task<IrCodeSet> ImportExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice);
 }

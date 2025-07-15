@@ -13,7 +13,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Infrared:UseRealGpio", "false" }
@@ -36,7 +36,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Infrared:UseRealGpio", "true" },
@@ -59,7 +59,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Infrared:UseRealGpio", "true" },
@@ -82,7 +82,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build();
+        var configuration = new ConfigurationBuilder().Build();
 
         services.AddInfraredServices(configuration);
         var provider = services.BuildServiceProvider();
@@ -98,7 +98,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Infrared:UseRealGpio", "false" }
@@ -120,7 +120,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "Infrared:UseRealGpio", "false" }

@@ -13,6 +13,7 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
     public DbSet<ActivityStep> ActivitySteps { get; set; }
     public DbSet<IrCode> IrCodes { get; set; }
     public DbSet<IrCodeSet> IrCodeSets { get; set; }
+    public DbSet<ExternalIrCodeCache> ExternalIrCodeCache { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -87,6 +88,13 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .WithOne()
                 .HasForeignKey("IRCodeSetId")
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ExternalIrCodeCache>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CacheKey).IsUnique();
+            entity.HasIndex(e => e.ExpiresAt);
         });
     }
 }

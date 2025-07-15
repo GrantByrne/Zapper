@@ -15,9 +15,9 @@ public class AndroidTvBluetoothController : IBluetoothDeviceController
         ArgumentNullException.ThrowIfNull(bluetoothService);
         ArgumentNullException.ThrowIfNull(logger);
 
-        this._hidController = hidController;
-        this._bluetoothService = bluetoothService;
-        this._logger = logger;
+        _hidController = hidController;
+        _bluetoothService = bluetoothService;
+        _logger = logger;
     }
     public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command, CancellationToken cancellationToken = default)
     {

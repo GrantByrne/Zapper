@@ -5,7 +5,7 @@ namespace Zapper.Device.Yamaha;
 
 public class YamahaProtocolController(IYamahaDeviceController yamahaController, ILogger<YamahaProtocolController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command)
+    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -48,7 +48,7 @@ public class YamahaProtocolController(IYamahaDeviceController yamahaController, 
 
     public bool SupportsDevice(Zapper.Core.Models.Device device)
     {
-        return device.Type == Zapper.Core.Models.DeviceType.YamahaReceiver &&
-               device.ConnectionType == Zapper.Core.Models.ConnectionType.Network;
+        return device.Type == Core.Models.DeviceType.YamahaReceiver &&
+               device.ConnectionType == Core.Models.ConnectionType.Network;
     }
 }

@@ -14,7 +14,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", "true" }
@@ -39,7 +39,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", "false" }
@@ -62,7 +62,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build();
+        var configuration = new ConfigurationBuilder().Build();
 
         services.AddUsbServices(configuration);
         var provider = services.BuildServiceProvider();
@@ -78,7 +78,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", "true" }
@@ -100,7 +100,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", "true" }
@@ -122,7 +122,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", "true" }
@@ -144,7 +144,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build();
+        var configuration = new ConfigurationBuilder().Build();
 
         services.AddUsbServices(configuration);
 
@@ -165,7 +165,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddLogging();
 
-        var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 { "USB:UseMockHandler", configValue }

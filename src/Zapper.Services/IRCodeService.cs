@@ -6,7 +6,7 @@ using Zapper.Core.Models;
 
 namespace Zapper.Services;
 
-public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger) : IIrCodeService
+public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger, IExternalIrCodeService externalIrCodeService) : IIrCodeService
 {
 
     public async Task<IEnumerable<IrCodeSet>> GetCodeSetsAsync()
@@ -346,5 +346,51 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
                 ]
             }
         ];
+    }
+
+    public async Task<IEnumerable<string>> GetExternalManufacturersAsync()
+    {
+        return await externalIrCodeService.GetAvailableManufacturersAsync();
+    }
+
+    public async Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchExternalDevicesAsync(string? manufacturer = null, string? deviceType = null)
+    {
+        return await externalIrCodeService.SearchDevicesAsync(manufacturer, deviceType);
+    }
+
+    public async Task<IrCodeSet?> GetExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice)
+    {
+        return await externalIrCodeService.GetCodeSetAsync(manufacturer, deviceType, device, subdevice);
+    }
+
+    public async Task<IrCodeSet> ImportExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice)
+    {
+        var existingCodeSet = await GetCodeSetAsync(manufacturer, device, MapDeviceType(deviceType));
+        if (existingCodeSet != null)
+        {
+            throw new InvalidOperationException("Code set already exists in local database");
+        }
+
+        var externalCodeSet = await externalIrCodeService.GetCodeSetAsync(manufacturer, deviceType, device, subdevice);
+        if (externalCodeSet == null)
+        {
+            throw new InvalidOperationException("Code set not found in external database");
+        }
+
+        return await CreateCodeSetAsync(externalCodeSet);
+    }
+
+    private static DeviceType MapDeviceType(string deviceType)
+    {
+        return deviceType.ToLowerInvariant() switch
+        {
+            "tv" => DeviceType.Television,
+            "dvd" => DeviceType.DvdPlayer,
+            "stb" or "set-top-box" => DeviceType.CableBox,
+            "ac" or "air-conditioner" => DeviceType.Receiver,
+            "fan" => DeviceType.Receiver,
+            "audio" or "stereo" => DeviceType.Receiver,
+            _ => DeviceType.Television
+        };
     }
 }

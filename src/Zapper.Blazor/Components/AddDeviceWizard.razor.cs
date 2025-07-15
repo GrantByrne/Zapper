@@ -175,7 +175,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             // Start the scanning process via API
             try
             {
-                var scanRequest = new Client.Abstractions.BluetoothScanRequest { DurationSeconds = 30 };
+                var scanRequest = new BluetoothScanRequest { DurationSeconds = 30 };
                 var response = await ApiClient.Devices.StartBluetoothScanAsync(scanRequest);
 
                 if (!response.Success)

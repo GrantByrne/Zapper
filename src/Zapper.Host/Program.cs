@@ -89,20 +89,21 @@ builder.Services.AddSonosDevice();
 builder.Services.AddYamahaDevice();
 
 // Register protocol implementations
-builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();
-builder.Services.AddTransient<Zapper.Device.WebOS.WebOsProtocolController>();
+builder.Services.AddTransient<InfraredDeviceController>();
+builder.Services.AddTransient<WebOsProtocolController>();
 
 // Register device controllers with factory pattern
 builder.Services.AddTransient<IDeviceController>(provider =>
 {
     // This is a simplified factory - in a real implementation, you'd choose based on device type
-    return provider.GetRequiredService<Zapper.Device.Infrared.InfraredDeviceController>();
+    return provider.GetRequiredService<InfraredDeviceController>();
 });
 
 // Register business services
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IActivityService, ActivityService>();
 builder.Services.AddScoped<IIrCodeService, IrCodeService>();
+builder.Services.AddScoped<IExternalIrCodeService, IrdbService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Add SignalR

@@ -48,7 +48,7 @@ public class XboxProtocolController(IXboxDeviceController xboxController, ILogge
 
     public bool SupportsDevice(Zapper.Core.Models.Device device)
     {
-        return device.Type == Zapper.Core.Models.DeviceType.Xbox &&
-               device.ConnectionType == Zapper.Core.Models.ConnectionType.Network;
+        return device.Type == Core.Models.DeviceType.Xbox &&
+               device.ConnectionType == Core.Models.ConnectionType.Network;
     }
 }

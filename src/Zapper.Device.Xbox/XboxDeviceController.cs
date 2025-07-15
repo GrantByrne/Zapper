@@ -71,20 +71,20 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         {
             return command.Type switch
             {
-                Zapper.Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
-                Zapper.Core.Models.CommandType.Menu => await SendButtonAsync(device.IpAddress, "nexus", cancellationToken),
-                Zapper.Core.Models.CommandType.Back => await SendButtonAsync(device.IpAddress, "back", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalUp => await SendButtonAsync(device.IpAddress, "up", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalDown => await SendButtonAsync(device.IpAddress, "down", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalLeft => await SendButtonAsync(device.IpAddress, "left", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalRight => await SendButtonAsync(device.IpAddress, "right", cancellationToken),
-                Zapper.Core.Models.CommandType.Ok => await SendButtonAsync(device.IpAddress, "a", cancellationToken),
-                Zapper.Core.Models.CommandType.PlayPause => await SendButtonAsync(device.IpAddress, "play_pause", cancellationToken),
-                Zapper.Core.Models.CommandType.Stop => await SendButtonAsync(device.IpAddress, "stop", cancellationToken),
-                Zapper.Core.Models.CommandType.FastForward => await SendButtonAsync(device.IpAddress, "fast_forward", cancellationToken),
-                Zapper.Core.Models.CommandType.Rewind => await SendButtonAsync(device.IpAddress, "rewind", cancellationToken),
-                Zapper.Core.Models.CommandType.Number => await HandleNumberCommand(device.IpAddress, command, cancellationToken),
-                Zapper.Core.Models.CommandType.Custom => await HandleCustomCommand(device.IpAddress, command, cancellationToken),
+                Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
+                Core.Models.CommandType.Menu => await SendButtonAsync(device.IpAddress, "nexus", cancellationToken),
+                Core.Models.CommandType.Back => await SendButtonAsync(device.IpAddress, "back", cancellationToken),
+                Core.Models.CommandType.DirectionalUp => await SendButtonAsync(device.IpAddress, "up", cancellationToken),
+                Core.Models.CommandType.DirectionalDown => await SendButtonAsync(device.IpAddress, "down", cancellationToken),
+                Core.Models.CommandType.DirectionalLeft => await SendButtonAsync(device.IpAddress, "left", cancellationToken),
+                Core.Models.CommandType.DirectionalRight => await SendButtonAsync(device.IpAddress, "right", cancellationToken),
+                Core.Models.CommandType.Ok => await SendButtonAsync(device.IpAddress, "a", cancellationToken),
+                Core.Models.CommandType.PlayPause => await SendButtonAsync(device.IpAddress, "play_pause", cancellationToken),
+                Core.Models.CommandType.Stop => await SendButtonAsync(device.IpAddress, "stop", cancellationToken),
+                Core.Models.CommandType.FastForward => await SendButtonAsync(device.IpAddress, "fast_forward", cancellationToken),
+                Core.Models.CommandType.Rewind => await SendButtonAsync(device.IpAddress, "rewind", cancellationToken),
+                Core.Models.CommandType.Number => await HandleNumberCommand(device.IpAddress, command, cancellationToken),
+                Core.Models.CommandType.Custom => await HandleCustomCommand(device.IpAddress, command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
         }

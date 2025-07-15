@@ -56,7 +56,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         return Task.FromResult(true);
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -68,19 +68,19 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         {
             return command.Type switch
             {
-                Zapper.Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
-                Zapper.Core.Models.CommandType.Menu => await SendButtonAsync(device.IpAddress, "ps", cancellationToken),
-                Zapper.Core.Models.CommandType.Back => await SendButtonAsync(device.IpAddress, "back", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalUp => await SendButtonAsync(device.IpAddress, "up", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalDown => await SendButtonAsync(device.IpAddress, "down", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalLeft => await SendButtonAsync(device.IpAddress, "left", cancellationToken),
-                Zapper.Core.Models.CommandType.DirectionalRight => await SendButtonAsync(device.IpAddress, "right", cancellationToken),
-                Zapper.Core.Models.CommandType.Ok => await SendButtonAsync(device.IpAddress, "cross", cancellationToken),
-                Zapper.Core.Models.CommandType.PlayPause => await SendButtonAsync(device.IpAddress, "play_pause", cancellationToken),
-                Zapper.Core.Models.CommandType.Stop => await SendButtonAsync(device.IpAddress, "stop", cancellationToken),
-                Zapper.Core.Models.CommandType.FastForward => await SendButtonAsync(device.IpAddress, "r1", cancellationToken),
-                Zapper.Core.Models.CommandType.Rewind => await SendButtonAsync(device.IpAddress, "l1", cancellationToken),
-                Zapper.Core.Models.CommandType.Custom => await HandleCustomCommand(device.IpAddress, command, cancellationToken),
+                Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
+                Core.Models.CommandType.Menu => await SendButtonAsync(device.IpAddress, "ps", cancellationToken),
+                Core.Models.CommandType.Back => await SendButtonAsync(device.IpAddress, "back", cancellationToken),
+                Core.Models.CommandType.DirectionalUp => await SendButtonAsync(device.IpAddress, "up", cancellationToken),
+                Core.Models.CommandType.DirectionalDown => await SendButtonAsync(device.IpAddress, "down", cancellationToken),
+                Core.Models.CommandType.DirectionalLeft => await SendButtonAsync(device.IpAddress, "left", cancellationToken),
+                Core.Models.CommandType.DirectionalRight => await SendButtonAsync(device.IpAddress, "right", cancellationToken),
+                Core.Models.CommandType.Ok => await SendButtonAsync(device.IpAddress, "cross", cancellationToken),
+                Core.Models.CommandType.PlayPause => await SendButtonAsync(device.IpAddress, "play_pause", cancellationToken),
+                Core.Models.CommandType.Stop => await SendButtonAsync(device.IpAddress, "stop", cancellationToken),
+                Core.Models.CommandType.FastForward => await SendButtonAsync(device.IpAddress, "r1", cancellationToken),
+                Core.Models.CommandType.Rewind => await SendButtonAsync(device.IpAddress, "l1", cancellationToken),
+                Core.Models.CommandType.Custom => await HandleCustomCommand(device.IpAddress, command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
         }
@@ -226,7 +226,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         }
     }
 
-    private async Task<bool> HandleCustomCommand(string ipAddress, Zapper.Core.Models.DeviceCommand command, CancellationToken cancellationToken)
+    private async Task<bool> HandleCustomCommand(string ipAddress, Core.Models.DeviceCommand command, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(command.NetworkPayload))
         {
@@ -261,7 +261,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         return false;
     }
 
-    private Task<bool> HandleUnknownCommand(Zapper.Core.Models.DeviceCommand command, CancellationToken cancellationToken)
+    private Task<bool> HandleUnknownCommand(Core.Models.DeviceCommand command, CancellationToken cancellationToken)
     {
         logger.LogWarning("Unknown PlayStation command type: {CommandType}", command.Type);
         return Task.FromResult(false);

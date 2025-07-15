@@ -21,8 +21,8 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Xbox,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network
+            Type = Core.Models.DeviceType.Xbox,
+            ConnectionType = Core.Models.ConnectionType.Network
         };
 
         Assert.True(_controller.SupportsDevice(device));
@@ -33,8 +33,8 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Television,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network
+            Type = Core.Models.DeviceType.Television,
+            ConnectionType = Core.Models.ConnectionType.Network
         };
 
         Assert.False(_controller.SupportsDevice(device));
@@ -45,11 +45,11 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Xbox,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network,
+            Type = Core.Models.DeviceType.Xbox,
+            ConnectionType = Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
-        var command = new Zapper.Core.Models.DeviceCommand { Type = Zapper.Core.Models.CommandType.Ok };
+        var command = new Zapper.Core.Models.DeviceCommand { Type = Core.Models.CommandType.Ok };
 
         _xboxControllerMock.Setup(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
@@ -65,10 +65,10 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Television,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network
+            Type = Core.Models.DeviceType.Television,
+            ConnectionType = Core.Models.ConnectionType.Network
         };
-        var command = new Zapper.Core.Models.DeviceCommand { Type = Zapper.Core.Models.CommandType.Ok };
+        var command = new Zapper.Core.Models.DeviceCommand { Type = Core.Models.CommandType.Ok };
 
         var result = await _controller.SendCommandAsync(device, command);
 
@@ -81,8 +81,8 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Xbox,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network,
+            Type = Core.Models.DeviceType.Xbox,
+            ConnectionType = Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
 
@@ -100,8 +100,8 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Xbox,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network,
+            Type = Core.Models.DeviceType.Xbox,
+            ConnectionType = Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
 
@@ -119,8 +119,8 @@ public class XboxProtocolControllerTests
     {
         var device = new Zapper.Core.Models.Device
         {
-            Type = Zapper.Core.Models.DeviceType.Television,
-            ConnectionType = Zapper.Core.Models.ConnectionType.Network
+            Type = Core.Models.DeviceType.Television,
+            ConnectionType = Core.Models.ConnectionType.Network
         };
 
         var result = await _controller.GetStatusAsync(device);
