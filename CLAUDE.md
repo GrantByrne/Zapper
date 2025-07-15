@@ -31,6 +31,23 @@ Zapper is an open-source replacement for Logitech Harmony universal remotes buil
 
 8. **No comments inside methods**: Do not add comments inside method bodies - code should be self-documenting through clear naming and structure
 
+### Blazor Conventions
+1. **Code-behind pattern**: All Blazor pages and components should use code-behind files to separate markup from logic
+   - Create `.razor` file for markup only (HTML, Razor syntax)
+   - Create `.razor.cs` file for all C# code logic
+   - Use partial classes to connect the files
+   ```csharp
+   // MyPage.razor.cs
+   namespace Zapper.Blazor.Pages;
+   
+   public partial class MyPage : ComponentBase
+   {
+       // All C# code goes here
+   }
+   ```
+
+2. **Clean separation**: Keep @code blocks empty in .razor files - all logic should be in the .razor.cs file
+
 ### General Conventions
 - No Docker deployment - the app runs directly on the host
 - Commit after each feature implementation

@@ -2,54 +2,75 @@
 
 <PageTitle>Zapper - Activities</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Activities</MudText>
+<MudText Typo="Typo.h3" GutterBottom="true" Class="mt-4">Activities</MudText>
 <MudText Class="mb-4">Create and manage automated activity sequences</MudText>
 
-<MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Create Activity" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
-
-<MudGrid>
-    @foreach (var activity in _activities)
-    {
-        <MudItem xs="12" sm="6" md="4">
-            <MudCard>
-                <MudCardContent>
-                    <div class="d-flex align-center mb-2">
-                        <MudIcon Icon="@GetActivityIcon(activity.Type)" Class="mr-2" />
-                        <MudText Typo="Typo.h6">@activity.Name</MudText>
-                    </div>
-                    <MudText Class="mb-2">@activity.Description</MudText>
-                    <MudText Class="mb-1" Typo="Typo.caption">Devices: @activity.DeviceCount</MudText>
-                    <MudText Class="mb-1" Typo="Typo.caption">Steps: @activity.StepCount</MudText>
-                    <MudChip T="string" Color="@(activity.IsActive ? Color.Success : Color.Default)" Size="Size.Small">
-                        @(activity.IsActive ? "Active" : "Inactive")
-                    </MudChip>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => RunActivity(activity))" StartIcon="@Icons.Material.Filled.PlayArrow">
-                        Run
-                    </MudButton>
-                    <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="@(() => EditActivity(activity))">
-                        Edit
-                    </MudButton>
-                    <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="@(() => DeleteActivity(activity))">
-                        Delete
-                    </MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    }
-</MudGrid>
-
-@if (!_activities.Any())
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <MudPaper Class="pa-8 text-center">
-        <MudIcon Icon="@Icons.Material.Filled.PlaylistPlay" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
-        <MudText Typo="Typo.h5" Class="mb-2">No activities configured</MudText>
-        <MudText Class="mb-4">Create your first activity to automate device control</MudText>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => _showAddDialog = true)">
-            Create Activity
-        </MudButton>
-    </MudPaper>
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+}
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-center align-center" style="min-height: 200px;">
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+            <MudText>Loading activities...</MudText>
+        </div>
+    </div>
+}
+else
+{
+    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Create Activity" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
+
+    <MudGrid>
+        @foreach (var activity in _activities)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <div class="d-flex align-center mb-2">
+                            <MudIcon Icon="@GetActivityIcon(activity.Name)" Class="mr-2" />
+                            <MudText Typo="Typo.h6">@activity.Name</MudText>
+                        </div>
+                        <MudText Class="mb-2">@activity.Description</MudText>
+                        <MudText Class="mb-1" Typo="Typo.caption">Devices: @GetDeviceCount(activity)</MudText>
+                        <MudText Class="mb-1" Typo="Typo.caption">Steps: @GetStepCount(activity)</MudText>
+                        <MudChip T="string" Color="@(activity.IsEnabled ? Color.Success : Color.Default)" Size="Size.Small">
+                            @(activity.IsEnabled ? "Enabled" : "Disabled")
+                        </MudChip>
+                        @if (activity.LastUsed.HasValue)
+                        {
+                            <MudText Class="mt-2" Typo="Typo.caption">Last used: @activity.LastUsed.Value.ToString("MM/dd/yyyy HH:mm")</MudText>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => RunActivity(activity))" StartIcon="@Icons.Material.Filled.PlayArrow" Disabled="@(!activity.IsEnabled)">
+                            Run
+                        </MudButton>
+                        <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="@(() => EditActivity(activity))">
+                            Edit
+                        </MudButton>
+                        <MudButton Color="Color.Error" Variant="Variant.Text" OnClick="@(() => DeleteActivity(activity))">
+                            Delete
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    @if (!_activities.Any())
+    {
+        <MudPaper Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.PlaylistPlay" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
+            <MudText Typo="Typo.h5" Class="mb-2">No activities configured</MudText>
+            <MudText Class="mb-4">Create your first activity to automate device control</MudText>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => _showAddDialog = true)">
+                Create Activity
+            </MudButton>
+        </MudPaper>
+    }
 }
 
 <MudDialog @bind-Visible="_showAddDialog" Options="_dialogOptions">
@@ -103,136 +124,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@(() => _showAddDialog = false)">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateActivity">Create Activity</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await CreateActivity())">Create Activity</MudButton>
     </DialogActions>
 </MudDialog>
 
-@code {
-    private List<ActivityModel> _activities = new();
-    private bool _showAddDialog = false;
-    private ActivityModel _newActivity = new();
-    
-    private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
-
-    protected override Task OnInitializedAsync()
-    {
-        LoadSampleActivities();
-        _newActivity = new ActivityModel();
-        return Task.CompletedTask;
-    }
-
-    private void LoadSampleActivities()
-    {
-        _activities = new List<ActivityModel>
-        {
-            new() 
-            { 
-                Name = "Watch Movie", 
-                Description = "Turn on TV, sound bar, and switch to movie input",
-                Type = "Movie",
-                DeviceCount = 2,
-                StepCount = 4,
-                IsActive = false
-            },
-            new() 
-            { 
-                Name = "Listen to Music", 
-                Description = "Turn on sound bar and set to music mode",
-                Type = "Music",
-                DeviceCount = 1,
-                StepCount = 2,
-                IsActive = false
-            },
-            new() 
-            { 
-                Name = "Gaming Setup", 
-                Description = "Configure all devices for gaming",
-                Type = "Gaming",
-                DeviceCount = 3,
-                StepCount = 6,
-                IsActive = true
-            }
-        };
-    }
-
-    private string GetActivityIcon(string activityType)
-    {
-        return activityType switch
-        {
-            "Entertainment" => Icons.Material.Filled.Tv,
-            "Gaming" => Icons.Material.Filled.SportsEsports,
-            "Music" => Icons.Material.Filled.LibraryMusic,
-            "Movie" => Icons.Material.Filled.Movie,
-            "Sports" => Icons.Material.Filled.Sports,
-            _ => Icons.Material.Filled.PlayArrow
-        };
-    }
-
-    private void AddStep()
-    {
-        _newActivity.Steps.Add(new ActivityStep());
-    }
-
-    private void RemoveStep(int index)
-    {
-        _newActivity.Steps.RemoveAt(index);
-    }
-
-    private void CreateActivity()
-    {
-        if (!string.IsNullOrWhiteSpace(_newActivity.Name) && !string.IsNullOrWhiteSpace(_newActivity.Type))
-        {
-            _activities.Add(new ActivityModel
-            {
-                Name = _newActivity.Name,
-                Description = _newActivity.Description,
-                Type = _newActivity.Type,
-                DeviceCount = _newActivity.Steps.Select(s => s.Device).Distinct().Count(),
-                StepCount = _newActivity.Steps.Count,
-                IsActive = false
-            });
-            
-            _newActivity = new ActivityModel();
-            _showAddDialog = false;
-        }
-    }
-
-    private async Task RunActivity(ActivityModel activity)
-    {
-        activity.IsActive = true;
-        StateHasChanged();
-        
-        // Simulate activity execution
-        await Task.Delay(2000);
-        
-        activity.IsActive = false;
-        StateHasChanged();
-    }
-
-    private void EditActivity(ActivityModel activity)
-    {
-        // TODO: Implement activity editing
-    }
-
-    private void DeleteActivity(ActivityModel activity)
-    {
-        _activities.Remove(activity);
-    }
-
-    public class ActivityModel
-    {
-        public string Name { get; set; } = "";
-        public string Description { get; set; } = "";
-        public string Type { get; set; } = "";
-        public int DeviceCount { get; set; }
-        public int StepCount { get; set; }
-        public bool IsActive { get; set; }
-        public List<ActivityStep> Steps { get; set; } = new();
-    }
-
-    public class ActivityStep
-    {
-        public string Device { get; set; } = "";
-        public string Command { get; set; } = "";
-    }
-}
