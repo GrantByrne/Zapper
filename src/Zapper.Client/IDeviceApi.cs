@@ -79,6 +79,6 @@ public interface IDeviceApi
     /// <summary>
     /// Discover available PlayStation devices on the network
     /// </summary>
-    [Get(ApiRoutes.Devices.PlayStationDiscovery)]
-    Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync(CancellationToken cancellationToken = default);
+    [Post(ApiRoutes.Devices.PlayStationDiscovery)]
+    Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync([Body] DiscoverPlayStationDevicesRequest request, CancellationToken cancellationToken = default);
 }

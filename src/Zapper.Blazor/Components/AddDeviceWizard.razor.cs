@@ -446,7 +446,8 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             // Start the scanning process via API
             try
             {
-                var response = await apiClient.Devices.DiscoverPlayStationDevicesAsync();
+                var request = new DiscoverPlayStationDevicesRequest { TimeoutSeconds = 10 };
+                var response = await apiClient.Devices.DiscoverPlayStationDevicesAsync(request);
 
                 if (response != null && response.Any())
                 {

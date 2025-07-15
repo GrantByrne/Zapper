@@ -4,12 +4,12 @@ using Zapper.Device.PlayStation;
 
 namespace Zapper.API.Endpoints.Devices;
 
-public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStationDiscovery) : EndpointWithoutRequest<IEnumerable<PlayStationDeviceDto>>
+public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStationDiscovery) : Endpoint<DiscoverPlayStationDevicesRequest, IEnumerable<PlayStationDeviceDto>>
 {
 
     public override void Configure()
     {
-        Get("/api/devices/discover/playstation");
+        Post("/api/devices/discover/playstation");
         AllowAnonymous();
         Summary(s =>
         {
@@ -18,9 +18,9 @@ public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStatio
         });
     }
 
-    public override async Task HandleAsync(CancellationToken ct)
+    public override async Task HandleAsync(DiscoverPlayStationDevicesRequest req, CancellationToken ct)
     {
-        var timeout = TimeSpan.FromSeconds(10); // Default timeout
+        var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
         var devices = await playStationDiscovery.DiscoverDevices(timeout, ct);
 
         var response = devices.Select(d => new PlayStationDeviceDto
