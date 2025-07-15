@@ -28,7 +28,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     }
 
     private WizardStep _currentStep = WizardStep.DeviceType;
-    private Zapper.Contracts.ConnectionType? _selectedConnectionType;
+    private Contracts.ConnectionType? _selectedConnectionType;
     private string _selectedDeviceTypeName = "";
     private bool _isRokuDevice = false;
     private CreateDeviceRequest _newDevice = new();
@@ -53,7 +53,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
 
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-    private void SelectDeviceType(Zapper.Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
+    private void SelectDeviceType(Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         _selectedConnectionType = connectionType;
         _selectedDeviceTypeName = typeName;
@@ -61,13 +61,13 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _newDevice.ConnectionType = connectionType;
     }
 
-    private async Task SelectDeviceTypeAndProceed(Zapper.Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
+    private async Task SelectDeviceTypeAndProceed(Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         SelectDeviceType(connectionType, typeName, isRoku);
         await NextStep();
     }
 
-    private string GetCardClass(Zapper.Contracts.ConnectionType connectionType, bool isRoku = false)
+    private string GetCardClass(Contracts.ConnectionType connectionType, bool isRoku = false)
     {
         bool isSelected = _selectedConnectionType == connectionType && (_isRokuDevice == isRoku || !isRoku);
         return $"device-type-card {(isSelected ? "selected" : "")}";
@@ -77,17 +77,17 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     {
         if (_currentStep == WizardStep.DeviceType && _selectedConnectionType.HasValue)
         {
-            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.Bluetooth)
+            if (_selectedConnectionType == Contracts.ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
                 await StartBluetoothScan();
             }
-            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.WebOs)
+            else if (_selectedConnectionType == Contracts.ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
                 await StartWebOsScan();
             }
-            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr)
+            else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
             }
@@ -149,15 +149,15 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     {
         if (_currentStep == WizardStep.Configuration)
         {
-            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.Bluetooth)
+            if (_selectedConnectionType == Contracts.ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
             }
-            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.WebOs)
+            else if (_selectedConnectionType == Contracts.ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
             }
-            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr)
+            else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
             }
@@ -430,7 +430,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         if (!string.IsNullOrWhiteSpace(_newDevice.Name))
         {
             // Store the IR code set ID in device metadata or custom field
-            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
+            if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
             {
                 // Store IR code set ID - this will need to be handled in the API
                 _newDevice.IrCodeSetId = _selectedIrCodeSetData.Id;
@@ -575,21 +575,21 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
-    private Zapper.Core.Models.DeviceType MapToCoreDeviceType(Zapper.Contracts.DeviceType deviceType)
+    private Core.Models.DeviceType MapToCoreDeviceType(Contracts.DeviceType deviceType)
     {
         return deviceType switch
         {
-            Zapper.Contracts.DeviceType.Television => Zapper.Core.Models.DeviceType.Television,
-            Zapper.Contracts.DeviceType.SmartTv => Zapper.Core.Models.DeviceType.SmartTv,
-            Zapper.Contracts.DeviceType.SoundBar => Zapper.Core.Models.DeviceType.SoundBar,
-            Zapper.Contracts.DeviceType.StreamingDevice => Zapper.Core.Models.DeviceType.StreamingDevice,
-            Zapper.Contracts.DeviceType.AppleTv => Zapper.Core.Models.DeviceType.AppleTv,
-            Zapper.Contracts.DeviceType.CableBox => Zapper.Core.Models.DeviceType.CableBox,
-            Zapper.Contracts.DeviceType.GameConsole => Zapper.Core.Models.DeviceType.GameConsole,
-            Zapper.Contracts.DeviceType.Receiver => Zapper.Core.Models.DeviceType.Receiver,
-            Zapper.Contracts.DeviceType.DvdPlayer => Zapper.Core.Models.DeviceType.DvdPlayer,
-            Zapper.Contracts.DeviceType.BluRayPlayer => Zapper.Core.Models.DeviceType.BluRayPlayer,
-            _ => Zapper.Core.Models.DeviceType.Television
+            Contracts.DeviceType.Television => Core.Models.DeviceType.Television,
+            Contracts.DeviceType.SmartTv => Core.Models.DeviceType.SmartTv,
+            Contracts.DeviceType.SoundBar => Core.Models.DeviceType.SoundBar,
+            Contracts.DeviceType.StreamingDevice => Core.Models.DeviceType.StreamingDevice,
+            Contracts.DeviceType.AppleTv => Core.Models.DeviceType.AppleTv,
+            Contracts.DeviceType.CableBox => Core.Models.DeviceType.CableBox,
+            Contracts.DeviceType.GameConsole => Core.Models.DeviceType.GameConsole,
+            Contracts.DeviceType.Receiver => Core.Models.DeviceType.Receiver,
+            Contracts.DeviceType.DvdPlayer => Core.Models.DeviceType.DvdPlayer,
+            Contracts.DeviceType.BluRayPlayer => Core.Models.DeviceType.BluRayPlayer,
+            _ => Core.Models.DeviceType.Television
         };
     }
 
