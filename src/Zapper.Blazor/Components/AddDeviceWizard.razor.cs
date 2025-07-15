@@ -19,6 +19,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         DeviceType,
         BluetoothScan,
         WebOsScan,
+        PlayStationScan,
         IrCodeSelection,
         Configuration
     }
@@ -44,6 +45,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private WebOsDevice? _selectedWebOsDevice;
     private string _manualWebOsIpAddress = "";
 
+    // PlayStation scanning variables
+    private bool _isPlayStationScanning;
+    private string _playStationScanError = "";
+    private List<PlayStationDevice> _discoveredPlayStationDevices = new();
+    private PlayStationDevice? _selectedPlayStationDevice;
+    private string _manualPlayStationIpAddress = "";
+
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
 
@@ -61,6 +69,33 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         SelectDeviceType(connectionType, typeName, isRoku);
         await NextStep();
+    }
+
+    private void SelectPlayStationType()
+    {
+        _selectedDeviceTypeName = "PlayStation";
+        _newDevice.Type = Contracts.DeviceType.PlayStation;
+        _selectedConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _currentStep = WizardStep.PlayStationScan;
+        _ = StartPlayStationScan();
+    }
+
+    private void SelectXboxType()
+    {
+        _selectedDeviceTypeName = "Xbox";
+        _newDevice.Type = Contracts.DeviceType.Xbox;
+        ShowConsoleConnectionOptions();
+    }
+
+    private void ShowConsoleConnectionOptions()
+    {
+        // For now, we'll default to Bluetooth for modern consoles
+        // In the future, we could show a dialog to let users choose
+        _selectedConnectionType = Contracts.ConnectionType.Bluetooth;
+        _newDevice.ConnectionType = Contracts.ConnectionType.Bluetooth;
+        _currentStep = WizardStep.BluetoothScan;
+        _ = StartBluetoothScan();
     }
 
     private string GetCardClass(Contracts.ConnectionType connectionType, bool isRoku = false)
@@ -125,6 +160,31 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.PlayStationScan && (_selectedPlayStationDevice != null || !string.IsNullOrWhiteSpace(_manualPlayStationIpAddress)))
+        {
+            // Pre-populate device info with selected PlayStation
+            if (_selectedPlayStationDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedPlayStationDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedPlayStationDevice.IpAddress;
+                _newDevice.Brand = "Sony";
+                _newDevice.Model = _selectedPlayStationDevice.Model;
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualPlayStationIpAddress))
+            {
+                _newDevice.IpAddress = _manualPlayStationIpAddress.Trim();
+                _newDevice.Brand = "Sony";
+                _newDevice.Model = "PlayStation";
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"PlayStation ({_manualPlayStationIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
         else if (_currentStep == WizardStep.IrCodeSelection && _selectedIrCodeSetData != null)
         {
             // Store the selected IR code set ID
@@ -153,6 +213,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             {
                 _currentStep = WizardStep.WebOsScan;
             }
+            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkTcp && _newDevice.Type == Contracts.DeviceType.PlayStation)
+            {
+                _currentStep = WizardStep.PlayStationScan;
+            }
             else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
@@ -170,6 +234,11 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.WebOsScan)
         {
             await StopWebOsScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.PlayStationScan)
+        {
+            await StopPlayStationScan();
             _currentStep = WizardStep.DeviceType;
         }
         else if (_currentStep == WizardStep.IrCodeSelection)
@@ -353,6 +422,84 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _selectedBluetoothDevice = deviceName;
     }
 
+    private async Task StartPlayStationScan()
+    {
+        if (apiClient == null)
+        {
+            _playStationScanError = "API client not available. Cannot scan for PlayStation devices.";
+            return;
+        }
+
+        try
+        {
+            _isPlayStationScanning = true;
+            _playStationScanError = "";
+            _discoveredPlayStationDevices.Clear();
+            _selectedPlayStationDevice = null;
+            _manualPlayStationIpAddress = "";
+            StateHasChanged();
+
+            // Initialize SignalR connection if needed
+            await EnsureSignalRConnection();
+
+            // Start the scanning process via API
+            try
+            {
+                var response = await apiClient.Devices.DiscoverPlayStationDevicesAsync();
+
+                if (response != null && response.Any())
+                {
+                    foreach (var device in response)
+                    {
+                        _discoveredPlayStationDevices.Add(new PlayStationDevice
+                        {
+                            Name = device.Name,
+                            IpAddress = device.IpAddress,
+                            Model = device.Model ?? "PlayStation"
+                        });
+                    }
+                }
+
+                _isPlayStationScanning = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _playStationScanError = $"Failed to scan for PlayStation devices: {ex.Message}";
+                _isPlayStationScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _playStationScanError = $"Failed to scan for PlayStation devices: {ex.Message}";
+            _isPlayStationScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectPlayStationDevice(PlayStationDevice device)
+    {
+        _selectedPlayStationDevice = device;
+        _manualPlayStationIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualPlayStationIp()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualPlayStationIpAddress))
+        {
+            _selectedPlayStationDevice = null; // Clear selected device when using manual IP
+        }
+    }
+
+    private async Task StopPlayStationScan()
+    {
+        _isPlayStationScanning = false;
+        _playStationScanError = "";
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+
     private async Task StartWebOsScan()
     {
         if (apiClient == null)
@@ -459,6 +606,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _discoveredWebOsDevices.Clear();
         _selectedWebOsDevice = null;
         _manualWebOsIpAddress = "";
+
+        // Reset PlayStation scanning state
+        _isPlayStationScanning = false;
+        _playStationScanError = "";
+        _discoveredPlayStationDevices.Clear();
+        _selectedPlayStationDevice = null;
+        _manualPlayStationIpAddress = "";
     }
 
     private void ResetWizard()
@@ -478,6 +632,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.WebOsScan && _isWebOsScanning)
         {
             await StopWebOsScan();
+        }
+        else if (_currentStep == WizardStep.PlayStationScan && _isPlayStationScanning)
+        {
+            await StopPlayStationScan();
         }
 
         ResetWizard();
@@ -582,10 +740,19 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             Contracts.DeviceType.AppleTv => DeviceType.AppleTv,
             Contracts.DeviceType.CableBox => DeviceType.CableBox,
             Contracts.DeviceType.GameConsole => DeviceType.GameConsole,
+            Contracts.DeviceType.PlayStation => DeviceType.PlayStation,
+            Contracts.DeviceType.Xbox => DeviceType.Xbox,
             Contracts.DeviceType.Receiver => DeviceType.Receiver,
             Contracts.DeviceType.DvdPlayer => DeviceType.DvdPlayer,
             Contracts.DeviceType.BluRayPlayer => DeviceType.BluRayPlayer,
             _ => DeviceType.Television
         };
+    }
+
+    private class PlayStationDevice
+    {
+        public string Name { get; set; } = "";
+        public string IpAddress { get; set; } = "";
+        public string Model { get; set; } = "";
     }
 }

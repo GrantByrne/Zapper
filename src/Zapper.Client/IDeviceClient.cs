@@ -61,4 +61,9 @@ public interface IDeviceClient
     /// Stop WebOS TV scanning
     /// </summary>
     Task<StopWebOsScanResponse> StopWebOsScanAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available PlayStation devices on the network
+    /// </summary>
+    Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync(CancellationToken cancellationToken = default);
 }

@@ -54,5 +54,15 @@ public enum DeviceType
     /// <summary>
     /// An Apple TV streaming device that provides access to Apple's ecosystem and services.
     /// </summary>
-    AppleTv
+    AppleTv,
+
+    /// <summary>
+    /// A PlayStation gaming console that supports gaming, media playback, and online services.
+    /// </summary>
+    PlayStation,
+
+    /// <summary>
+    /// An Xbox gaming console that supports gaming, media playback, and online services.
+    /// </summary>
+    Xbox
 }

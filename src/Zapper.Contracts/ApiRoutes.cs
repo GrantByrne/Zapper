@@ -22,6 +22,7 @@ public static class ApiRoutes
         public const string BluetoothScanStop = $"{Base}/scan/bluetooth/stop";
         public const string WebOsScan = $"{Base}/scan/webos";
         public const string WebOsScanStop = $"{Base}/scan/webos/stop";
+        public const string PlayStationDiscovery = $"{Base}/discover/playstation";
     }
 
     public static class Activities

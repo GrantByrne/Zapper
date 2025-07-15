@@ -16,6 +16,10 @@
             {
                 <span>Add New Device - Scan for @_selectedDeviceTypeName TVs</span>
             }
+            else if (_currentStep == WizardStep.PlayStationScan)
+            {
+                <span>Add New Device - Scan for PlayStation Consoles</span>
+            }
             else if (_currentStep == WizardStep.IrCodeSelection)
             {
                 <span>Add New Device - Select IR Codes</span>
@@ -75,6 +79,30 @@
                             <MudText Typo="Typo.h6">WebOS</MudText>
                             <MudText Typo="Typo.body2" Class="mud-text-secondary">
                                 LG Smart TVs
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="device-type-card" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectPlayStationType())">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.SportsEsports" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">PlayStation</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                PS4, PS5 Consoles
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="device-type-card" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectXboxType())">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.VideogameAsset" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Xbox</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Xbox One, Series X/S
                             </MudText>
                         </MudCardContent>
                     </MudCard>
@@ -215,6 +243,77 @@
                 Use This IP Address
             </MudButton>
         }
+        else if (_currentStep == WizardStep.PlayStationScan)
+        {
+            <MudText Class="mb-4">Scanning for available PlayStation consoles on your network...</MudText>
+            
+            @if (_isPlayStationScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for PlayStation consoles...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your PlayStation is powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_playStationScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_playStationScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartPlayStationScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredPlayStationDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredPlayStationDevices.Count() console(s). Select the console you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredPlayStationDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedPlayStationDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedPlayStationDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectPlayStationDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.SportsEsports" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.Model</MudText>
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartPlayStationScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No PlayStation consoles found on your network. Make sure your console is powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartPlayStationScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualPlayStationIpAddress" Label="Console IP Address" 
+                         HelperText="Enter the IP address of your PlayStation console (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualPlayStationIp" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualPlayStationIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.IrCodeSelection)
         {
             <MudText Class="mb-4">Select or search for IR codes for your device:</MudText>
@@ -233,7 +332,9 @@
                 <MudSelectItem Value="DeviceType.StreamingDevice">Streaming Device</MudSelectItem>
                 <MudSelectItem Value="DeviceType.AppleTv">Apple TV</MudSelectItem>
                 <MudSelectItem Value="DeviceType.CableBox">Cable Box</MudSelectItem>
-                <MudSelectItem Value="DeviceType.GameConsole">Game Console</MudSelectItem>
+                <MudSelectItem Value="DeviceType.GameConsole">Game Console (Other)</MudSelectItem>
+                <MudSelectItem Value="DeviceType.PlayStation">PlayStation</MudSelectItem>
+                <MudSelectItem Value="DeviceType.Xbox">Xbox</MudSelectItem>
                 <MudSelectItem Value="DeviceType.Receiver">Receiver</MudSelectItem>
                 <MudSelectItem Value="DeviceType.DvdPlayer">DVD Player</MudSelectItem>
                 <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
@@ -278,6 +379,14 @@
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOsDevice == null && string.IsNullOrWhiteSpace(_manualWebOsIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.PlayStationScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedPlayStationDevice == null && string.IsNullOrWhiteSpace(_manualPlayStationIpAddress))">
                 Next
             </MudButton>
         }

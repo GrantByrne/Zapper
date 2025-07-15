@@ -69,4 +69,9 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
     {
         return await deviceApi.StopWebOsScanAsync(cancellationToken);
     }
+
+    public async Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync(CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.DiscoverPlayStationDevicesAsync(cancellationToken);
+    }
 }

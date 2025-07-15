@@ -75,4 +75,10 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.WebOsScanStop)]
     Task<StopWebOsScanResponse> StopWebOsScanAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available PlayStation devices on the network
+    /// </summary>
+    [Get(ApiRoutes.Devices.PlayStationDiscovery)]
+    Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync(CancellationToken cancellationToken = default);
 }
