@@ -9,5 +9,6 @@ public enum ConnectionType
     NetworkHttp,
     Bluetooth,
     Usb,
-    WebOs
+    WebOs,
+    Network
 }
