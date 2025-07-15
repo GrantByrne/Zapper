@@ -108,13 +108,13 @@ public class DeviceService(
         try
         {
             var success = await ExecuteCommandAsync(device, command, cancellationToken);
-            
+
             if (success)
             {
                 device.LastSeen = DateTime.UtcNow;
                 device.IsOnline = true;
                 await context.SaveChangesAsync();
-                
+
                 await notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, true);
             }
             else
@@ -143,11 +143,11 @@ public class DeviceService(
         {
             bool isOnline = device.ConnectionType switch
             {
-                ConnectionType.NetworkTcp or ConnectionType.NetworkWebSocket => 
+                ConnectionType.NetworkTcp or ConnectionType.NetworkWebSocket =>
                     await TestNetworkDeviceAsync(device),
                 ConnectionType.NetworkHttp =>
                     await rokuController.TestConnectionAsync(device),
-                ConnectionType.InfraredIr => 
+                ConnectionType.InfraredIr =>
                     irTransmitter.IsAvailable,
                 ConnectionType.WebOs =>
                     await webOsController.TestConnectionAsync(device),
@@ -157,7 +157,7 @@ public class DeviceService(
             device.IsOnline = isOnline;
             device.LastSeen = DateTime.UtcNow;
             await context.SaveChangesAsync();
-            
+
             await notificationService.NotifyDeviceStatusChangedAsync(device.Id, device.Name, isOnline);
 
             return isOnline;
@@ -174,12 +174,12 @@ public class DeviceService(
         try
         {
             var discoveryResult = await networkController.DiscoverDevicesAsync(deviceType, TimeSpan.FromSeconds(10), cancellationToken);
-            
+
             if (string.IsNullOrEmpty(discoveryResult))
                 return [];
 
             var devices = new List<Zapper.Core.Models.Device>();
-            
+
             logger.LogInformation("Device discovery completed for type: {DeviceType}", deviceType);
             return devices;
         }
@@ -214,7 +214,7 @@ public class DeviceService(
         }
 
         await irTransmitter.TransmitAsync(command.IrCode, command.IsRepeatable ? 3 : 1, cancellationToken);
-        
+
         if (command.DelayMs > 0)
         {
             await Task.Delay(command.DelayMs, cancellationToken);
@@ -232,10 +232,10 @@ public class DeviceService(
         }
 
         return await networkController.SendCommandAsync(
-            device.IpAddress, 
-            device.Port.Value, 
-            command.Name, 
-            command.NetworkPayload, 
+            device.IpAddress,
+            device.Port.Value,
+            command.Name,
+            command.NetworkPayload,
             cancellationToken);
     }
 

@@ -94,7 +94,7 @@ public class ActivityService(
         }
 
         logger.LogInformation("Executing activity: {ActivityName}", activity.Name);
-        
+
         await notificationService.NotifyActivityStartedAsync(activity.Id, activity.Name);
 
         try
@@ -113,32 +113,32 @@ public class ActivityService(
                 }
 
                 var success = await deviceService.SendCommandAsync(
-                    step.DeviceCommand.DeviceId, 
-                    step.DeviceCommand.Name, 
+                    step.DeviceCommand.DeviceId,
+                    step.DeviceCommand.Name,
                     cancellationToken);
 
                 await notificationService.NotifyActivityStepExecutedAsync(
-                    activity.Id, activity.Name, step.StepOrder, 
+                    activity.Id, activity.Name, step.StepOrder,
                     $"{step.DeviceCommand.Device.Name} - {step.DeviceCommand.Name}", success);
 
                 if (!success && step.IsRequired)
                 {
-                    logger.LogError("Required step failed in activity {ActivityName}: {DeviceName} - {CommandName}", 
+                    logger.LogError("Required step failed in activity {ActivityName}: {DeviceName} - {CommandName}",
                                    activity.Name, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
-                    
+
                     await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, false);
                     return false;
                 }
 
                 if (!success)
                 {
-                    logger.LogWarning("Optional step failed in activity {ActivityName}: {DeviceName} - {CommandName}", 
+                    logger.LogWarning("Optional step failed in activity {ActivityName}: {DeviceName} - {CommandName}",
                                      activity.Name, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
                 }
                 else
                 {
                     executedSteps++;
-                    logger.LogDebug("Executed step {StepOrder}: {DeviceName} - {CommandName}", 
+                    logger.LogDebug("Executed step {StepOrder}: {DeviceName} - {CommandName}",
                                    step.StepOrder, step.DeviceCommand.Device.Name, step.DeviceCommand.Name);
                 }
 
@@ -152,9 +152,9 @@ public class ActivityService(
             activity.LastUsed = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Activity {ActivityName} completed successfully. Executed {ExecutedSteps}/{TotalSteps} steps", 
+            logger.LogInformation("Activity {ActivityName} completed successfully. Executed {ExecutedSteps}/{TotalSteps} steps",
                                  activity.Name, executedSteps, steps.Count);
-            
+
             await notificationService.NotifyActivityCompletedAsync(activity.Id, activity.Name, true);
             return true;
         }
@@ -248,7 +248,7 @@ public class ActivityService(
         context.ActivitySteps.Add(step);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Added step to activity {ActivityName}: {StepOrder} - {CommandName}", 
+        logger.LogInformation("Added step to activity {ActivityName}: {StepOrder} - {CommandName}",
                              activity.Name, stepOrder, deviceCommand.Name);
         return step;
     }

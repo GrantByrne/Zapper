@@ -23,13 +23,13 @@ builder.Services.AddSingleton<IInfraredTransmitter>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<GpioInfraredTransmitter>>();
     var config = provider.GetRequiredService<IConfiguration>();
-    
+
     // Use mock transmitter if GPIO is disabled
     if (!config.GetValue<bool>("Hardware:EnableGPIO", true))
     {
         return new MockInfraredTransmitter(provider.GetRequiredService<ILogger<MockInfraredTransmitter>>());
     }
-    
+
     var gpioPin = config.GetValue<int>("Hardware:IRTransmitter:GpioPin", 18);
     return new GpioInfraredTransmitter(gpioPin, logger);
 });

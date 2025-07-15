@@ -35,10 +35,10 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             DiscoverRemoteDevices();
 
             _isListening = true;
-            
+
             // Start background task to monitor for new devices
             _ = Task.Run(() => MonitorDevicesAsync(_cancellationTokenSource.Token), cancellationToken);
-            
+
             _logger.LogInformation("USB remote listener started. Monitoring {DeviceCount} devices", _connectedDevices.Count);
             await Task.CompletedTask;
         }
@@ -91,23 +91,23 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
 
         foreach (var device in hidDevices)
         {
-            if (!IsRemoteDevice(device)) 
+            if (!IsRemoteDevice(device))
                 continue;
-            
+
             var deviceId = GetDeviceId(device);
             _connectedDevices.TryAdd(deviceId, device);
 
             try
             {
                 var stream = device.Open();
-                    
-                if (stream == null) 
+
+                if (stream == null)
                     continue;
-                    
+
                 _activeStreams.TryAdd(deviceId, stream);
                 _ = Task.Run(() => ListenToDeviceAsync(deviceId, stream, _cancellationTokenSource.Token));
-                        
-                _logger.LogInformation("Connected to USB remote: {DeviceId} ({ProductName})", 
+
+                _logger.LogInformation("Connected to USB remote: {DeviceId} ({ProductName})",
                     deviceId, device.GetProductName() ?? "Unknown");
             }
             catch (Exception ex)
@@ -146,7 +146,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             while (!cancellationToken.IsCancellationRequested && _isListening)
             {
                 var bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                
+
                 if (bytesRead > 0)
                 {
                     ProcessInputReport(deviceId, buffer, bytesRead);
@@ -160,7 +160,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Error reading from device {DeviceId}", deviceId);
-            
+
             // Remove device from active list
             _activeStreams.TryRemove(deviceId, out _);
             _connectedDevices.TryRemove(deviceId, out _);
@@ -174,15 +174,15 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             // Simple key mapping - in reality you'd have device-specific mappings
             var keyCode = buffer[1]; // Assuming second byte contains key code
 
-            if (keyCode == 0) 
+            if (keyCode == 0)
                 return;
-            
+
             var buttonName = MapKeyCodeToButton(keyCode);
             var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
-                
-            _logger.LogDebug("Button pressed on {DeviceId}: {ButtonName} (0x{KeyCode:X2})", 
+
+            _logger.LogDebug("Button pressed on {DeviceId}: {ButtonName} (0x{KeyCode:X2})",
                 deviceId, buttonName, keyCode);
-                
+
             ButtonPressed?.Invoke(this, eventArgs);
         }
         catch (Exception ex)
@@ -201,8 +201,8 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             var productId = device.ProductID;
 
             // Check product name for remote-like keywords
-            if (productName.Contains("remote") || 
-                productName.Contains("media") || 
+            if (productName.Contains("remote") ||
+                productName.Contains("media") ||
                 productName.Contains("control") ||
                 productName.Contains("receiver"))
             {
@@ -212,7 +212,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             // Known remote control vendor/product IDs (examples)
             // This would be expanded with real device IDs
             var knownRemoteVendors = new[] { 0x046D, 0x054C, 0x05AC }; // Logitech, Sony, Apple examples
-            
+
             return knownRemoteVendors.Contains(vendorId);
         }
         catch
@@ -277,7 +277,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         if (_disposed) return;
 
         _cancellationTokenSource.Cancel();
-        
+
         foreach (var stream in _activeStreams.Values)
         {
             stream?.Dispose();

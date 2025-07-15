@@ -45,7 +45,7 @@ public class WebOSScanEndpoint(
                 try
                 {
                     var devices = await webOsDiscovery.DiscoverDevicesAsync(TimeSpan.FromSeconds(req.DurationSeconds), ct);
-                    
+
                     foreach (var device in devices)
                     {
                         // Send real-time device discovery updates via SignalR

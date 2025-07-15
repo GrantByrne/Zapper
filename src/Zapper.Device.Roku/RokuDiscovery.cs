@@ -43,7 +43,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
         {
             var baseUrl = $"http://{ipAddress}:8060";
             var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
-            
+
             if (success)
             {
                 var device = new Zapper.Core.Models.Device
@@ -81,9 +81,9 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
             _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             var multicastEndpoint = new IPEndPoint(IPAddress.Parse("239.255.255.250"), 1900);
-            
+
             // Send SSDP M-SEARCH request for Roku devices
-            var searchMessage = 
+            var searchMessage =
                 "M-SEARCH * HTTP/1.1\r\n" +
                 "HOST: 239.255.255.250:1900\r\n" +
                 "MX: 30\r\n" +
@@ -146,7 +146,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
             }
 
             var locationUrl = locationMatch.Groups[1].Value.Trim();
-            
+
             // Parse the IP address from the location URL
             var uri = new Uri(locationUrl);
             var ipAddress = uri.Host;
@@ -160,7 +160,7 @@ public class RokuDiscovery(ILogger<RokuDiscovery> logger, INetworkDeviceControll
                 {
                     var baseUrl = $"http://{ipAddress}:8060";
                     var success = await networkController.SendHttpCommandAsync(baseUrl, "/", "GET", null, null, cancellationToken);
-                    
+
                     if (success)
                     {
                         // In a real implementation, we'd parse the XML response to get device details

@@ -8,14 +8,14 @@ public class UsbRemoteHostedService(IUsbRemoteHandler remoteHandler, ILogger<Usb
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting USB remote service");
-        
+
         try
         {
             await remoteHandler.StartListeningAsync(cancellationToken);
-            
+
             // Subscribe to button events for logging
             remoteHandler.ButtonPressed += OnButtonPressed;
-            
+
             logger.LogInformation("USB remote service started successfully");
         }
         catch (Exception ex)
@@ -28,12 +28,12 @@ public class UsbRemoteHostedService(IUsbRemoteHandler remoteHandler, ILogger<Usb
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Stopping USB remote service");
-        
+
         try
         {
             remoteHandler.ButtonPressed -= OnButtonPressed;
             await remoteHandler.StopListeningAsync();
-            
+
             logger.LogInformation("USB remote service stopped");
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class UsbRemoteHostedService(IUsbRemoteHandler remoteHandler, ILogger<Usb
 
     private void OnButtonPressed(object? sender, RemoteButtonEventArgs e)
     {
-        logger.LogInformation("USB remote button pressed: Device={DeviceId}, Button={ButtonName}, KeyCode=0x{KeyCode:X2}", 
+        logger.LogInformation("USB remote button pressed: Device={DeviceId}, Button={ButtonName}, KeyCode=0x{KeyCode:X2}",
             e.DeviceId, e.ButtonName, e.KeyCode);
     }
 }

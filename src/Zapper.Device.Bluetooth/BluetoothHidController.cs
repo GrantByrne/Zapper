@@ -32,13 +32,13 @@ public class BluetoothHidController : IBluetoothHidController
 
             if (IsHidDevice(device))
             {
-                _logger.LogInformation("Simulating HID key {KeyCode} sent to device {Address} ({Name})", 
+                _logger.LogInformation("Simulating HID key {KeyCode} sent to device {Address} ({Name})",
                     keyCode, deviceAddress, device.Name);
                 return true;
             }
             else
             {
-                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
+                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile",
                     deviceAddress, device.Name);
                 return false;
             }
@@ -63,21 +63,21 @@ public class BluetoothHidController : IBluetoothHidController
 
             if (!IsHidDevice(device))
             {
-                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
+                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile",
                     deviceAddress, device.Name);
                 return false;
             }
 
-            _logger.LogDebug("Sending HID key sequence to device {Address}: {Keys}", 
+            _logger.LogDebug("Sending HID key sequence to device {Address}: {Keys}",
                 deviceAddress, string.Join(", ", keyCodes));
 
             foreach (var keyCode in keyCodes)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 if (!await SendKeyAsync(deviceAddress, keyCode, cancellationToken))
                 {
-                    _logger.LogWarning("Failed to send key {KeyCode} in sequence to device {Address}", 
+                    _logger.LogWarning("Failed to send key {KeyCode} in sequence to device {Address}",
                         keyCode, deviceAddress);
                     return false;
                 }
@@ -118,7 +118,7 @@ public class BluetoothHidController : IBluetoothHidController
 
             if (!IsHidDevice(device))
             {
-                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile", 
+                _logger.LogWarning("Device {Address} ({Name}) does not support HID profile",
                     deviceAddress, device.Name);
                 return false;
             }

@@ -3,7 +3,7 @@ namespace Zapper.Contracts;
 public static class ApiRoutes
 {
     public const string BaseUrl = "/api";
-    
+
     public static class Devices
     {
         public const string Base = $"{BaseUrl}/devices";
@@ -21,14 +21,14 @@ public static class ApiRoutes
         public const string BluetoothScan = $"{Base}/scan/bluetooth";
         public const string WebOSScan = $"{Base}/scan/webos";
     }
-    
+
     public static class Activities
     {
         public const string Base = $"{BaseUrl}/activities";
         public const string GetAll = Base;
         public const string Execute = $"{Base}/{{id}}/execute";
     }
-    
+
     public static class IRCodes
     {
         public const string Base = $"{BaseUrl}/ircodes";
@@ -43,7 +43,7 @@ public static class ApiRoutes
         public const string SearchSets = $"{Base}/sets/search";
         public const string SeedDefaults = $"{Base}/seed";
     }
-    
+
     public static class System
     {
         public const string Base = $"{BaseUrl}/system";

@@ -14,7 +14,7 @@ public class AndroidTvBluetoothController : IBluetoothDeviceController
         ArgumentNullException.ThrowIfNull(hidController);
         ArgumentNullException.ThrowIfNull(bluetoothService);
         ArgumentNullException.ThrowIfNull(logger);
-        
+
         this.hidController = hidController;
         this.bluetoothService = bluetoothService;
         this.logger = logger;
@@ -75,7 +75,7 @@ public class AndroidTvBluetoothController : IBluetoothDeviceController
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send Bluetooth command {CommandType} to device {DeviceName}", 
+            logger.LogError(ex, "Failed to send Bluetooth command {CommandType} to device {DeviceName}",
                 command.Type, device.Name);
             return false;
         }
@@ -203,20 +203,20 @@ public class AndroidTvBluetoothController : IBluetoothDeviceController
                 case "netflix":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.N], 100, cancellationToken);
-                
+
                 case "youtube":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.Y], 100, cancellationToken);
-                
+
                 case "assistant":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Assistant, cancellationToken);
-                
+
                 case "search":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Search, cancellationToken);
-                
+
                 case "settings":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Settings, cancellationToken);
-                
+
                 default:
                     if (Enum.TryParse<HidKeyCode>(command.NetworkPayload, true, out var keyCode))
                     {
@@ -245,12 +245,12 @@ public class AndroidTvBluetoothController : IBluetoothDeviceController
     {
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
-        
-        return name.Contains("android tv") || 
-               name.Contains("chromecast") || 
+
+        return name.Contains("android tv") ||
+               name.Contains("chromecast") ||
                name.Contains("google tv") ||
-               alias.Contains("android tv") || 
-               alias.Contains("chromecast") || 
+               alias.Contains("android tv") ||
+               alias.Contains("chromecast") ||
                alias.Contains("google tv") ||
                device.UuiDs.Any(uuid => IsAndroidTvServiceUuid(uuid));
     }

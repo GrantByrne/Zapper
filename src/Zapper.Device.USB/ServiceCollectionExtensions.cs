@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUsbServices(this IServiceCollection services, IConfiguration configuration)
     {
         var useMockHandler = configuration.GetValue<bool>("USB:UseMockHandler", true);
-        
+
         if (useMockHandler)
         {
             services.AddSingleton<IUsbRemoteHandler>(provider =>
@@ -28,13 +28,13 @@ public static class ServiceCollectionExtensions
                 return new UsbRemoteHandler(logger);
             });
         }
-        
+
         // Register the device controller
         services.AddSingleton<IDeviceController, UsbDeviceController>();
-        
+
         // Register as hosted service to manage lifecycle
         services.AddSingleton<IHostedService, UsbRemoteHostedService>();
-        
+
         return services;
     }
 }

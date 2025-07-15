@@ -54,8 +54,8 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
     {
         return await context.IrCodeSets
             .Include(cs => cs.Codes)
-            .FirstOrDefaultAsync(cs => cs.Brand.ToLower() == brand.ToLower() 
-                                    && cs.Model.ToLower() == model.ToLower() 
+            .FirstOrDefaultAsync(cs => cs.Brand.ToLower() == brand.ToLower()
+                                    && cs.Model.ToLower() == model.ToLower()
                                     && cs.DeviceType == deviceType);
     }
 
@@ -70,7 +70,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
     public async Task<IrCode?> GetCodeAsync(int codeSetId, string commandName)
     {
         return await context.IrCodes
-            .FirstOrDefaultAsync(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId 
+            .FirstOrDefaultAsync(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId
                                    && c.CommandName.ToLower() == commandName.ToLower());
     }
 
@@ -90,7 +90,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
         }
 
         context.Entry(code).Property("IRCodeSetId").CurrentValue = codeSetId;
-        
+
         context.IrCodes.Add(code);
         await context.SaveChangesAsync();
         return code;
@@ -119,7 +119,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
         {
             var json = await File.ReadAllTextAsync(filePath);
             var importData = JsonSerializer.Deserialize<IrCodeSetImport>(json);
-            
+
             if (importData == null) return false;
 
             var codeSet = new IrCodeSet
@@ -197,7 +197,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
         logger.LogInformation("Seeding default IR codes...");
 
         var defaultCodeSets = GetDefaultCodeSets();
-        
+
         foreach (var codeSet in defaultCodeSets)
         {
             await CreateCodeSetAsync(codeSet);

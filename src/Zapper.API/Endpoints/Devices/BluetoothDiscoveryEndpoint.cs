@@ -22,7 +22,7 @@ public class BluetoothDiscoveryEndpoint(
     {
         var androidDevices = await androidTvController.DiscoverPairedDevicesAsync(ct);
         var appleDevices = await appleTvController.DiscoverPairedDevicesAsync(ct);
-        
+
         var allDevices = androidDevices.Concat(appleDevices).Distinct();
         await SendOkAsync(allDevices, ct);
     }

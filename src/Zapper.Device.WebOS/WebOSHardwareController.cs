@@ -58,7 +58,7 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send WebOS command {CommandType} to device {DeviceName}", 
+            logger.LogError(ex, "Failed to send WebOS command {CommandType} to device {DeviceName}",
                 command.Type, device.Name);
             return false;
         }
@@ -99,7 +99,7 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
         if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
             // For custom commands, use the HttpEndpoint field as the SSAP URI
-            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint, 
+            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint,
                 string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }
@@ -110,24 +110,24 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
     private async Task<bool> HandleUnknownCommand(DeviceCommand command, CancellationToken cancellationToken)
     {
         logger.LogWarning("Unknown WebOS command type: {CommandType}", command.Type);
-        
+
         // Try to execute as a direct SSAP URI if HttpEndpoint field is set
         if (!string.IsNullOrEmpty(command.HttpEndpoint))
         {
-            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint, 
+            var response = await webOsClient.SendCommandAsync(command.HttpEndpoint,
                 string.IsNullOrEmpty(command.NetworkPayload) ? null : command.NetworkPayload, cancellationToken);
             return response != null;
         }
-        
+
         return false;
     }
 
     public Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         // For WebOS devices, testing connection means trying to connect and authenticate
-        return SendCommandAsync(device, new DeviceCommand 
-        { 
-            Type = CommandType.Custom, 
+        return SendCommandAsync(device, new DeviceCommand
+        {
+            Type = CommandType.Custom,
             NetworkPayload = "Connection test from ZapperHub",
             HttpEndpoint = "ssap://system.notifications/createToast"
         }, cancellationToken);

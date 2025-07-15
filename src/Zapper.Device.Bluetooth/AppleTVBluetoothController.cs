@@ -62,7 +62,7 @@ public class AppleTvBluetoothController(IBluetoothHidController hidController, I
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send Bluetooth command {CommandType} to device {DeviceName}", 
+            logger.LogError(ex, "Failed to send Bluetooth command {CommandType} to device {DeviceName}",
                 command.Type, device.Name);
             return false;
         }
@@ -190,33 +190,33 @@ public class AppleTvBluetoothController(IBluetoothHidController hidController, I
             {
                 case "siri":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Assistant, cancellationToken);
-                
+
                 case "app_switcher":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.Home], 200, cancellationToken);
-                
+
                 case "control_center":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Menu, cancellationToken);
-                
+
                 case "netflix":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.N], 100, cancellationToken);
-                
+
                 case "disney":
                 case "disney+":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.D], 100, cancellationToken);
-                
+
                 case "youtube":
                     return await hidController.SendKeySequenceAsync(deviceAddress,
                         [HidKeyCode.Home, HidKeyCode.Y], 100, cancellationToken);
-                
+
                 case "search":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Search, cancellationToken);
-                
+
                 case "settings":
                     return await hidController.SendKeyAsync(deviceAddress, HidKeyCode.Settings, cancellationToken);
-                
+
                 default:
                     if (Enum.TryParse<HidKeyCode>(command.NetworkPayload, true, out var keyCode))
                     {
@@ -245,13 +245,13 @@ public class AppleTvBluetoothController(IBluetoothHidController hidController, I
     {
         var name = device.Name?.ToLowerInvariant() ?? "";
         var alias = device.Alias?.ToLowerInvariant() ?? "";
-        
-        return name.Contains("apple tv") || 
-               name.Contains("appletv") || 
+
+        return name.Contains("apple tv") ||
+               name.Contains("appletv") ||
                name.Contains("siri remote") ||
                name.Contains("apple remote") ||
-               alias.Contains("apple tv") || 
-               alias.Contains("appletv") || 
+               alias.Contains("apple tv") ||
+               alias.Contains("appletv") ||
                alias.Contains("siri remote") ||
                alias.Contains("apple remote") ||
                device.UuiDs.Any(uuid => IsAppleTvServiceUuid(uuid));

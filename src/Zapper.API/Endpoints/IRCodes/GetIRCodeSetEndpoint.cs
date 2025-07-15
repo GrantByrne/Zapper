@@ -21,7 +21,7 @@ public class GetIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<GetIr
             await SendNotFoundAsync(ct);
             return;
         }
-        
+
         await SendOkAsync(codeSet, ct);
     }
 }

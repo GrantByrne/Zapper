@@ -27,7 +27,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
         _logger.LogInformation("Mock transmitting IR code: {IrCode} (repeat {RepeatCount}x)", irCode, repeatCount);
-        
+
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
@@ -36,9 +36,9 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
-        _logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)", 
+        _logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)",
                               irCode.Brand, irCode.Model, irCode.CommandName, irCode.HexCode, repeatCount);
-        
+
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
 
@@ -47,9 +47,9 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
-        _logger.LogInformation("Mock transmitting raw IR signal: {PulseCount} pulses at {Frequency}Hz", 
+        _logger.LogInformation("Mock transmitting raw IR signal: {PulseCount} pulses at {Frequency}Hz",
                               pulses.Length, carrierFrequency);
-        
+
         var totalMicros = pulses.Sum();
         await Task.Delay(Math.Max(1, totalMicros / 10000), cancellationToken);
     }

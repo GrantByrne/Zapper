@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     {
         var useRealGpio = configuration.GetValue<bool>("Infrared:UseRealGpio", false);
         var gpioPin = configuration.GetValue<int>("Infrared:GpioPin", 18);
-        
+
         if (useRealGpio)
         {
             services.AddSingleton<IInfraredTransmitter>(provider =>
@@ -32,9 +32,9 @@ public static class ServiceCollectionExtensions
                 return transmitter;
             });
         }
-        
+
         services.AddSingleton<IDeviceController, InfraredDeviceController>();
-        
+
         return services;
     }
 }

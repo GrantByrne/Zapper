@@ -35,7 +35,7 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
         };
 
         var createdDevice = await deviceService.CreateDeviceAsync(device);
-        
+
         var response = new CreateDeviceResponse
         {
             Id = createdDevice.Id,

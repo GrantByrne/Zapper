@@ -5,7 +5,7 @@ namespace Zapper.Data;
 
 public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(options)
 {
-    
+
     public DbSet<Device> Devices { get; set; }
     public DbSet<DeviceCommand> DeviceCommands { get; set; }
     public DbSet<Activity> Activities { get; set; }
@@ -13,7 +13,7 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
     public DbSet<ActivityStep> ActivitySteps { get; set; }
     public DbSet<IrCode> IrCodes { get; set; }
     public DbSet<IrCodeSet> IrCodeSets { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Device>(entity =>
@@ -24,7 +24,7 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.Property(e => e.Type).HasConversion<string>();
             entity.Property(e => e.ConnectionType).HasConversion<string>();
         });
-        
+
         modelBuilder.Entity<DeviceCommand>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -35,14 +35,14 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .HasForeignKey(e => e.DeviceId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<Activity>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Name).IsUnique();
             entity.HasIndex(e => e.SortOrder);
         });
-        
+
         modelBuilder.Entity<ActivityDevice>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -56,7 +56,7 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .HasForeignKey(e => e.DeviceId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<ActivityStep>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -70,14 +70,14 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
                 .HasForeignKey(e => e.DeviceCommandId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         modelBuilder.Entity<IrCode>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.Brand, e.Model, e.CommandName });
             entity.Property(e => e.DeviceType).HasConversion<string>();
         });
-        
+
         modelBuilder.Entity<IrCodeSet>(entity =>
         {
             entity.HasKey(e => e.Id);

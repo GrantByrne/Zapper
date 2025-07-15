@@ -23,10 +23,10 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         try
         {
             logger.LogInformation("Initializing BlueZ adapter...");
-            
+
             var adapters = await BlueZManager.GetAdaptersAsync();
             _adapter = adapters.FirstOrDefault();
-            
+
             if (_adapter == null)
             {
                 throw new InvalidOperationException("No Bluetooth adapters found on the system");
@@ -35,11 +35,11 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
             logger.LogInformation("Found Bluetooth adapter: {Address}", await _adapter.GetAddressAsync());
 
             if (!await _adapter.GetAsync<bool>("Powered"))
-            if (!await _adapter.GetAsync<bool>("Powered"))
-            {
-                logger.LogInformation("Powering on Bluetooth adapter...");
-                await _adapter.SetAsync("Powered", true);
-            }
+                if (!await _adapter.GetAsync<bool>("Powered"))
+                {
+                    logger.LogInformation("Powering on Bluetooth adapter...");
+                    await _adapter.SetAsync("Powered", true);
+                }
 
             logger.LogInformation("BlueZ adapter initialized successfully");
         }
@@ -152,7 +152,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         {
             var devices = await _adapter.GetDevicesAsync();
             var device = devices.FirstOrDefault(d => d.GetAsync<string>("Address").GetAwaiter().GetResult() == address);
-            
+
             if (device == null)
                 return null;
 
@@ -174,7 +174,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         {
             var devices = await _adapter.GetDevicesAsync();
             var device = devices.FirstOrDefault(d => d.GetAsync<string>("Address").GetAwaiter().GetResult() == address);
-            
+
             if (device == null)
             {
                 logger.LogWarning("Device {Address} not found for pairing", address);
@@ -189,10 +189,10 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 
             logger.LogInformation("Pairing with device {Address}...", address);
             await device.PairAsync();
-            
+
             var isPaired = await device.GetAsync<bool>("Paired");
             logger.LogInformation("Pairing with device {Address} {Result}", address, isPaired ? "succeeded" : "failed");
-            
+
             return isPaired;
         }
         catch (Exception ex)
@@ -211,7 +211,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         {
             var devices = await _adapter.GetDevicesAsync();
             var device = devices.FirstOrDefault(d => d.GetAsync<string>("Address").GetAwaiter().GetResult() == address);
-            
+
             if (device == null)
             {
                 logger.LogWarning("Device {Address} not found for connection", address);
@@ -226,16 +226,16 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 
             logger.LogInformation("Connecting to device {Address}...", address);
             await device.ConnectAsync();
-            
+
             var isConnected = await device.GetAsync<bool>("Connected");
             logger.LogInformation("Connection to device {Address} {Result}", address, isConnected ? "succeeded" : "failed");
-            
+
             if (isConnected)
             {
                 _devices[address] = device;
                 DeviceConnected?.Invoke(this, new BluetoothDeviceEventArgs(await CreateDeviceInfoAsync(device)));
             }
-            
+
             return isConnected;
         }
         catch (Exception ex)
@@ -254,7 +254,7 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         {
             var devices = await _adapter.GetDevicesAsync();
             var device = devices.FirstOrDefault(d => d.GetAsync<string>("Address").GetAwaiter().GetResult() == address);
-            
+
             if (device == null)
             {
                 logger.LogWarning("Device {Address} not found for disconnection", address);
@@ -269,16 +269,16 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 
             logger.LogInformation("Disconnecting from device {Address}...", address);
             await device.DisconnectAsync();
-            
+
             var isConnected = await device.GetAsync<bool>("Connected");
             logger.LogInformation("Disconnection from device {Address} {Result}", address, !isConnected ? "succeeded" : "failed");
-            
+
             if (!isConnected)
             {
                 _devices.Remove(address);
                 DeviceDisconnected?.Invoke(this, new BluetoothDeviceEventArgs(await CreateDeviceInfoAsync(device)));
             }
-            
+
             return !isConnected;
         }
         catch (Exception ex)
