@@ -9,7 +9,6 @@ namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxDeviceControllerTests
 {
-    private readonly Mock<INetworkDeviceController> _networkControllerMock;
     private readonly Mock<INetworkClientFactory> _networkClientFactoryMock;
     private readonly Mock<ITcpClientWrapper> _tcpClientMock;
     private readonly Mock<IUdpClientWrapper> _udpClientMock;
@@ -19,7 +18,6 @@ public class XboxDeviceControllerTests
 
     public XboxDeviceControllerTests()
     {
-        _networkControllerMock = new Mock<INetworkDeviceController>();
         _networkClientFactoryMock = new Mock<INetworkClientFactory>();
         _tcpClientMock = new Mock<ITcpClientWrapper>();
         _udpClientMock = new Mock<IUdpClientWrapper>();
@@ -36,7 +34,7 @@ public class XboxDeviceControllerTests
         _udpClientMock.Setup(x => x.SendAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<IPEndPoint>()))
             .ThrowsAsync(new SocketException());
 
-        _controller = new XboxDeviceController(_networkControllerMock.Object, _networkClientFactoryMock.Object, _loggerMock.Object);
+        _controller = new XboxDeviceController(_networkClientFactoryMock.Object, _loggerMock.Object);
     }
 
     [Fact(Timeout = 5000)]

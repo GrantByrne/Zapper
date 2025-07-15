@@ -66,4 +66,9 @@ public interface IDeviceClient
     /// Discover available PlayStation devices on the network
     /// </summary>
     Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync(DiscoverPlayStationDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Xbox devices on the network
+    /// </summary>
+    Task<DiscoverXboxDevicesResponse> DiscoverXboxDevicesAsync(DiscoverXboxDevicesRequest request, CancellationToken cancellationToken = default);
 }

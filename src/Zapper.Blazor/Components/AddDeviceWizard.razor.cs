@@ -21,6 +21,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         BluetoothScan,
         WebOsScan,
         PlayStationScan,
+        XboxScan,
         IrCodeSelection,
         Configuration
     }
@@ -52,6 +53,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private List<PlayStationDevice> _discoveredPlayStationDevices = new();
     private PlayStationDevice? _selectedPlayStationDevice;
     private string _manualPlayStationIpAddress = "";
+
+    // Xbox scanning variables
+    private bool _isXboxScanning;
+    private string _xboxScanError = "";
+    private List<XboxDevice> _discoveredXboxDevices = new();
+    private XboxDevice? _selectedXboxDevice;
+    private string _manualXboxIpAddress = "";
 
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
@@ -86,7 +94,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         _selectedDeviceTypeName = "Xbox";
         _newDevice.Type = Contracts.DeviceType.Xbox;
-        ShowConsoleConnectionOptions();
+        _selectedConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _currentStep = WizardStep.XboxScan;
+        _ = StartXboxScan();
     }
 
     private void ShowConsoleConnectionOptions()
@@ -186,6 +197,31 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.XboxScan && (_selectedXboxDevice != null || !string.IsNullOrWhiteSpace(_manualXboxIpAddress)))
+        {
+            // Pre-populate device info with selected Xbox
+            if (_selectedXboxDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedXboxDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedXboxDevice.IpAddress;
+                _newDevice.Brand = "Microsoft";
+                _newDevice.Model = _selectedXboxDevice.ConsoleType;
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualXboxIpAddress))
+            {
+                _newDevice.IpAddress = _manualXboxIpAddress.Trim();
+                _newDevice.Brand = "Microsoft";
+                _newDevice.Model = "Xbox";
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"Xbox ({_manualXboxIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
         else if (_currentStep == WizardStep.IrCodeSelection && _selectedIrCodeSetData != null)
         {
             // Store the selected IR code set ID
@@ -218,6 +254,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             {
                 _currentStep = WizardStep.PlayStationScan;
             }
+            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkTcp && _newDevice.Type == Contracts.DeviceType.Xbox)
+            {
+                _currentStep = WizardStep.XboxScan;
+            }
             else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
@@ -240,6 +280,11 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.PlayStationScan)
         {
             await StopPlayStationScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.XboxScan)
+        {
+            await StopXboxScan();
             _currentStep = WizardStep.DeviceType;
         }
         else if (_currentStep == WizardStep.IrCodeSelection)
@@ -414,6 +459,43 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 });
             });
 
+            // Subscribe to Xbox scanning events
+            _hubConnection.On<object>("XboxDeviceFound", (device) =>
+            {
+                InvokeAsync(() =>
+                {
+                    var deviceType = device?.GetType();
+                    var name = deviceType?.GetProperty("name")?.GetValue(device)?.ToString() ??
+                               deviceType?.GetProperty("Name")?.GetValue(device)?.ToString();
+                    var ipAddress = deviceType?.GetProperty("ipAddress")?.GetValue(device)?.ToString() ??
+                                    deviceType?.GetProperty("IpAddress")?.GetValue(device)?.ToString();
+                    var liveId = deviceType?.GetProperty("liveId")?.GetValue(device)?.ToString() ??
+                                 deviceType?.GetProperty("LiveId")?.GetValue(device)?.ToString();
+                    var consoleType = deviceType?.GetProperty("consoleType")?.GetValue(device)?.ToString() ??
+                                      deviceType?.GetProperty("ConsoleType")?.GetValue(device)?.ToString();
+                    var isAuthenticated = deviceType?.GetProperty("isAuthenticated")?.GetValue(device) ??
+                                          deviceType?.GetProperty("IsAuthenticated")?.GetValue(device);
+
+                    if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(ipAddress))
+                    {
+                        var xboxDevice = new XboxDevice
+                        {
+                            Name = name,
+                            IpAddress = ipAddress,
+                            LiveId = liveId ?? "",
+                            ConsoleType = consoleType ?? "Xbox",
+                            IsAuthenticated = isAuthenticated as bool? ?? false
+                        };
+
+                        if (!_discoveredXboxDevices.Any(d => d.IpAddress == xboxDevice.IpAddress))
+                        {
+                            _discoveredXboxDevices.Add(xboxDevice);
+                            StateHasChanged();
+                        }
+                    }
+                });
+            });
+
             await _hubConnection.StartAsync();
         }
     }
@@ -508,6 +590,96 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         _isPlayStationScanning = false;
         _playStationScanError = "";
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+
+    private async Task StartXboxScan()
+    {
+        if (apiClient == null)
+        {
+            _xboxScanError = "API client not available. Cannot scan for Xbox devices.";
+            return;
+        }
+
+        try
+        {
+            _isXboxScanning = true;
+            _xboxScanError = "";
+            _discoveredXboxDevices.Clear();
+            _selectedXboxDevice = null;
+            _manualXboxIpAddress = "";
+            StateHasChanged();
+
+            // Initialize SignalR connection if needed
+            await EnsureSignalRConnection();
+
+            // Get SignalR connection ID
+            var connectionId = _hubConnection?.ConnectionId ?? "";
+
+            // Start the scanning process via API
+            try
+            {
+                var request = new DiscoverXboxDevicesRequest { DurationSeconds = 15 };
+                var headers = new Dictionary<string, string>();
+                if (!string.IsNullOrEmpty(connectionId))
+                {
+                    headers["X-SignalR-ConnectionId"] = connectionId;
+                }
+
+                var response = await apiClient.Devices.DiscoverXboxDevicesAsync(request);
+
+                if (response.Success && response.Devices != null)
+                {
+                    foreach (var device in response.Devices)
+                    {
+                        _discoveredXboxDevices.Add(new XboxDevice
+                        {
+                            Name = device.Name,
+                            IpAddress = device.IpAddress,
+                            LiveId = device.LiveId,
+                            ConsoleType = device.ConsoleType,
+                            IsAuthenticated = device.IsAuthenticated
+                        });
+                    }
+                }
+
+                _isXboxScanning = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _xboxScanError = $"Failed to scan for Xbox devices: {ex.Message}";
+                _isXboxScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _xboxScanError = $"Failed to scan for Xbox devices: {ex.Message}";
+            _isXboxScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectXboxDevice(XboxDevice device)
+    {
+        _selectedXboxDevice = device;
+        _manualXboxIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualXboxIp()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualXboxIpAddress))
+        {
+            _selectedXboxDevice = null; // Clear selected device when using manual IP
+        }
+    }
+
+    private async Task StopXboxScan()
+    {
+        _isXboxScanning = false;
+        _xboxScanError = "";
         await Task.CompletedTask;
         StateHasChanged();
     }
@@ -625,6 +797,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _discoveredPlayStationDevices.Clear();
         _selectedPlayStationDevice = null;
         _manualPlayStationIpAddress = "";
+
+        // Reset Xbox scanning state
+        _isXboxScanning = false;
+        _xboxScanError = "";
+        _discoveredXboxDevices.Clear();
+        _selectedXboxDevice = null;
+        _manualXboxIpAddress = "";
     }
 
     private void ResetWizard()
@@ -648,6 +827,10 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.PlayStationScan && _isPlayStationScanning)
         {
             await StopPlayStationScan();
+        }
+        else if (_currentStep == WizardStep.XboxScan && _isXboxScanning)
+        {
+            await StopXboxScan();
         }
 
         ResetWizard();
@@ -766,5 +949,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         public string Name { get; set; } = "";
         public string IpAddress { get; set; } = "";
         public string Model { get; set; } = "";
+    }
+
+    private class XboxDevice
+    {
+        public string Name { get; set; } = "";
+        public string IpAddress { get; set; } = "";
+        public string LiveId { get; set; } = "";
+        public string ConsoleType { get; set; } = "";
+        public bool IsAuthenticated { get; set; }
     }
 }

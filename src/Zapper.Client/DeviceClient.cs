@@ -74,4 +74,9 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
     {
         return await deviceApi.DiscoverPlayStationDevicesAsync(request, cancellationToken);
     }
+
+    public async Task<DiscoverXboxDevicesResponse> DiscoverXboxDevicesAsync(DiscoverXboxDevicesRequest request, CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.DiscoverXboxDevicesAsync(request, cancellationToken);
+    }
 }

@@ -20,6 +20,10 @@
             {
                 <span>Add New Device - Scan for PlayStation Consoles</span>
             }
+            else if (_currentStep == WizardStep.XboxScan)
+            {
+                <span>Add New Device - Scan for Xbox Consoles</span>
+            }
             else if (_currentStep == WizardStep.IrCodeSelection)
             {
                 <span>Add New Device - Select IR Codes</span>
@@ -314,6 +318,81 @@
                 Use This IP Address
             </MudButton>
         }
+        else if (_currentStep == WizardStep.XboxScan)
+        {
+            <MudText Class="mb-4">Scanning for available Xbox consoles on your network...</MudText>
+            
+            @if (_isXboxScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for Xbox consoles...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your Xbox is powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_xboxScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_xboxScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartXboxScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredXboxDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredXboxDevices.Count() console(s). Select the console you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredXboxDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedXboxDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedXboxDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectXboxDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.SportsEsports" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.ConsoleType</MudText>
+                                    @if (device.IsAuthenticated)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="ml-2">Authenticated</MudChip>
+                                    }
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartXboxScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No Xbox consoles found on your network. Make sure your Xbox is powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartXboxScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualXboxIpAddress" Label="Xbox IP Address" 
+                         HelperText="Enter the IP address of your Xbox console (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualXboxIp" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualXboxIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.IrCodeSelection)
         {
             <MudText Class="mb-4">Select or search for IR codes for your device:</MudText>
@@ -387,6 +466,14 @@
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedPlayStationDevice == null && string.IsNullOrWhiteSpace(_manualPlayStationIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.XboxScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedXboxDevice == null && string.IsNullOrWhiteSpace(_manualXboxIpAddress))">
                 Next
             </MudButton>
         }

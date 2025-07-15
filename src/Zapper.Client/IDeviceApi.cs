@@ -81,4 +81,10 @@ public interface IDeviceApi
     /// </summary>
     [Post(ApiRoutes.Devices.PlayStationDiscovery)]
     Task<IEnumerable<PlayStationDeviceDto>> DiscoverPlayStationDevicesAsync([Body] DiscoverPlayStationDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Xbox devices on the network
+    /// </summary>
+    [Post(ApiRoutes.Devices.XboxDiscovery)]
+    Task<DiscoverXboxDevicesResponse> DiscoverXboxDevicesAsync([Body] DiscoverXboxDevicesRequest request, CancellationToken cancellationToken = default);
 }

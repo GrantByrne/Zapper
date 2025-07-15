@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.SignalR;
+using Zapper.Contracts.Devices;
 using Zapper.Device.Xbox;
 using Zapper.Services;
 

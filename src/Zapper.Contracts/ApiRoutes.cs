@@ -23,6 +23,7 @@ public static class ApiRoutes
         public const string WebOsScan = $"{Base}/scan/webos";
         public const string WebOsScanStop = $"{Base}/scan/webos/stop";
         public const string PlayStationDiscovery = $"{Base}/discover/playstation";
+        public const string XboxDiscovery = $"{Base}/discover/xbox";
     }
 
     public static class Activities

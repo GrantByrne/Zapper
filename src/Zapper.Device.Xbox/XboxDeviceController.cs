@@ -8,9 +8,10 @@ using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox;
 
-public class XboxDeviceController(INetworkDeviceController networkController, INetworkClientFactory networkClientFactory, ILogger<XboxDeviceController> logger) : IXboxDeviceController
+public class XboxDeviceController(
+    INetworkClientFactory networkClientFactory,
+    ILogger<XboxDeviceController> logger) : IXboxDeviceController
 {
-    private readonly INetworkDeviceController _networkController = networkController;
     private readonly ConcurrentDictionary<string, XboxConnection> _connections = new();
     private const int CommandPort = 5050;
 
