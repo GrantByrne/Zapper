@@ -57,7 +57,7 @@ namespace Zapper.Data.Migrations
 
                     b.HasIndex("SortOrder");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.ActivityDevice", b =>
@@ -82,7 +82,7 @@ namespace Zapper.Data.Migrations
                     b.HasIndex("ActivityId", "DeviceId")
                         .IsUnique();
 
-                    b.ToTable("ActivityDevices");
+                    b.ToTable("ActivityDevices", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.ActivityStep", b =>
@@ -116,7 +116,7 @@ namespace Zapper.Data.Migrations
                     b.HasIndex("ActivityId", "StepOrder")
                         .IsUnique();
 
-                    b.ToTable("ActivitySteps");
+                    b.ToTable("ActivitySteps", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.Device", b =>
@@ -200,7 +200,7 @@ namespace Zapper.Data.Migrations
 
                     b.HasIndex("IpAddress", "Port");
 
-                    b.ToTable("Devices");
+                    b.ToTable("Devices", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.DeviceCommand", b =>
@@ -253,7 +253,7 @@ namespace Zapper.Data.Migrations
                     b.HasIndex("DeviceId", "Name")
                         .IsUnique();
 
-                    b.ToTable("DeviceCommands");
+                    b.ToTable("DeviceCommands", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.ExternalIrCodeCache", b =>
@@ -283,7 +283,7 @@ namespace Zapper.Data.Migrations
 
                     b.HasIndex("ExpiresAt");
 
-                    b.ToTable("ExternalIrCodeCache");
+                    b.ToTable("ExternalIrCodeCache", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.IrCode", b =>
@@ -340,7 +340,7 @@ namespace Zapper.Data.Migrations
 
                     b.HasIndex("Brand", "Model", "CommandName");
 
-                    b.ToTable("IrCodes");
+                    b.ToTable("IrCodes", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.IrCodeSet", b =>
@@ -381,7 +381,7 @@ namespace Zapper.Data.Migrations
                     b.HasIndex("Brand", "Model")
                         .IsUnique();
 
-                    b.ToTable("IrCodeSets");
+                    b.ToTable("IrCodeSets", (string)null);
                 });
 
             modelBuilder.Entity("Zapper.Core.Models.ActivityDevice", b =>

@@ -11,23 +11,23 @@ public partial class IrCodeSelector(IZapperApiClient? apiClient, HttpClient http
     [Parameter] public DeviceType DeviceType { get; set; }
     [Parameter] public EventCallback<IrCodeSet> OnCodeSetSelected { get; set; }
 
-    private bool _isLoadingLocal = false;
+    private bool _isLoadingLocal;
     private List<IrCodeSet> _localCodeSets = new();
     private string _searchBrand = "";
     private string _searchModel = "";
 
-    private bool _isSearchingExternal = false;
-    private bool _hasSearchedExternal = false;
+    private bool _isSearchingExternal;
+    private bool _hasSearchedExternal;
     private string _externalManufacturer = "";
     private List<string> _manufacturers = new();
     private List<ExternalDeviceInfo> _externalDevices = new();
 
     private IrCodeSet? _selectedCodeSet;
-    private bool _isTesting = false;
+    private bool _isTesting;
     private string _testResult = "";
 
-    private bool _isLearning = false;
-    private bool _isReceiverAvailable = false;
+    private bool _isLearning;
+    private bool _isReceiverAvailable;
     private string _learningCommandName = "";
     private List<IrCode> _learnedCodes = new();
     private string _learningMessage = "";

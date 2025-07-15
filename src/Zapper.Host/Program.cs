@@ -25,30 +25,36 @@ builder.Services.AddZapperDatabase();
 builder.Services.AddSingleton<IInfraredTransmitter>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<GpioInfraredTransmitter>>();
-    var config = provider.GetRequiredService<IConfiguration>();
+    var settingsService = provider.GetRequiredService<ISettingsService>();
+
+    // Get settings to determine GPIO configuration
+    var settings = settingsService.GetSettingsAsync().GetAwaiter().GetResult();
 
     // Use mock transmitter if GPIO is disabled
-    if (!config.GetValue<bool>("Hardware:EnableGPIO", true))
+    if (!settings.Hardware.EnableGpio)
     {
         return new MockInfraredTransmitter(provider.GetRequiredService<ILogger<MockInfraredTransmitter>>());
     }
 
-    var gpioPin = config.GetValue<int>("Hardware:IRTransmitter:GpioPin", 18);
+    var gpioPin = settings.Hardware.Infrared.TransmitterGpioPin;
     return new GpioInfraredTransmitter(gpioPin, logger);
 });
 
 builder.Services.AddSingleton<IInfraredReceiver>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<GpioInfraredReceiver>>();
-    var config = provider.GetRequiredService<IConfiguration>();
+    var settingsService = provider.GetRequiredService<ISettingsService>();
+
+    // Get settings to determine GPIO configuration
+    var settings = settingsService.GetSettingsAsync().GetAwaiter().GetResult();
 
     // Use mock receiver if GPIO is disabled
-    if (!config.GetValue<bool>("Hardware:EnableGPIO", true))
+    if (!settings.Hardware.EnableGpio)
     {
         return new MockInfraredReceiver(provider.GetRequiredService<ILogger<MockInfraredReceiver>>());
     }
 
-    var gpioPin = config.GetValue<int>("Hardware:IRReceiver:GpioPin", 19);
+    var gpioPin = settings.Hardware.Infrared.ReceiverGpioPin;
     return new GpioInfraredReceiver(gpioPin, logger);
 });
 
@@ -120,6 +126,8 @@ builder.Services.AddScoped<IIrCodeService, IrCodeService>();
 builder.Services.AddScoped<IExternalIrCodeService, IrdbService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IIrLearningService, IrLearningService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IIrTroubleshootingService, IrTroubleshootingService>();
 
 // Add SignalR
 builder.Services.AddSignalR();

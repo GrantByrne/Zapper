@@ -10,7 +10,7 @@ public partial class Devices(IZapperApiClient? apiClient) : ComponentBase
 {
 
     private List<DeviceDto> _devices = new();
-    private bool _showAddDialog = false;
+    private bool _showAddDialog;
     private bool _isLoading = true;
     private string? _errorMessage;
     private string _loadingStep = "initializing";

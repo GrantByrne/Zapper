@@ -26,22 +26,22 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private WizardStep _currentStep = WizardStep.DeviceType;
     private Contracts.ConnectionType? _selectedConnectionType;
     private string _selectedDeviceTypeName = "";
-    private bool _isRokuDevice = false;
+    private bool _isRokuDevice;
     private CreateDeviceRequest _newDevice = new();
     private string _selectedIrCodeSet = "";
     private IrCodeSet? _selectedIrCodeSetData;
 
     // Bluetooth scanning variables
-    private bool _isScanning = false;
+    private bool _isScanning;
     private string _scanError = "";
     private List<string> _discoveredBluetoothDevices = new();
     private string _selectedBluetoothDevice = "";
 
     // WebOS scanning variables
-    private bool _isWebOsScanning = false;
+    private bool _isWebOsScanning;
     private string _webOsScanError = "";
     private List<WebOsDevice> _discoveredWebOsDevices = new();
-    private WebOsDevice? _selectedWebOsDevice = null;
+    private WebOsDevice? _selectedWebOsDevice;
     private string _manualWebOsIpAddress = "";
 
     // SignalR connection for real-time updates

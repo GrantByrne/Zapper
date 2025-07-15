@@ -10,7 +10,7 @@ public partial class Activities(IZapperApiClient? apiClient) : ComponentBase
 {
 
     private List<ActivityDto> _activities = new();
-    private bool _showAddDialog = false;
+    private bool _showAddDialog;
     private bool _isLoading = true;
     private string? _errorMessage;
     private ActivityModel _newActivity = new();
