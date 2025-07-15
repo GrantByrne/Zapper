@@ -124,7 +124,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void PreviousStep()
+    private async Task PreviousStep()
     {
         if (_currentStep == WizardStep.Configuration)
         {
@@ -141,8 +141,14 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                 _currentStep = WizardStep.DeviceType;
             }
         }
-        else if (_currentStep == WizardStep.BluetoothScan || _currentStep == WizardStep.WebOSScan)
+        else if (_currentStep == WizardStep.BluetoothScan)
         {
+            await StopBluetoothScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.WebOSScan)
+        {
+            await StopWebOSScan();
             _currentStep = WizardStep.DeviceType;
         }
     }
@@ -422,6 +428,69 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         ResetWizardState();
         IsVisible = false;
         _ = IsVisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task CancelWizard()
+    {
+        // Stop any ongoing scans before canceling
+        if (_currentStep == WizardStep.BluetoothScan && _isScanning)
+        {
+            await StopBluetoothScan();
+        }
+        else if (_currentStep == WizardStep.WebOSScan && _isWebOSScanning)
+        {
+            await StopWebOSScan();
+        }
+
+        ResetWizard();
+    }
+
+    private async Task StopBluetoothScan()
+    {
+        if (_isScanning)
+        {
+            try
+            {
+                // TODO: Implement stop scan API endpoint when available
+                // await ApiClient.Devices.StopBluetoothScanAsync();
+                
+                // For now, just reset the scanning state
+                _isScanning = false;
+                _scanError = "";
+                StateHasChanged();
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _scanError = $"Failed to stop Bluetooth scan: {ex.Message}";
+                _isScanning = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task StopWebOSScan()
+    {
+        if (_isWebOSScanning)
+        {
+            try
+            {
+                // TODO: Implement stop scan API endpoint when available
+                // await ApiClient.Devices.StopWebOSScanAsync();
+                
+                // For now, just reset the scanning state
+                _isWebOSScanning = false;
+                _webOSScanError = "";
+                StateHasChanged();
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                _webOSScanError = $"Failed to stop WebOS scan: {ex.Message}";
+                _isWebOSScanning = false;
+                StateHasChanged();
+            }
+        }
     }
 
     protected override void OnParametersSet()

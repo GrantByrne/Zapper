@@ -259,12 +259,12 @@
     <DialogActions>
         @if (_currentStep == WizardStep.DeviceType)
         {
-            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
         }
         else if (_currentStep == WizardStep.BluetoothScan)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
-            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(string.IsNullOrEmpty(_selectedBluetoothDevice))">
                 Next
             </MudButton>
@@ -272,7 +272,7 @@
         else if (_currentStep == WizardStep.WebOSScan)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
-            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOSDevice == null && string.IsNullOrWhiteSpace(_manualWebOSIpAddress))">
                 Next
             </MudButton>
@@ -280,7 +280,7 @@
         else if (_currentStep == WizardStep.Configuration)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
-            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="FinishWizard" Disabled="@(string.IsNullOrWhiteSpace(_newDevice.Name))">
                 Add Device
             </MudButton>
