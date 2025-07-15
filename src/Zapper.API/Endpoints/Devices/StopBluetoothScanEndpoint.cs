@@ -41,7 +41,7 @@ public class StopBluetoothScanEndpoint(
             }
 
             var stopped = await bluetoothService.StopDiscoveryAsync(ct);
-            
+
             if (stopped)
             {
                 await hubContext.Clients.All.SendAsync("BluetoothScanCompleted", cancellationToken: ct);
