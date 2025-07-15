@@ -22,7 +22,7 @@ public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCode
 
     public override async Task HandleAsync(ImportExternalCodeSetRequest req, CancellationToken ct)
     {
-        var isAvailable = await externalIrCodeService.IsAvailableAsync();
+        var isAvailable = await externalIrCodeService.IsAvailable();
         if (!isAvailable)
         {
             await SendAsync(new ImportExternalCodeSetResponse
@@ -33,7 +33,7 @@ public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCode
             return;
         }
 
-        var existingCodeSet = await irCodeService.GetCodeSetAsync(req.Manufacturer, req.Device,
+        var existingCodeSet = await irCodeService.GetCodeSet(req.Manufacturer, req.Device,
             MapDeviceType(req.DeviceType));
 
         if (existingCodeSet != null)
@@ -47,7 +47,7 @@ public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCode
             return;
         }
 
-        var externalCodeSet = await externalIrCodeService.GetCodeSetAsync(req.Manufacturer, req.DeviceType, req.Device, req.Subdevice);
+        var externalCodeSet = await externalIrCodeService.GetCodeSet(req.Manufacturer, req.DeviceType, req.Device, req.Subdevice);
 
         if (externalCodeSet == null)
         {
@@ -59,7 +59,7 @@ public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCode
             return;
         }
 
-        var createdCodeSet = await irCodeService.CreateCodeSetAsync(externalCodeSet);
+        var createdCodeSet = await irCodeService.CreateCodeSet(externalCodeSet);
 
         await SendOkAsync(new ImportExternalCodeSetResponse
         {

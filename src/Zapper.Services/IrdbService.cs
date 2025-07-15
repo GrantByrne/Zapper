@@ -11,11 +11,11 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
     private const string BaseUrl = "https://cdn.jsdelivr.net/gh/probonopd/irdb@master/codes";
     private const int CacheExpiryHours = 24;
 
-    public async Task<IEnumerable<string>> GetAvailableManufacturersAsync()
+    public async Task<IEnumerable<string>> GetAvailableManufacturers()
     {
         const string cacheKey = "irdb:manufacturers";
 
-        var cachedData = await GetFromCacheAsync(cacheKey);
+        var cachedData = await GetFromCache(cacheKey);
         if (cachedData != null)
         {
             return JsonSerializer.Deserialize<IEnumerable<string>>(cachedData) ?? [];
@@ -27,7 +27,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
             var response = await httpClient.GetStringAsync(indexUrl);
             var manufacturers = ParseManufacturersFromIndex(response);
 
-            await CacheDataAsync(cacheKey, JsonSerializer.Serialize(manufacturers));
+            await CacheData(cacheKey, JsonSerializer.Serialize(manufacturers));
             return manufacturers;
         }
         catch (Exception ex)
@@ -37,11 +37,11 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         }
     }
 
-    public async Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchDevicesAsync(string? manufacturer = null, string? deviceType = null)
+    public async Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchDevices(string? manufacturer = null, string? deviceType = null)
     {
         var cacheKey = $"irdb:devices:{manufacturer}:{deviceType}";
 
-        var cachedData = await GetFromCacheAsync(cacheKey);
+        var cachedData = await GetFromCache(cacheKey);
         if (cachedData != null)
         {
             return JsonSerializer.Deserialize<IEnumerable<(string, string, string, string)>>(cachedData) ?? [];
@@ -53,7 +53,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
             var response = await httpClient.GetStringAsync(indexUrl);
             var devices = ParseDevicesFromIndex(response, manufacturer, deviceType);
 
-            await CacheDataAsync(cacheKey, JsonSerializer.Serialize(devices));
+            await CacheData(cacheKey, JsonSerializer.Serialize(devices));
             return devices;
         }
         catch (Exception ex)
@@ -63,11 +63,11 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         }
     }
 
-    public async Task<IrCodeSet?> GetCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice)
+    public async Task<IrCodeSet?> GetCodeSet(string manufacturer, string deviceType, string device, string subdevice)
     {
         var cacheKey = $"irdb:codeset:{manufacturer}:{deviceType}:{device}:{subdevice}";
 
-        var cachedData = await GetFromCacheAsync(cacheKey);
+        var cachedData = await GetFromCache(cacheKey);
         if (cachedData != null)
         {
             return JsonSerializer.Deserialize<IrCodeSet>(cachedData);
@@ -81,7 +81,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
 
             if (codeSet != null)
             {
-                await CacheDataAsync(cacheKey, JsonSerializer.Serialize(codeSet));
+                await CacheData(cacheKey, JsonSerializer.Serialize(codeSet));
             }
 
             return codeSet;
@@ -94,7 +94,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         }
     }
 
-    public async Task<bool> IsAvailableAsync()
+    public async Task<bool> IsAvailable()
     {
         try
         {
@@ -107,7 +107,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         }
     }
 
-    public async Task InvalidateCacheAsync()
+    public async Task InvalidateCache()
     {
         var expiredEntries = await context.ExternalIrCodeCache
             .Where(e => e.CacheKey.StartsWith("irdb:"))
@@ -119,7 +119,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         logger.LogInformation("Invalidated {Count} IRDB cache entries", expiredEntries.Count);
     }
 
-    private async Task<string?> GetFromCacheAsync(string cacheKey)
+    private async Task<string?> GetFromCache(string cacheKey)
     {
         var cacheEntry = await context.ExternalIrCodeCache
             .FirstOrDefaultAsync(e => e.CacheKey == cacheKey && e.ExpiresAt > DateTime.UtcNow);
@@ -127,7 +127,7 @@ public class IrdbService(HttpClient httpClient, ZapperContext context, ILogger<I
         return cacheEntry?.CachedData;
     }
 
-    private async Task CacheDataAsync(string cacheKey, string data)
+    private async Task CacheData(string cacheKey, string data)
     {
         var existingEntry = await context.ExternalIrCodeCache
             .FirstOrDefaultAsync(e => e.CacheKey == cacheKey);

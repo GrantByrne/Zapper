@@ -2,12 +2,12 @@ namespace Zapper.Services;
 
 public interface IDeviceService
 {
-    Task<IEnumerable<Zapper.Core.Models.Device>> GetAllDevicesAsync();
-    Task<Zapper.Core.Models.Device?> GetDeviceAsync(int id);
-    Task<Zapper.Core.Models.Device> CreateDeviceAsync(Zapper.Core.Models.Device device);
-    Task<Zapper.Core.Models.Device?> UpdateDeviceAsync(int id, Zapper.Core.Models.Device device);
-    Task<bool> DeleteDeviceAsync(int id);
-    Task<bool> SendCommandAsync(int deviceId, string commandName, CancellationToken cancellationToken = default);
-    Task<bool> TestDeviceConnectionAsync(int deviceId);
-    Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(string deviceType, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Zapper.Core.Models.Device>> GetAllDevices();
+    Task<Zapper.Core.Models.Device?> GetDevice(int id);
+    Task<Zapper.Core.Models.Device> CreateDevice(Zapper.Core.Models.Device device);
+    Task<Zapper.Core.Models.Device?> UpdateDevice(int id, Zapper.Core.Models.Device device);
+    Task<bool> DeleteDevice(int id);
+    Task<bool> SendCommand(int deviceId, string commandName, CancellationToken cancellationToken = default);
+    Task<bool> TestDeviceConnection(int deviceId);
+    Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevices(string deviceType, CancellationToken cancellationToken = default);
 }

@@ -5,9 +5,8 @@ using Zapper.Contracts.Activities;
 
 namespace Zapper.Blazor.Pages;
 
-public partial class Activities : ComponentBase
+public partial class Activities(IZapperApiClient? apiClient) : ComponentBase
 {
-    [Inject] public IZapperApiClient? ApiClient { get; set; }
 
     private List<ActivityDto> _activities = new();
     private bool _showAddDialog = false;
@@ -30,13 +29,13 @@ public partial class Activities : ComponentBase
             _isLoading = true;
             _errorMessage = null;
 
-            if (ApiClient == null)
+            if (apiClient == null)
             {
                 _errorMessage = "API client not configured";
                 return;
             }
 
-            var activities = await ApiClient.Activities.GetAllActivitiesAsync();
+            var activities = await apiClient.Activities.GetAllActivitiesAsync();
             _activities = activities.ToList();
         }
         catch (Exception ex)
@@ -82,28 +81,27 @@ public partial class Activities : ComponentBase
         {
             try
             {
-                // TODO: Implement create activity API endpoint
-                // var createRequest = new CreateActivityRequest
-                // {
-                //     Name = _newActivity.Name,
-                //     Description = _newActivity.Description,
-                //     IsEnabled = true,
-                //     Steps = _newActivity.Steps.Select((step, index) => new CreateActivityStepRequest
-                //     {
-                //         DeviceId = step.DeviceId,
-                //         Command = step.Command,
-                //         DelayMs = 500,
-                //         SortOrder = index
-                //     }).ToList()
-                // };
-                // var createdActivity = await ApiClient.Activities.CreateActivityAsync(createRequest);
-                // _activities.Add(createdActivity);
+                var createRequest = new CreateActivityRequest
+                {
+                    Name = _newActivity.Name,
+                    Description = _newActivity.Description,
+                    IsEnabled = true,
+                    Type = _newActivity.Type,
+                    Steps = _newActivity.Steps.Select((step, index) => new CreateActivityStepRequest
+                    {
+                        DeviceId = step.DeviceId,
+                        Command = step.Command,
+                        DelayMs = 500,
+                        SortOrder = index
+                    }).ToList()
+                };
 
-                // For now, show a message that this feature is not implemented
-                _errorMessage = "Creating activities is not yet implemented in the API.";
+                var createdActivity = await apiClient.Activities.CreateActivityAsync(createRequest);
+                _activities.Add(createdActivity);
+
+                _errorMessage = null;
+                _newActivity = new CreateActivityModel();
                 StateHasChanged();
-
-                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -117,13 +115,13 @@ public partial class Activities : ComponentBase
     {
         try
         {
-            if (ApiClient == null)
+            if (apiClient == null)
             {
                 _errorMessage = "API client not configured";
                 return;
             }
 
-            var response = await ApiClient.Activities.ExecuteActivityAsync(activity.Id);
+            var response = await apiClient.Activities.ExecuteActivityAsync(activity.Id);
 
             if (response.Success)
             {
@@ -145,17 +143,15 @@ public partial class Activities : ComponentBase
 
     private void EditActivity(ActivityDto activity)
     {
-        // TODO: Implement activity editing dialog
+        _errorMessage = "Activity editing is not yet implemented in the UI.";
+        StateHasChanged();
     }
 
     private async Task DeleteActivity(ActivityDto activity)
     {
         try
         {
-            // TODO: Implement delete activity API endpoint
-            // await ApiClient.Activities.DeleteActivityAsync(activity.Id);
-
-            // For now, remove from local list
+            await apiClient.Activities.DeleteActivityAsync(activity.Id);
             _activities.Remove(activity);
             StateHasChanged();
 

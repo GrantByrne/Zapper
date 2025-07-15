@@ -22,14 +22,14 @@ public class GetExternalCodeSetEndpoint(IExternalIrCodeService externalIrCodeSer
 
     public override async Task HandleAsync(GetExternalCodeSetRequest req, CancellationToken ct)
     {
-        var isAvailable = await externalIrCodeService.IsAvailableAsync();
+        var isAvailable = await externalIrCodeService.IsAvailable();
         if (!isAvailable)
         {
             await SendNotFoundAsync(ct);
             return;
         }
 
-        var codeSet = await externalIrCodeService.GetCodeSetAsync(req.Manufacturer, req.DeviceType, req.Device, req.Subdevice);
+        var codeSet = await externalIrCodeService.GetCodeSet(req.Manufacturer, req.DeviceType, req.Device, req.Subdevice);
 
         if (codeSet == null)
         {

@@ -6,7 +6,7 @@ namespace Zapper.Services;
 public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<NotificationService> logger) : INotificationService
 {
 
-    public async Task NotifyDeviceStatusChangedAsync(int deviceId, string deviceName, bool isOnline)
+    public async Task NotifyDeviceStatusChanged(int deviceId, string deviceName, bool isOnline)
     {
         var data = new
         {
@@ -16,14 +16,14 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToDeviceGroupAsync(deviceId, "DeviceStatusChanged", data);
-        await SendToAllClientsAsync("DeviceStatusChanged", data);
+        await SendToDeviceGroup(deviceId, "DeviceStatusChanged", data);
+        await SendToAllClients("DeviceStatusChanged", data);
 
         logger.LogInformation("Device status changed: {DeviceName} is now {Status}",
             deviceName, isOnline ? "online" : "offline");
     }
 
-    public async Task NotifyDeviceCommandExecutedAsync(int deviceId, string deviceName, string commandName, bool success)
+    public async Task NotifyDeviceCommandExecuted(int deviceId, string deviceName, string commandName, bool success)
     {
         var data = new
         {
@@ -34,13 +34,13 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToDeviceGroupAsync(deviceId, "DeviceCommandExecuted", data);
+        await SendToDeviceGroup(deviceId, "DeviceCommandExecuted", data);
 
         logger.LogInformation("Device command executed: {DeviceName} - {CommandName} ({Status})",
             deviceName, commandName, success ? "success" : "failed");
     }
 
-    public async Task NotifyActivityStartedAsync(int activityId, string activityName)
+    public async Task NotifyActivityStarted(int activityId, string activityName)
     {
         var data = new
         {
@@ -50,13 +50,13 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
+        await SendToActivityGroup(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
 
         logger.LogInformation("Activity started: {ActivityName}", activityName);
     }
 
-    public async Task NotifyActivityCompletedAsync(int activityId, string activityName, bool success)
+    public async Task NotifyActivityCompleted(int activityId, string activityName, bool success)
     {
         var data = new
         {
@@ -67,14 +67,14 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToActivityGroupAsync(activityId, "ActivityStatusChanged", data);
+        await SendToActivityGroup(activityId, "ActivityStatusChanged", data);
         await SendToAllClientsAsync("ActivityStatusChanged", data);
 
         logger.LogInformation("Activity completed: {ActivityName} ({Status})",
             activityName, success ? "success" : "failed");
     }
 
-    public async Task NotifyActivityStepExecutedAsync(int activityId, string activityName, int stepNumber, string stepDescription, bool success)
+    public async Task NotifyActivityStepExecuted(int activityId, string activityName, int stepNumber, string stepDescription, bool success)
     {
         var data = new
         {
@@ -86,13 +86,13 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToActivityGroupAsync(activityId, "ActivityStepExecuted", data);
+        await SendToActivityGroup(activityId, "ActivityStepExecuted", data);
 
         logger.LogInformation("Activity step executed: {ActivityName} - Step {StepNumber} ({Status})",
             activityName, stepNumber, success ? "success" : "failed");
     }
 
-    public async Task NotifyDeviceDiscoveredAsync(string deviceType, string deviceName, string deviceAddress)
+    public async Task NotifyDeviceDiscovered(string deviceType, string deviceName, string deviceAddress)
     {
         var data = new
         {
@@ -102,13 +102,13 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToAllClientsAsync("DeviceDiscovered", data);
+        await SendToAllClients("DeviceDiscovered", data);
 
         logger.LogInformation("Device discovered: {DeviceName} ({DeviceType}) at {DeviceAddress}",
             deviceName, deviceType, deviceAddress);
     }
 
-    public async Task NotifyBluetoothDeviceConnectedAsync(string deviceId, string deviceName)
+    public async Task NotifyBluetoothDeviceConnected(string deviceId, string deviceName)
     {
         var data = new
         {
@@ -118,12 +118,12 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
+        await SendToAllClients("BluetoothDeviceStatusChanged", data);
 
         logger.LogInformation("Bluetooth device connected: {DeviceName}", deviceName);
     }
 
-    public async Task NotifyBluetoothDeviceDisconnectedAsync(string deviceId, string deviceName)
+    public async Task NotifyBluetoothDeviceDisconnected(string deviceId, string deviceName)
     {
         var data = new
         {
@@ -133,12 +133,12 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToAllClientsAsync("BluetoothDeviceStatusChanged", data);
+        await SendToAllClients("BluetoothDeviceStatusChanged", data);
 
         logger.LogInformation("Bluetooth device disconnected: {DeviceName}", deviceName);
     }
 
-    public async Task NotifyWebOsDevicePairedAsync(string deviceId, string deviceName, bool success)
+    public async Task NotifyWebOsDevicePaired(string deviceId, string deviceName, bool success)
     {
         var data = new
         {
@@ -149,13 +149,13 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToAllClientsAsync("WebOSDevicePaired", data);
+        await SendToAllClients("WebOSDevicePaired", data);
 
         logger.LogInformation("WebOS device pairing: {DeviceName} ({Status})",
             deviceName, success ? "success" : "failed");
     }
 
-    public async Task SendSystemMessageAsync(string message, string level = "info")
+    public async Task SendSystemMessage(string message, string level = "info")
     {
         var data = new
         {
@@ -164,12 +164,12 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             Timestamp = DateTime.UtcNow
         };
 
-        await SendToAllClientsAsync("SystemMessage", data);
+        await SendToAllClients("SystemMessage", data);
 
         logger.LogInformation("System message sent: {Message} (level: {Level})", message, level);
     }
 
-    public async Task SendToAllClientsAsync(string method, object data)
+    public async Task SendToAllClients(string method, object data)
     {
         try
         {
@@ -181,7 +181,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         }
     }
 
-    public async Task SendToDeviceGroupAsync(int deviceId, string method, object data)
+    public async Task SendToDeviceGroup(int deviceId, string method, object data)
     {
         try
         {
@@ -193,7 +193,7 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
         }
     }
 
-    public async Task SendToActivityGroupAsync(int activityId, string method, object data)
+    public async Task SendToActivityGroup(int activityId, string method, object data)
     {
         try
         {

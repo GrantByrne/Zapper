@@ -6,13 +6,10 @@ using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Components;
 
-public partial class IrCodeSelector : ComponentBase
+public partial class IrCodeSelector(IZapperApiClient? apiClient, HttpClient httpClient, ISnackbar snackbar) : ComponentBase
 {
     [Parameter] public DeviceType DeviceType { get; set; }
     [Parameter] public EventCallback<IrCodeSet> OnCodeSetSelected { get; set; }
-    [Inject] public IZapperApiClient? ApiClient { get; set; }
-    [Inject] public HttpClient HttpClient { get; set; } = default!;
-    [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
     private bool _isLoadingLocal = false;
     private List<IrCodeSet> _localCodeSets = new();
@@ -41,7 +38,7 @@ public partial class IrCodeSelector : ComponentBase
         try
         {
             _isLoadingLocal = true;
-            var response = await HttpClient.GetAsync($"/api/ir-codes/sets/search?deviceType={DeviceType}");
+            var response = await httpClient.GetAsync($"/api/ir-codes/sets/search?deviceType={DeviceType}");
             if (response.IsSuccessStatusCode)
             {
                 _localCodeSets = await response.Content.ReadFromJsonAsync<List<IrCodeSet>>() ?? new();
@@ -49,7 +46,7 @@ public partial class IrCodeSelector : ComponentBase
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to load IR codes: {ex.Message}", Severity.Error);
+            snackbar.Add($"Failed to load IR codes: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -75,7 +72,7 @@ public partial class IrCodeSelector : ComponentBase
             queryParams.Add($"deviceType={DeviceType}");
 
             var queryString = string.Join("&", queryParams);
-            var response = await HttpClient.GetAsync($"/api/ir-codes/sets/search?{queryString}");
+            var response = await httpClient.GetAsync($"/api/ir-codes/sets/search?{queryString}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -84,7 +81,7 @@ public partial class IrCodeSelector : ComponentBase
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Search failed: {ex.Message}", Severity.Error);
+            snackbar.Add($"Search failed: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -98,7 +95,7 @@ public partial class IrCodeSelector : ComponentBase
 
         try
         {
-            var response = await HttpClient.GetAsync("/api/ir-codes/external/manufacturers");
+            var response = await httpClient.GetAsync("/api/ir-codes/external/manufacturers");
             if (response.IsSuccessStatusCode)
             {
                 _manufacturers = await response.Content.ReadFromJsonAsync<List<string>>() ?? new();
@@ -106,7 +103,7 @@ public partial class IrCodeSelector : ComponentBase
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to load manufacturers: {ex.Message}", Severity.Error);
+            snackbar.Add($"Failed to load manufacturers: {ex.Message}", Severity.Error);
         }
     }
 
@@ -135,7 +132,7 @@ public partial class IrCodeSelector : ComponentBase
             _hasSearchedExternal = true;
             _externalDevices.Clear();
 
-            var response = await HttpClient.GetAsync($"/api/ir-codes/external/devices/search?manufacturer={Uri.EscapeDataString(_externalManufacturer)}");
+            var response = await httpClient.GetAsync($"/api/ir-codes/external/devices/search?manufacturer={Uri.EscapeDataString(_externalManufacturer)}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<SearchExternalDevicesResponse>();
@@ -143,12 +140,12 @@ public partial class IrCodeSelector : ComponentBase
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable)
             {
-                Snackbar.Add("External IR database is currently unavailable", Severity.Warning);
+                snackbar.Add("External IR database is currently unavailable", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Search failed: {ex.Message}", Severity.Error);
+            snackbar.Add($"Search failed: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -160,7 +157,7 @@ public partial class IrCodeSelector : ComponentBase
     {
         try
         {
-            var response = await HttpClient.GetAsync($"/api/ir-codes/external/codeset/{Uri.EscapeDataString(device.Manufacturer)}/{Uri.EscapeDataString(device.DeviceType)}/{Uri.EscapeDataString(device.Device)}/{Uri.EscapeDataString(device.Subdevice)}");
+            var response = await httpClient.GetAsync($"/api/ir-codes/external/codeset/{Uri.EscapeDataString(device.Manufacturer)}/{Uri.EscapeDataString(device.DeviceType)}/{Uri.EscapeDataString(device.Device)}/{Uri.EscapeDataString(device.Subdevice)}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -169,17 +166,17 @@ public partial class IrCodeSelector : ComponentBase
                 {
                     _selectedCodeSet = codeSet;
                     await OnCodeSetSelected.InvokeAsync(codeSet);
-                    Snackbar.Add($"Loaded {codeSet.Codes.Count} IR codes for {codeSet.Brand} {codeSet.Model}", Severity.Success);
+                    snackbar.Add($"Loaded {codeSet.Codes.Count} IR codes for {codeSet.Brand} {codeSet.Model}", Severity.Success);
                 }
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Snackbar.Add("Code set not found in external database", Severity.Warning);
+                snackbar.Add("Code set not found in external database", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Failed to load code set: {ex.Message}", Severity.Error);
+            snackbar.Add($"Failed to load code set: {ex.Message}", Severity.Error);
         }
     }
 
@@ -219,7 +216,7 @@ public partial class IrCodeSelector : ComponentBase
                 CommandName = powerCommand.CommandName
             };
 
-            var response = await HttpClient.PostAsJsonAsync("/api/ir-codes/test", testRequest);
+            var response = await httpClient.PostAsJsonAsync("/api/ir-codes/test", testRequest);
 
             if (response.IsSuccessStatusCode)
             {

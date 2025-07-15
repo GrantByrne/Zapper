@@ -62,7 +62,7 @@ public class TestIrCodeEndpoint(IIrCodeService irCodeService, IDeviceController 
                 ConnectionType = Core.Models.ConnectionType.InfraredIr,
                 Name = "Test Device"
             };
-            
+
             var result = await deviceController.SendCommandAsync(testDevice, deviceCommand);
 
             if (result)

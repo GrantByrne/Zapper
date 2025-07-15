@@ -19,8 +19,8 @@ public partial class Settings : ComponentBase
 
     private async Task SaveSettings()
     {
-        // TODO: Implement settings persistence
-        await Task.Delay(500); // Simulate saving
-        // Show success message or handle errors
+        // Settings persistence would require a settings API endpoint or local storage
+        // For now, settings are only persisted in memory during the session
+        await Task.CompletedTask;
     }
 }

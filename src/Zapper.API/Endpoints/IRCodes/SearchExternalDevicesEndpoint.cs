@@ -20,14 +20,14 @@ public class SearchExternalDevicesEndpoint(IExternalIrCodeService externalIrCode
 
     public override async Task HandleAsync(SearchExternalDevicesRequest req, CancellationToken ct)
     {
-        var isAvailable = await externalIrCodeService.IsAvailableAsync();
+        var isAvailable = await externalIrCodeService.IsAvailable();
         if (!isAvailable)
         {
             await SendAsync(new SearchExternalDevicesResponse(), 503, ct);
             return;
         }
 
-        var devices = await externalIrCodeService.SearchDevicesAsync(req.Manufacturer, req.DeviceType);
+        var devices = await externalIrCodeService.SearchDevices(req.Manufacturer, req.DeviceType);
 
         var response = new SearchExternalDevicesResponse
         {

@@ -8,14 +8,11 @@ using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Components;
 
-public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
+public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsRuntime) : ComponentBase, IAsyncDisposable
 {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
     [Parameter] public EventCallback<CreateDeviceRequest> OnDeviceAdded { get; set; }
-
-    [Inject] public IZapperApiClient? ApiClient { get; set; }
-    [Inject] public IJSRuntime JsRuntime { get; set; } = default!;
 
     private enum WizardStep
     {
@@ -204,7 +201,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             try
             {
                 var scanRequest = new BluetoothScanRequest { DurationSeconds = 30 };
-                var response = await ApiClient.Devices.StartBluetoothScanAsync(scanRequest);
+                var response = await apiClient.Devices.StartBluetoothScanAsync(scanRequest);
 
                 if (!response.Success)
                 {
@@ -221,7 +218,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                 StateHasChanged();
                 await Task.Delay(500);
 
-                var devices = await ApiClient.Devices.DiscoverBluetoothDevicesAsync();
+                var devices = await apiClient.Devices.DiscoverBluetoothDevicesAsync();
                 _discoveredBluetoothDevices = devices.ToList();
                 _isScanning = false;
                 StateHasChanged();
@@ -239,7 +236,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     {
         if (_hubConnection == null)
         {
-            var baseUri = await JsRuntime.InvokeAsync<string>("eval", "window.location.origin");
+            var baseUri = await jsRuntime.InvokeAsync<string>("eval", "window.location.origin");
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl($"{baseUri}/hubs/zapper")
                 .WithAutomaticReconnect()
@@ -380,7 +377,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             try
             {
                 var scanRequest = new WebOsScanRequest { DurationSeconds = 15 };
-                var response = await ApiClient.Devices.StartWebOsScanAsync(scanRequest);
+                var response = await apiClient.Devices.StartWebOsScanAsync(scanRequest);
 
                 if (!response.Success)
                 {
@@ -492,7 +489,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         {
             try
             {
-                var response = await ApiClient.Devices.StopBluetoothScanAsync();
+                var response = await apiClient.Devices.StopBluetoothScanAsync();
 
                 if (response.Success)
                 {
@@ -528,7 +525,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         {
             try
             {
-                var response = await ApiClient.Devices.StopWebOsScanAsync();
+                var response = await apiClient.Devices.StopWebOsScanAsync();
 
                 if (response.Success)
                 {

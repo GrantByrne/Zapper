@@ -15,7 +15,7 @@ public class SearchIrCodeSetsEndpoint(IIrCodeService irCodeService) : Endpoint<S
 
     public override async Task HandleAsync(SearchIrCodeSetsRequest req, CancellationToken ct)
     {
-        var codeSets = await irCodeService.SearchCodeSetsAsync(req.Brand, req.Model, req.DeviceType);
+        var codeSets = await irCodeService.SearchCodeSets(req.Brand, req.Model, req.DeviceType);
         await SendOkAsync(codeSets, ct);
     }
 }

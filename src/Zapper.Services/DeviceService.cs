@@ -20,7 +20,7 @@ public class DeviceService(
     ILogger<DeviceService> logger) : IDeviceService
 {
 
-    public async Task<IEnumerable<Zapper.Core.Models.Device>> GetAllDevicesAsync()
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> GetAllDevices()
     {
         return await context.Devices
             .Include(d => d.Commands)
@@ -28,14 +28,14 @@ public class DeviceService(
             .ToListAsync();
     }
 
-    public async Task<Zapper.Core.Models.Device?> GetDeviceAsync(int id)
+    public async Task<Zapper.Core.Models.Device?> GetDevice(int id)
     {
         return await context.Devices
             .Include(d => d.Commands)
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task<Zapper.Core.Models.Device> CreateDeviceAsync(Zapper.Core.Models.Device device)
+    public async Task<Zapper.Core.Models.Device> CreateDevice(Zapper.Core.Models.Device device)
     {
         device.CreatedAt = DateTime.UtcNow;
         device.LastSeen = DateTime.UtcNow;
@@ -46,7 +46,7 @@ public class DeviceService(
         // If IR code set is specified, create commands from it
         if (device.ConnectionType == ConnectionType.InfraredIr && device.IrCodeSetId.HasValue)
         {
-            var codeSet = await irCodeService.GetCodeSetAsync(device.IrCodeSetId.Value);
+            var codeSet = await irCodeService.GetCodeSet(device.IrCodeSetId.Value);
             if (codeSet != null)
             {
                 foreach (var irCode in codeSet.Codes)
@@ -106,7 +106,7 @@ public class DeviceService(
         };
     }
 
-    public async Task<Zapper.Core.Models.Device?> UpdateDeviceAsync(int id, Zapper.Core.Models.Device device)
+    public async Task<Zapper.Core.Models.Device?> UpdateDevice(int id, Zapper.Core.Models.Device device)
     {
         var existingDevice = await context.Devices.FindAsync(id);
         if (existingDevice == null)
@@ -133,7 +133,7 @@ public class DeviceService(
         return existingDevice;
     }
 
-    public async Task<bool> DeleteDeviceAsync(int id)
+    public async Task<bool> DeleteDevice(int id)
     {
         var device = await context.Devices.FindAsync(id);
         if (device == null)
@@ -146,7 +146,7 @@ public class DeviceService(
         return true;
     }
 
-    public async Task<bool> SendCommandAsync(int deviceId, string commandName, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(int deviceId, string commandName, CancellationToken cancellationToken = default)
     {
         var device = await context.Devices
             .Include(d => d.Commands)
@@ -175,11 +175,11 @@ public class DeviceService(
                 device.IsOnline = true;
                 await context.SaveChangesAsync();
 
-                await notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, true);
+                await notificationService.NotifyDeviceCommandExecuted(device.Id, device.Name, commandName, true);
             }
             else
             {
-                await notificationService.NotifyDeviceCommandExecutedAsync(device.Id, device.Name, commandName, false);
+                await notificationService.NotifyDeviceCommandExecuted(device.Id, device.Name, commandName, false);
             }
 
             return success;
@@ -193,9 +193,9 @@ public class DeviceService(
         }
     }
 
-    public async Task<bool> TestDeviceConnectionAsync(int deviceId)
+    public async Task<bool> TestDeviceConnection(int deviceId)
     {
-        var device = await GetDeviceAsync(deviceId);
+        var device = await GetDevice(deviceId);
         if (device == null)
             return false;
 
@@ -218,7 +218,7 @@ public class DeviceService(
             device.LastSeen = DateTime.UtcNow;
             await context.SaveChangesAsync();
 
-            await notificationService.NotifyDeviceStatusChangedAsync(device.Id, device.Name, isOnline);
+            await notificationService.NotifyDeviceStatusChanged(device.Id, device.Name, isOnline);
 
             return isOnline;
         }
@@ -229,11 +229,11 @@ public class DeviceService(
         }
     }
 
-    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(string deviceType, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevices(string deviceType, CancellationToken cancellationToken = default)
     {
         try
         {
-            var discoveryResult = await networkController.DiscoverDevicesAsync(deviceType, TimeSpan.FromSeconds(10), cancellationToken);
+            var discoveryResult = await networkController.DiscoverDevices(deviceType, TimeSpan.FromSeconds(10), cancellationToken);
 
             if (string.IsNullOrEmpty(discoveryResult))
                 return [];
@@ -259,8 +259,8 @@ public class DeviceService(
             ConnectionType.InfraredIr => await ExecuteIrCommandAsync(command, cancellationToken),
             ConnectionType.NetworkTcp => await ExecuteNetworkCommandAsync(device, command, cancellationToken),
             ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommandAsync(device, command, cancellationToken),
-            ConnectionType.NetworkHttp => await rokuController.SendCommandAsync(device, command, cancellationToken),
-            ConnectionType.WebOs => await webOsController.SendCommandAsync(device, command, cancellationToken),
+            ConnectionType.NetworkHttp => await rokuController.SendCommand(device, command, cancellationToken),
+            ConnectionType.WebOs => await webOsController.SendCommand(device, command, cancellationToken),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };
     }
@@ -291,7 +291,7 @@ public class DeviceService(
             return false;
         }
 
-        return await networkController.SendCommandAsync(
+        return await networkController.SendCommand(
             device.IpAddress,
             device.Port.Value,
             command.Name,

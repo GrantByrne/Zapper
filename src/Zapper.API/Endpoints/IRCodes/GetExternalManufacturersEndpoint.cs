@@ -20,14 +20,14 @@ public class GetExternalManufacturersEndpoint(IExternalIrCodeService externalIrC
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var isAvailable = await externalIrCodeService.IsAvailableAsync();
+        var isAvailable = await externalIrCodeService.IsAvailable();
         if (!isAvailable)
         {
             await SendAsync([], 503, ct);
             return;
         }
 
-        var manufacturers = await externalIrCodeService.GetAvailableManufacturersAsync();
+        var manufacturers = await externalIrCodeService.GetAvailableManufacturers();
         await SendOkAsync(manufacturers, ct);
     }
 }

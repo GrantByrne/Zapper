@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zapper.Data;
 using Zapper.Core.Models;
+using Zapper.Contracts;
 
 namespace Zapper.Services;
 
@@ -11,7 +12,7 @@ public class ActivityService(
     INotificationService notificationService,
     ILogger<ActivityService> logger) : IActivityService
 {
-    public async Task<IEnumerable<Activity>> GetAllActivitiesAsync()
+    public async Task<IEnumerable<Activity>> GetAllActivities()
     {
         return await context.Activities
             .Include(a => a.ActivityDevices)
@@ -24,7 +25,7 @@ public class ActivityService(
             .ToListAsync();
     }
 
-    public async Task<Activity?> GetActivityAsync(int id)
+    public async Task<Activity?> GetActivity(int id)
     {
         return await context.Activities
             .Include(a => a.ActivityDevices)
@@ -35,7 +36,7 @@ public class ActivityService(
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Activity> CreateActivityAsync(Activity activity)
+    public async Task<Activity> CreateActivity(Activity activity)
     {
         activity.CreatedAt = DateTime.UtcNow;
         activity.LastUsed = DateTime.UtcNow;
@@ -53,7 +54,7 @@ public class ActivityService(
         return activity;
     }
 
-    public async Task<Activity?> UpdateActivityAsync(int id, Activity activity)
+    public async Task<Activity?> UpdateActivity(int id, Activity activity)
     {
         var existingActivity = await context.Activities.FindAsync(id);
         if (existingActivity == null)
@@ -71,7 +72,7 @@ public class ActivityService(
         return existingActivity;
     }
 
-    public async Task<bool> DeleteActivityAsync(int id)
+    public async Task<bool> DeleteActivity(int id)
     {
         var activity = await context.Activities.FindAsync(id);
         if (activity == null)
@@ -84,9 +85,9 @@ public class ActivityService(
         return true;
     }
 
-    public async Task<bool> ExecuteActivityAsync(int activityId, CancellationToken cancellationToken = default)
+    public async Task<bool> ExecuteActivity(int activityId, CancellationToken cancellationToken = default)
     {
-        var activity = await GetActivityAsync(activityId);
+        var activity = await GetActivity(activityId);
         if (activity == null || !activity.IsEnabled)
         {
             logger.LogWarning("Activity not found or disabled: {ActivityId}", activityId);
@@ -95,7 +96,7 @@ public class ActivityService(
 
         logger.LogInformation("Executing activity: {ActivityName}", activity.Name);
 
-        await notificationService.NotifyActivityStartedAsync(activity.Id, activity.Name);
+        await notificationService.NotifyActivityStarted(activity.Id, activity.Name);
 
         try
         {
@@ -112,7 +113,7 @@ public class ActivityService(
                     await Task.Delay(step.DelayBeforeMs, cancellationToken);
                 }
 
-                var success = await deviceService.SendCommandAsync(
+                var success = await deviceService.SendCommand(
                     step.DeviceCommand.DeviceId,
                     step.DeviceCommand.Name,
                     cancellationToken);
@@ -172,14 +173,14 @@ public class ActivityService(
         }
     }
 
-    public async Task<bool> StopActivityAsync(int activityId, CancellationToken cancellationToken = default)
+    public async Task<bool> StopActivity(int activityId, CancellationToken cancellationToken = default)
     {
         logger.LogInformation("Stop activity requested for activity ID: {ActivityId}", activityId);
         await Task.CompletedTask;
         return true;
     }
 
-    public async Task<Activity?> AddDeviceToActivityAsync(int activityId, int deviceId, bool isPrimary = false)
+    public async Task<Activity?> AddDeviceToActivity(int activityId, int deviceId, bool isPrimary = false)
     {
         var activity = await context.Activities.FindAsync(activityId);
         var device = await context.Devices.FindAsync(deviceId);
@@ -212,7 +213,7 @@ public class ActivityService(
         return await GetActivityAsync(activityId);
     }
 
-    public async Task<bool> RemoveDeviceFromActivityAsync(int activityId, int deviceId)
+    public async Task<bool> RemoveDeviceFromActivity(int activityId, int deviceId)
     {
         var activityDevice = await context.ActivityDevices
             .FirstOrDefaultAsync(ad => ad.ActivityId == activityId && ad.DeviceId == deviceId);
@@ -227,7 +228,7 @@ public class ActivityService(
         return true;
     }
 
-    public async Task<ActivityStep?> AddStepToActivityAsync(int activityId, int deviceCommandId, int stepOrder, int delayBeforeMs = 0, int delayAfterMs = 0)
+    public async Task<ActivityStep?> AddStepToActivity(int activityId, int deviceCommandId, int stepOrder, int delayBeforeMs = 0, int delayAfterMs = 0)
     {
         var activity = await context.Activities.FindAsync(activityId);
         var deviceCommand = await context.DeviceCommands.FindAsync(deviceCommandId);
@@ -253,7 +254,7 @@ public class ActivityService(
         return step;
     }
 
-    public async Task<bool> RemoveStepFromActivityAsync(int activityId, int stepId)
+    public async Task<bool> RemoveStepFromActivity(int activityId, int stepId)
     {
         var step = await context.ActivitySteps
             .FirstOrDefaultAsync(s => s.Id == stepId && s.ActivityId == activityId);
@@ -268,7 +269,7 @@ public class ActivityService(
         return true;
     }
 
-    public async Task<bool> ReorderActivityStepsAsync(int activityId, int[] stepIds)
+    public async Task<bool> ReorderActivitySteps(int activityId, int[] stepIds)
     {
         var steps = await context.ActivitySteps
             .Where(s => s.ActivityId == activityId && stepIds.Contains(s.Id))
@@ -287,5 +288,91 @@ public class ActivityService(
 
         logger.LogInformation("Reordered steps for activity {ActivityId}", activityId);
         return true;
+    }
+
+    public async Task<ActivityDto?> GetActivityDto(int id)
+    {
+        var activity = await GetActivity(id);
+        if (activity == null)
+            return null;
+
+        return new ActivityDto
+        {
+            Id = activity.Id,
+            Name = activity.Name,
+            Description = activity.Description,
+            Type = activity.Type.ToString(),
+            IsEnabled = activity.IsEnabled,
+            LastUsed = activity.LastUsed,
+            CreatedAt = activity.CreatedAt,
+            UpdatedAt = activity.UpdatedAt
+        };
+    }
+
+    public async Task<ActivityDto> CreateActivity(CreateActivityRequest request)
+    {
+        var activity = new Activity
+        {
+            Name = request.Name,
+            Description = request.Description,
+            Type = Enum.Parse<ActivityType>(request.Type),
+            IsEnabled = request.IsEnabled
+        };
+
+        var createdActivity = await CreateActivity(activity);
+
+        // Add steps if provided
+        if (request.Steps?.Any() == true)
+        {
+            foreach (var stepRequest in request.Steps.OrderBy(s => s.SortOrder))
+            {
+                await AddStepToActivity(
+                    createdActivity.Id,
+                    stepRequest.DeviceId,
+                    stepRequest.SortOrder,
+                    stepRequest.DelayMs,
+                    stepRequest.DelayMs);
+            }
+        }
+
+        return new ActivityDto
+        {
+            Id = createdActivity.Id,
+            Name = createdActivity.Name,
+            Description = createdActivity.Description,
+            Type = createdActivity.Type.ToString(),
+            IsEnabled = createdActivity.IsEnabled,
+            LastUsed = createdActivity.LastUsed,
+            CreatedAt = createdActivity.CreatedAt,
+            UpdatedAt = createdActivity.UpdatedAt
+        };
+    }
+
+    public async Task<ActivityDto?> UpdateActivity(UpdateActivityRequest request)
+    {
+        var activity = await GetActivity(request.Id);
+        if (activity == null)
+            return null;
+
+        activity.Name = request.Name;
+        activity.Description = request.Description;
+        activity.Type = Enum.Parse<ActivityType>(request.Type);
+        activity.IsEnabled = request.IsEnabled;
+
+        var updated = await UpdateActivity(request.Id, activity);
+        if (updated == null)
+            return null;
+
+        return new ActivityDto
+        {
+            Id = updated.Id,
+            Name = updated.Name,
+            Description = updated.Description,
+            Type = updated.Type.ToString(),
+            IsEnabled = updated.IsEnabled,
+            LastUsed = updated.LastUsed,
+            CreatedAt = updated.CreatedAt,
+            UpdatedAt = updated.UpdatedAt
+        };
     }
 }

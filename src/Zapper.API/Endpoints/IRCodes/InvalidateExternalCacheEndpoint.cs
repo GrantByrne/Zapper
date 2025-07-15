@@ -19,7 +19,7 @@ public class InvalidateExternalCacheEndpoint(IExternalIrCodeService externalIrCo
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await externalIrCodeService.InvalidateCacheAsync();
+        await externalIrCodeService.InvalidateCache();
 
         await SendOkAsync(new InvalidateExternalCacheResponse
         {

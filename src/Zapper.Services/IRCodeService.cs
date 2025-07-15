@@ -9,7 +9,7 @@ namespace Zapper.Services;
 public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger, IExternalIrCodeService externalIrCodeService) : IIrCodeService
 {
 
-    public async Task<IEnumerable<IrCodeSet>> GetCodeSetsAsync()
+    public async Task<IEnumerable<IrCodeSet>> GetCodeSets()
     {
         return await context.IrCodeSets
             .Include(cs => cs.Codes)
@@ -18,7 +18,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<IrCodeSet>> SearchCodeSetsAsync(string? brand = null, string? model = null, DeviceType? deviceType = null)
+    public async Task<IEnumerable<IrCodeSet>> SearchCodeSets(string? brand = null, string? model = null, DeviceType? deviceType = null)
     {
         var query = context.IrCodeSets.Include(cs => cs.Codes).AsQueryable();
 
@@ -43,14 +43,14 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
             .ToListAsync();
     }
 
-    public async Task<IrCodeSet?> GetCodeSetAsync(int id)
+    public async Task<IrCodeSet?> GetCodeSet(int id)
     {
         return await context.IrCodeSets
             .Include(cs => cs.Codes)
             .FirstOrDefaultAsync(cs => cs.Id == id);
     }
 
-    public async Task<IrCodeSet?> GetCodeSetAsync(string brand, string model, DeviceType deviceType)
+    public async Task<IrCodeSet?> GetCodeSet(string brand, string model, DeviceType deviceType)
     {
         return await context.IrCodeSets
             .Include(cs => cs.Codes)
@@ -59,7 +59,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
                                     && cs.DeviceType == deviceType);
     }
 
-    public async Task<IEnumerable<IrCode>> GetCodesAsync(int codeSetId)
+    public async Task<IEnumerable<IrCode>> GetCodes(int codeSetId)
     {
         return await context.IrCodes
             .Where(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId)
@@ -67,23 +67,23 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
             .ToListAsync();
     }
 
-    public async Task<IrCode?> GetCodeAsync(int codeSetId, string commandName)
+    public async Task<IrCode?> GetCode(int codeSetId, string commandName)
     {
         return await context.IrCodes
             .FirstOrDefaultAsync(c => EF.Property<int>(c, "IRCodeSetId") == codeSetId
                                    && c.CommandName.ToLower() == commandName.ToLower());
     }
 
-    public async Task<IrCodeSet> CreateCodeSetAsync(IrCodeSet codeSet)
+    public async Task<IrCodeSet> CreateCodeSet(IrCodeSet codeSet)
     {
         context.IrCodeSets.Add(codeSet);
         await context.SaveChangesAsync();
         return codeSet;
     }
 
-    public async Task<IrCode> AddCodeAsync(int codeSetId, IrCode code)
+    public async Task<IrCode> AddCode(int codeSetId, IrCode code)
     {
-        var codeSet = await GetCodeSetAsync(codeSetId);
+        var codeSet = await GetCodeSet(codeSetId);
         if (codeSet == null)
         {
             throw new ArgumentException($"Code set with ID {codeSetId} not found");
@@ -96,16 +96,16 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
         return code;
     }
 
-    public async Task UpdateCodeSetAsync(IrCodeSet codeSet)
+    public async Task UpdateCodeSet(IrCodeSet codeSet)
     {
         codeSet.UpdatedAt = DateTime.UtcNow;
         context.IrCodeSets.Update(codeSet);
         await context.SaveChangesAsync();
     }
 
-    public async Task DeleteCodeSetAsync(int id)
+    public async Task DeleteCodeSet(int id)
     {
-        var codeSet = await GetCodeSetAsync(id);
+        var codeSet = await GetCodeSet(id);
         if (codeSet != null)
         {
             context.IrCodeSets.Remove(codeSet);
@@ -113,7 +113,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
         }
     }
 
-    public async Task<bool> ImportCodeSetAsync(string filePath)
+    public async Task<bool> ImportCodeSet(string filePath)
     {
         try
         {
@@ -143,7 +143,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
                 }).ToList()
             };
 
-            await CreateCodeSetAsync(codeSet);
+            await CreateCodeSet(codeSet);
             return true;
         }
         catch (Exception ex)
@@ -153,9 +153,9 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
         }
     }
 
-    public async Task<string> ExportCodeSetAsync(int id)
+    public async Task<string> ExportCodeSet(int id)
     {
-        var codeSet = await GetCodeSetAsync(id);
+        var codeSet = await GetCodeSet(id);
         if (codeSet == null)
         {
             throw new ArgumentException($"Code set with ID {id} not found");
@@ -187,7 +187,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
         return JsonSerializer.Serialize(exportData, options);
     }
 
-    public async Task SeedDefaultCodesAsync()
+    public async Task SeedDefaultCodes()
     {
         if (await context.IrCodeSets.AnyAsync())
         {
@@ -200,7 +200,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
 
         foreach (var codeSet in defaultCodeSets)
         {
-            await CreateCodeSetAsync(codeSet);
+            await CreateCodeSet(codeSet);
         }
 
         logger.LogInformation("Seeded {Count} default IR code sets", defaultCodeSets.Count);
@@ -348,24 +348,24 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
         ];
     }
 
-    public async Task<IEnumerable<string>> GetExternalManufacturersAsync()
+    public async Task<IEnumerable<string>> GetExternalManufacturers()
     {
-        return await externalIrCodeService.GetAvailableManufacturersAsync();
+        return await externalIrCodeService.GetAvailableManufacturers();
     }
 
-    public async Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchExternalDevicesAsync(string? manufacturer = null, string? deviceType = null)
+    public async Task<IEnumerable<(string Manufacturer, string DeviceType, string Device, string Subdevice)>> SearchExternalDevices(string? manufacturer = null, string? deviceType = null)
     {
-        return await externalIrCodeService.SearchDevicesAsync(manufacturer, deviceType);
+        return await externalIrCodeService.SearchDevices(manufacturer, deviceType);
     }
 
-    public async Task<IrCodeSet?> GetExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice)
+    public async Task<IrCodeSet?> GetExternalCodeSet(string manufacturer, string deviceType, string device, string subdevice)
     {
-        return await externalIrCodeService.GetCodeSetAsync(manufacturer, deviceType, device, subdevice);
+        return await externalIrCodeService.GetCodeSet(manufacturer, deviceType, device, subdevice);
     }
 
-    public async Task<IrCodeSet> ImportExternalCodeSetAsync(string manufacturer, string deviceType, string device, string subdevice)
+    public async Task<IrCodeSet> ImportExternalCodeSet(string manufacturer, string deviceType, string device, string subdevice)
     {
-        var existingCodeSet = await GetCodeSetAsync(manufacturer, device, MapDeviceType(deviceType));
+        var existingCodeSet = await GetCodeSet(manufacturer, device, MapDeviceType(deviceType));
         if (existingCodeSet != null)
         {
             throw new InvalidOperationException("Code set already exists in local database");
@@ -377,7 +377,7 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger,
             throw new InvalidOperationException("Code set not found in external database");
         }
 
-        return await CreateCodeSetAsync(externalCodeSet);
+        return await CreateCodeSet(externalCodeSet);
     }
 
     private static DeviceType MapDeviceType(string deviceType)

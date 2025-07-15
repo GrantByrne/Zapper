@@ -4,9 +4,8 @@ using Zapper.Contracts.Devices;
 
 namespace Zapper.Blazor.Pages;
 
-public partial class Remote : ComponentBase
+public partial class Remote(IZapperApiClient? apiClient) : ComponentBase
 {
-    [Inject] public IZapperApiClient? ApiClient { get; set; }
 
     private List<DeviceDto> _devices = new();
     private int? _selectedDeviceId;
@@ -25,13 +24,13 @@ public partial class Remote : ComponentBase
             _isLoading = true;
             _errorMessage = null;
 
-            if (ApiClient == null)
+            if (apiClient == null)
             {
                 _errorMessage = "API client not configured";
                 return;
             }
 
-            var devices = await ApiClient.Devices.GetAllDevicesAsync();
+            var devices = await apiClient.Devices.GetAllDevicesAsync();
             _devices = devices.ToList();
 
             // Select first device by default
@@ -53,7 +52,7 @@ public partial class Remote : ComponentBase
 
     private async Task SendCommand(string command)
     {
-        if (ApiClient == null || !_selectedDeviceId.HasValue)
+        if (apiClient == null || !_selectedDeviceId.HasValue)
         {
             return;
         }
@@ -61,7 +60,7 @@ public partial class Remote : ComponentBase
         try
         {
             var request = new SendCommandRequest { Command = command };
-            await ApiClient.Devices.SendCommandAsync(_selectedDeviceId.Value, request);
+            await apiClient.Devices.SendCommandAsync(_selectedDeviceId.Value, request);
         }
         catch (Exception ex)
         {
