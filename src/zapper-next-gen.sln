@@ -61,6 +61,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Client.Abstractions"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Client", "Zapper.Client\Zapper.Client.csproj", "{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.Xbox", "Zapper.Device.Xbox\Zapper.Device.Xbox.csproj", "{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.Xbox.Tests.Unit", "Zapper.Device.Xbox.Tests.Unit\Zapper.Device.Xbox.Tests.Unit.csproj", "{2CD19517-85B7-4B6A-9A8C-C8232967B77E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -323,6 +327,30 @@ Global
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Release|x64.Build.0 = Release|Any CPU
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Release|x86.ActiveCfg = Release|Any CPU
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Release|x86.Build.0 = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|x64.Build.0 = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}.Release|x86.Build.0 = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|x64.Build.0 = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Debug|x86.Build.0 = Debug|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|x64.ActiveCfg = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|x64.Build.0 = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|x86.ActiveCfg = Release|Any CPU
+		{2CD19517-85B7-4B6A-9A8C-C8232967B77E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

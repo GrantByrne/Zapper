@@ -11,5 +11,6 @@ public enum DeviceType
     DvdPlayer,
     BluRayPlayer,
     SmartTv,
-    AppleTv
+    AppleTv,
+    Xbox
 }

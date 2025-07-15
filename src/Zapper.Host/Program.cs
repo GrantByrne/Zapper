@@ -9,6 +9,7 @@ using Zapper.Device.WebOS;
 using Zapper.Device.Roku;
 using Zapper.Device.USB;
 using Zapper.Device.Bluetooth;
+using Zapper.Device.Xbox;
 using Zapper.Endpoints.Devices;
 using Zapper.Services;
 
@@ -71,6 +72,9 @@ builder.Services.AddRokuServices();
 
 // Register Bluetooth services
 builder.Services.AddBluetoothServices();
+
+// Register Xbox services
+builder.Services.AddXboxDevice();
 
 // Register protocol implementations
 builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();
