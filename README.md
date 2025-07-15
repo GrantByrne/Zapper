@@ -3,8 +3,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-red.svg)](https://www.raspberrypi.org/)
-[![CI/CD](https://github.com/yourusername/zapper-next-gen/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/zapper-next-gen/actions)
-[![Release](https://img.shields.io/github/v/release/yourusername/zapper-next-gen)](https://github.com/yourusername/zapper-next-gen/releases)
+[![CI/CD](https://github.com/GrantByrne/Zapper-Next-Gen/actions/workflows/ci.yml/badge.svg)](https://github.com/GrantByrne/Zapper-Next-Gen/actions)
+[![Release](https://img.shields.io/github/v/release/GrantByrne/Zapper-Next-Gen)](https://github.com/GrantByrne/Zapper-Next-Gen/releases)
+[![codecov](https://codecov.io/gh/GrantByrne/Zapper-Next-Gen/branch/main/graph/badge.svg)](https://codecov.io/gh/GrantByrne/Zapper-Next-Gen)
 
 **Zapper** is an open-source universal remote control system designed to replace Logitech Harmony hubs. Built with ASP.NET Core and designed to run on Raspberry Pi, Zapper provides a modern web interface for controlling your home theater devices through infrared, network, and Bluetooth connections.
 
@@ -55,7 +56,7 @@ GPIO 18 ────┬─── 330Ω Resistor ─── Transistor Base
 ### One-Line Installation
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/yourusername/zapper-next-gen/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/GrantByrne/zapper-next-gen/main/install.sh | bash
 ```
 
 This will:
@@ -66,7 +67,7 @@ This will:
 
 ### Manual Installation
 
-1. **Download the latest release** from [Releases](https://github.com/yourusername/zapper-next-gen/releases)
+1. **Download the latest release** from [Releases](https://github.com/GrantByrne/zapper-next-gen/releases)
 2. **Extract** to `/opt/zapper`
 3. **Run** `sudo ./install.sh`
 4. **Start** with `sudo systemctl start zapper`
@@ -188,7 +189,7 @@ We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/zapper-next-gen.git
+git clone https://github.com/GrantByrne/zapper-next-gen.git
 cd zapper-next-gen
 
 # Install dependencies
@@ -212,9 +213,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/zapper-next-gen/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/zapper-next-gen/discussions)
-- **Wiki**: [Project Wiki](https://github.com/yourusername/zapper-next-gen/wiki)
+- **Issues**: [GitHub Issues](https://github.com/GrantByrne/zapper-next-gen/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/GrantByrne/zapper-next-gen/discussions)
+- **Wiki**: [Project Wiki](https://github.com/GrantByrne/zapper-next-gen/wiki)
 
 ---
 
