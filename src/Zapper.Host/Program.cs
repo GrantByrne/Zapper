@@ -21,6 +21,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddZapperDatabase();
 
+// Register settings service first (needed by hardware services)
+builder.Services.AddSingleton<ISettingsService, SettingsService>();
+
 // Register hardware abstractions
 builder.Services.AddSingleton<IInfraredTransmitter>(provider =>
 {
@@ -126,8 +129,7 @@ builder.Services.AddScoped<IIrCodeService, IrCodeService>();
 builder.Services.AddScoped<IExternalIrCodeService, IrdbService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IIrLearningService, IrLearningService>();
-builder.Services.AddScoped<ISettingsService, SettingsService>();
-builder.Services.AddScoped<IIrTroubleshootingService, IrTroubleshootingService>();
+builder.Services.AddSingleton<IIrTroubleshootingService, IrTroubleshootingService>();
 
 // Add SignalR
 builder.Services.AddSignalR();
