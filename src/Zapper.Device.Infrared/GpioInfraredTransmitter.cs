@@ -5,20 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Infrared;
 
-public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
+public class GpioInfraredTransmitter(int gpioPin, ILogger<GpioInfraredTransmitter> logger)
+    : IInfraredTransmitter, IDisposable
 {
-    private readonly int _gpioPin;
-    private readonly ILogger<GpioInfraredTransmitter> _logger;
     private GpioController? _controller;
     private PwmChannel? _pwmChannel;
     private bool _isInitialized;
     private bool _disposed;
-
-    public GpioInfraredTransmitter(int gpioPin, ILogger<GpioInfraredTransmitter> logger)
-    {
-        _gpioPin = gpioPin;
-        _logger = logger;
-    }
 
     public bool IsAvailable => _isInitialized && !_disposed;
 
@@ -27,7 +20,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         try
         {
             _controller = new GpioController();
-            _controller.OpenPin(_gpioPin, PinMode.Output);
+            _controller.OpenPin(gpioPin, PinMode.Output);
 
             try
             {
@@ -36,15 +29,15 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "PWM not available, falling back to GPIO timing");
+                logger.LogWarning(ex, "PWM not available, falling back to GPIO timing");
             }
 
             _isInitialized = true;
-            _logger.LogInformation("IR transmitter initialized on GPIO pin {Pin}", _gpioPin);
+            logger.LogInformation("IR transmitter initialized on GPIO pin {Pin}", gpioPin);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to initialize IR transmitter on GPIO pin {Pin}", _gpioPin);
+            logger.LogError(ex, "Failed to initialize IR transmitter on GPIO pin {Pin}", gpioPin);
             throw;
         }
     }
@@ -71,7 +64,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
 
-        _logger.LogInformation("Transmitting IR code for {Brand} {Model} command {Command}",
+        logger.LogInformation("Transmitting IR code for {Brand} {Model} command {Command}",
                               irCode.Brand, irCode.Model, irCode.CommandName);
 
         int[] pulses;
@@ -100,7 +93,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         if (!IsAvailable)
             throw new InvalidOperationException("IR transmitter not initialized");
 
-        _logger.LogDebug("Transmitting IR signal with {PulseCount} pulses", pulses.Length);
+        logger.LogDebug("Transmitting IR signal with {PulseCount} pulses", pulses.Length);
 
         try
         {
@@ -126,14 +119,14 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
                 }
                 else
                 {
-                    _controller!.Write(_gpioPin, PinValue.Low);
+                    _controller!.Write(gpioPin, PinValue.Low);
                     await Task.Delay(TimeSpan.FromMicroseconds(durationMicros), cancellationToken);
                 }
             }
         }
         finally
         {
-            _controller!.Write(_gpioPin, PinValue.Low);
+            _controller!.Write(gpioPin, PinValue.Low);
         }
     }
 
@@ -144,9 +137,9 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
 
         while (DateTime.UtcNow < endTime && !cancellationToken.IsCancellationRequested)
         {
-            _controller!.Write(_gpioPin, PinValue.High);
+            _controller!.Write(gpioPin, PinValue.High);
             await Task.Delay(TimeSpan.FromMicroseconds(halfPeriodMicros), cancellationToken);
-            _controller!.Write(_gpioPin, PinValue.Low);
+            _controller!.Write(gpioPin, PinValue.Low);
             await Task.Delay(TimeSpan.FromMicroseconds(halfPeriodMicros), cancellationToken);
         }
     }
@@ -161,7 +154,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to parse IR code: {IrCode}", irCode);
+            logger.LogError(ex, "Failed to parse IR code: {IrCode}", irCode);
             throw new ArgumentException("Invalid IR code format", nameof(irCode));
         }
     }
@@ -183,7 +176,7 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to convert hex code to pulses: {HexCode} ({Protocol})", hexCode, protocol);
+            logger.LogError(ex, "Failed to convert hex code to pulses: {HexCode} ({Protocol})", hexCode, protocol);
             throw;
         }
     }
@@ -284,6 +277,6 @@ public class GpioInfraredTransmitter : IInfraredTransmitter, IDisposable
         _controller?.Dispose();
         _disposed = true;
 
-        _logger.LogInformation("IR transmitter disposed");
+        logger.LogInformation("IR transmitter disposed");
     }
 }

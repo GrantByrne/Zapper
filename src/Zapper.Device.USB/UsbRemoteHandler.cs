@@ -22,7 +22,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
 
     public bool IsListening => _isListening;
 
-    public async Task StartListeningAsync(CancellationToken cancellationToken = default)
+    public async Task StartListening(CancellationToken cancellationToken = default)
     {
         if (_isListening || _disposed)
             return;
@@ -49,7 +49,7 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         }
     }
 
-    public Task StopListeningAsync()
+    public Task StopListening()
     {
         if (!_isListening)
             return Task.CompletedTask;

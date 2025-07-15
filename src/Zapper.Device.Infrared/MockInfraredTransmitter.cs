@@ -3,22 +3,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Infrared;
 
-public class MockInfraredTransmitter : IInfraredTransmitter
+public class MockInfraredTransmitter(ILogger<MockInfraredTransmitter> logger) : IInfraredTransmitter
 {
-    private readonly ILogger<MockInfraredTransmitter> _logger;
-    private bool _isInitialized;
-
-    public MockInfraredTransmitter(ILogger<MockInfraredTransmitter> logger)
-    {
-        _logger = logger;
-    }
-
-    public bool IsAvailable => _isInitialized;
+    public bool IsAvailable { get; private set; }
 
     public void Initialize()
     {
-        _isInitialized = true;
-        _logger.LogInformation("Mock IR transmitter initialized");
+        IsAvailable = true;
+        logger.LogInformation("Mock IR transmitter initialized");
     }
 
     public async Task Transmit(string irCode, int repeatCount = 1, CancellationToken cancellationToken = default)
@@ -26,7 +18,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
-        _logger.LogInformation("Mock transmitting IR code: {IrCode} (repeat {RepeatCount}x)", irCode, repeatCount);
+        logger.LogInformation("Mock transmitting IR code: {IrCode} (repeat {RepeatCount}x)", irCode, repeatCount);
 
         await Task.Delay(100 * repeatCount, cancellationToken);
     }
@@ -36,7 +28,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
-        _logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)",
+        logger.LogInformation("Mock transmitting IR code: {Brand} {Model} {Command} - {HexCode} (repeat {RepeatCount}x)",
                               irCode.Brand, irCode.Model, irCode.CommandName, irCode.HexCode, repeatCount);
 
         await Task.Delay(100 * repeatCount, cancellationToken);
@@ -47,7 +39,7 @@ public class MockInfraredTransmitter : IInfraredTransmitter
         if (!IsAvailable)
             throw new InvalidOperationException("Mock IR transmitter not initialized");
 
-        _logger.LogInformation("Mock transmitting raw IR signal: {PulseCount} pulses at {Frequency}Hz",
+        logger.LogInformation("Mock transmitting raw IR signal: {PulseCount} pulses at {Frequency}Hz",
                               pulses.Length, carrierFrequency);
 
         var totalMicros = pulses.Sum();
@@ -56,6 +48,6 @@ public class MockInfraredTransmitter : IInfraredTransmitter
 
     public void Dispose()
     {
-        _logger.LogInformation("Mock IR transmitter disposed");
+        logger.LogInformation("Mock IR transmitter disposed");
     }
 }

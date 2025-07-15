@@ -4,47 +4,39 @@ using Zapper.Core.Models;
 
 namespace Zapper.Device.Infrared;
 
-public class InfraredDeviceController : IDeviceController
+public class InfraredDeviceController(IInfraredTransmitter transmitter, ILogger<InfraredDeviceController> logger)
+    : IDeviceController
 {
-    private readonly IInfraredTransmitter _transmitter;
-    private readonly ILogger<InfraredDeviceController> _logger;
-
-    public InfraredDeviceController(IInfraredTransmitter transmitter, ILogger<InfraredDeviceController> logger)
-    {
-        _transmitter = transmitter;
-        _logger = logger;
-    }
-
     public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
-            _logger.LogWarning("Device {DeviceId} is not supported by IR controller", device.Id);
+            logger.LogWarning("Device {DeviceId} is not supported by IR controller", device.Id);
             return false;
         }
 
         if (string.IsNullOrEmpty(command.IrCode))
         {
-            _logger.LogWarning("No IR code specified for command {CommandName}", command.Name);
+            logger.LogWarning("No IR code specified for command {CommandName}", command.Name);
             return false;
         }
 
         try
         {
-            await _transmitter.Transmit(command.IrCode, command.IsRepeatable ? 3 : 1);
+            await transmitter.Transmit(command.IrCode, command.IsRepeatable ? 3 : 1);
 
             if (command.DelayMs > 0)
             {
                 await Task.Delay(command.DelayMs);
             }
 
-            _logger.LogDebug("Successfully sent IR command {CommandName} to device {DeviceName}",
+            logger.LogDebug("Successfully sent IR command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send IR command {CommandName} to device {DeviceName}",
+            logger.LogError(ex, "Failed to send IR command {CommandName} to device {DeviceName}",
                 command.Name, device.Name);
             return false;
         }
@@ -52,15 +44,15 @@ public class InfraredDeviceController : IDeviceController
 
     public Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
-        return Task.FromResult(_transmitter.IsAvailable && SupportsDevice(device));
+        return Task.FromResult(transmitter.IsAvailable && SupportsDevice(device));
     }
 
     public Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         return Task.FromResult(new DeviceStatus
         {
-            IsOnline = _transmitter.IsAvailable,
-            StatusMessage = _transmitter.IsAvailable ? "IR transmitter ready" : "IR transmitter not available"
+            IsOnline = transmitter.IsAvailable,
+            StatusMessage = transmitter.IsAvailable ? "IR transmitter ready" : "IR transmitter not available"
         });
     }
 

@@ -2,15 +2,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class MockBluetoothHidController : IBluetoothHidController
+public class MockBluetoothHidController(ILogger<MockBluetoothHidController> logger) : IBluetoothHidController
 {
-    private readonly ILogger<MockBluetoothHidController> _logger;
+    private readonly ILogger<MockBluetoothHidController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly Dictionary<string, bool> _connectedDevices = new();
-
-    public MockBluetoothHidController(ILogger<MockBluetoothHidController> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public Task<bool> SendKey(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
     {

@@ -28,7 +28,7 @@ public class IrdbServiceTests
         var mockIndexContent = "Samsung/TV/Generic,1.csv\nLG/TV/Generic,1.csv\nSony/TV/Generic,1.csv";
         _httpClient.GetStringAsync(Arg.Any<string>()).Returns(mockIndexContent);
 
-        var result = await _service.GetAvailableManufacturersAsync();
+        var result = await _service.GetAvailableManufacturers();
 
         result.Should().Contain("Samsung", "LG", "Sony");
     }
@@ -39,7 +39,7 @@ public class IrdbServiceTests
         var mockIndexContent = "Samsung/TV/Generic,1.csv\nLG/TV/Generic,1.csv\nSamsung/DVD/Player,1.csv";
         _httpClient.GetStringAsync(Arg.Any<string>()).Returns(mockIndexContent);
 
-        var result = await _service.SearchDevicesAsync(manufacturer: "Samsung");
+        var result = await _service.SearchDevices(manufacturer: "Samsung");
 
         result.Should().HaveCount(2);
         result.Should().AllSatisfy(d => d.Manufacturer.Should().Be("Samsung"));
@@ -50,7 +50,7 @@ public class IrdbServiceTests
     {
         _httpClient.GetStringAsync(Arg.Any<string>()).Returns("");
 
-        var result = await _service.GetCodeSetAsync("Samsung", "TV", "Generic", "1");
+        var result = await _service.GetCodeSet("Samsung", "TV", "Generic", "1");
 
         result.Should().BeNull();
     }
@@ -61,7 +61,7 @@ public class IrdbServiceTests
         var mockCsvContent = "Power,NEC,1,1\nVolumeUp,NEC,1,2\nVolumeDown,NEC,1,3";
         _httpClient.GetStringAsync(Arg.Any<string>()).Returns(mockCsvContent);
 
-        var result = await _service.GetCodeSetAsync("Samsung", "TV", "Generic", "1");
+        var result = await _service.GetCodeSet("Samsung", "TV", "Generic", "1");
 
         result.Should().NotBeNull();
         result!.Brand.Should().Be("Samsung");
@@ -79,7 +79,7 @@ public class IrdbServiceTests
         var mockResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
         _httpClient.GetAsync(Arg.Any<string>()).Returns(mockResponse);
 
-        var result = await _service.IsAvailableAsync();
+        var result = await _service.IsAvailable();
 
         result.Should().BeTrue();
     }
@@ -89,7 +89,7 @@ public class IrdbServiceTests
     {
         _httpClient.GetAsync(Arg.Any<string>()).Returns(Task.FromException<HttpResponseMessage>(new HttpRequestException()));
 
-        var result = await _service.IsAvailableAsync();
+        var result = await _service.IsAvailable();
 
         result.Should().BeFalse();
     }
@@ -104,7 +104,7 @@ public class IrdbServiceTests
         );
         await _context.SaveChangesAsync();
 
-        await _service.InvalidateCacheAsync();
+        await _service.InvalidateCache();
 
         var remainingEntries = await _context.ExternalIrCodeCache.ToListAsync();
         remainingEntries.Should().HaveCount(1);

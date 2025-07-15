@@ -26,7 +26,7 @@ public class UsbRemoteHandlerTests
     {
         // Since we can't actually test real HID devices in unit tests,
         // we'll test the basic state management
-        var act = async () => await _handler.StartListeningAsync();
+        var act = async () => await _handler.StartListening();
 
         await act.Should().NotThrowAsync();
     }
@@ -34,7 +34,7 @@ public class UsbRemoteHandlerTests
     [Fact]
     public async Task StopListeningAsync_WhenNotListening_ShouldNotThrow()
     {
-        var act = async () => await _handler.StopListeningAsync();
+        var act = async () => await _handler.StopListening();
 
         await act.Should().NotThrowAsync();
     }
@@ -72,11 +72,11 @@ public class UsbRemoteHandlerTests
     public async Task StartAndStopLifecycle_ShouldWorkCorrectly()
     {
         // Test basic lifecycle without real devices
-        await _handler.StartListeningAsync();
-        await _handler.StopListeningAsync();
+        await _handler.StartListening();
+        await _handler.StopListening();
 
         // Should be able to start again
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
         _handler.Dispose();
     }
 
@@ -127,10 +127,10 @@ public class UsbRemoteHandlerTests
     public async Task StopListeningAsync_ShouldSetIsListeningToFalse()
     {
         // Start first (though it may not actually start without real devices)
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         // Stop should always work
-        await _handler.StopListeningAsync();
+        await _handler.StopListening();
 
         // After stopping, IsListening should be false
         _handler.IsListening.Should().BeFalse();

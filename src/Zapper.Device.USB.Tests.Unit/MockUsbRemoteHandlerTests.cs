@@ -24,7 +24,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task StartListeningAsync_ShouldSetIsListeningToTrue()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         _handler.IsListening.Should().BeTrue();
     }
@@ -32,9 +32,9 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task StartListeningAsync_WhenAlreadyListening_ShouldNotThrow()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
-        var act = async () => await _handler.StartListeningAsync();
+        var act = async () => await _handler.StartListening();
 
         await act.Should().NotThrowAsync();
         _handler.IsListening.Should().BeTrue();
@@ -43,8 +43,8 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task StopListeningAsync_ShouldSetIsListeningToFalse()
     {
-        await _handler.StartListeningAsync();
-        await _handler.StopListeningAsync();
+        await _handler.StartListening();
+        await _handler.StopListening();
 
         _handler.IsListening.Should().BeFalse();
     }
@@ -52,7 +52,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task StopListeningAsync_WhenNotListening_ShouldNotThrow()
     {
-        var act = async () => await _handler.StopListeningAsync();
+        var act = async () => await _handler.StopListening();
 
         await act.Should().NotThrowAsync();
     }
@@ -70,7 +70,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task SimulateButtonPress_WhenListening_ShouldRaiseButtonPressedEvent()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         RemoteButtonEventArgs? capturedArgs = null;
         _handler.ButtonPressed += (sender, args) => capturedArgs = args;
@@ -98,7 +98,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task ButtonPressedEvent_ShouldContainCorrectTimestamp()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         var before = DateTime.UtcNow;
         RemoteButtonEventArgs? capturedArgs = null;
@@ -114,7 +114,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task MultipleEventSubscribers_ShouldAllReceiveEvents()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         var subscriber1Called = false;
         var subscriber2Called = false;
@@ -131,7 +131,7 @@ public class MockUsbRemoteHandlerTests
     [Fact]
     public async Task EventUnsubscription_ShouldPreventEventDelivery()
     {
-        await _handler.StartListeningAsync();
+        await _handler.StartListening();
 
         var eventReceived = false;
         EventHandler<RemoteButtonEventArgs> handler = (sender, args) => eventReceived = true;

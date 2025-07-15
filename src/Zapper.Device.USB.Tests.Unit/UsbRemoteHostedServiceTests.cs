@@ -21,19 +21,19 @@ public class UsbRemoteHostedServiceTests
     [Fact]
     public async Task StartAsync_ShouldStartRemoteHandler()
     {
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         await _service.StartAsync(CancellationToken.None);
 
-        await _mockRemoteHandler.Received(1).StartListeningAsync(Arg.Any<CancellationToken>());
+        await _mockRemoteHandler.Received(1).StartListening(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task StartAsync_WhenRemoteHandlerThrows_ShouldPropagateException()
     {
         var expectedException = new InvalidOperationException("Test exception");
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.FromException(expectedException));
 
         var act = async () => await _service.StartAsync(CancellationToken.None);
@@ -45,30 +45,30 @@ public class UsbRemoteHostedServiceTests
     [Fact]
     public async Task StopAsync_ShouldStopRemoteHandler()
     {
-        _mockRemoteHandler.StopListeningAsync()
+        _mockRemoteHandler.StopListening()
             .Returns(Task.CompletedTask);
 
         await _service.StopAsync(CancellationToken.None);
 
-        await _mockRemoteHandler.Received(1).StopListeningAsync();
+        await _mockRemoteHandler.Received(1).StopListening();
     }
 
     [Fact]
     public async Task StopAsync_WhenRemoteHandlerThrows_ShouldNotPropagateException()
     {
-        _mockRemoteHandler.StopListeningAsync()
+        _mockRemoteHandler.StopListening()
             .Returns(Task.FromException(new InvalidOperationException("Test exception")));
 
         var act = async () => await _service.StopAsync(CancellationToken.None);
 
         await act.Should().NotThrowAsync();
-        await _mockRemoteHandler.Received(1).StopListeningAsync();
+        await _mockRemoteHandler.Received(1).StopListening();
     }
 
     [Fact]
     public async Task StartAsync_ShouldSubscribeToButtonPressedEvent()
     {
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         await _service.StartAsync(CancellationToken.None);
@@ -84,9 +84,9 @@ public class UsbRemoteHostedServiceTests
     [Fact]
     public async Task StopAsync_ShouldUnsubscribeFromButtonPressedEvent()
     {
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
-        _mockRemoteHandler.StopListeningAsync()
+        _mockRemoteHandler.StopListening()
             .Returns(Task.CompletedTask);
 
         await _service.StartAsync(CancellationToken.None);
@@ -94,13 +94,13 @@ public class UsbRemoteHostedServiceTests
 
         // After stopping, the event handler should be unsubscribed
         // This is tested implicitly through the -= operation in StopAsync
-        await _mockRemoteHandler.Received(1).StopListeningAsync();
+        await _mockRemoteHandler.Received(1).StopListening();
     }
 
     [Fact]
     public async Task ButtonPressedEventHandler_ShouldNotThrow()
     {
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         await _service.StartAsync(CancellationToken.None);
@@ -114,34 +114,34 @@ public class UsbRemoteHostedServiceTests
     [Fact]
     public async Task StartStopLifecycle_ShouldWorkCorrectly()
     {
-        _mockRemoteHandler.StartListeningAsync(Arg.Any<CancellationToken>())
+        _mockRemoteHandler.StartListening(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
-        _mockRemoteHandler.StopListeningAsync()
+        _mockRemoteHandler.StopListening()
             .Returns(Task.CompletedTask);
 
         // Start
         await _service.StartAsync(CancellationToken.None);
-        await _mockRemoteHandler.Received(1).StartListeningAsync(Arg.Any<CancellationToken>());
+        await _mockRemoteHandler.Received(1).StartListening(Arg.Any<CancellationToken>());
 
         // Stop
         await _service.StopAsync(CancellationToken.None);
-        await _mockRemoteHandler.Received(1).StopListeningAsync();
+        await _mockRemoteHandler.Received(1).StopListening();
 
         // Should be able to start again
         await _service.StartAsync(CancellationToken.None);
-        await _mockRemoteHandler.Received(2).StartListeningAsync(Arg.Any<CancellationToken>());
+        await _mockRemoteHandler.Received(2).StartListening(Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task StartAsync_WithCancellationToken_ShouldPassTokenToHandler()
     {
         var cancellationToken = new CancellationToken();
-        _mockRemoteHandler.StartListeningAsync(cancellationToken)
+        _mockRemoteHandler.StartListening(cancellationToken)
             .Returns(Task.CompletedTask);
 
         await _service.StartAsync(cancellationToken);
 
-        await _mockRemoteHandler.Received(1).StartListeningAsync(cancellationToken);
+        await _mockRemoteHandler.Received(1).StartListening(cancellationToken);
     }
 
     // Note: Primary constructors in C# 12 don't automatically add null checks

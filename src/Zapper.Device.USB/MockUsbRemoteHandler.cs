@@ -11,7 +11,7 @@ public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRe
 
     public bool IsListening => _isListening;
 
-    public Task StartListeningAsync(CancellationToken cancellationToken = default)
+    public Task StartListening(CancellationToken cancellationToken = default)
     {
         if (_isListening)
             return Task.CompletedTask;
@@ -28,7 +28,7 @@ public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRe
         return Task.CompletedTask;
     }
 
-    public Task StopListeningAsync()
+    public Task StopListening()
     {
         _isListening = false;
         logger.LogInformation("Mock USB remote handler stopped");

@@ -11,7 +11,7 @@ public class UsbRemoteHostedService(IUsbRemoteHandler remoteHandler, ILogger<Usb
 
         try
         {
-            await remoteHandler.StartListeningAsync(cancellationToken);
+            await remoteHandler.StartListening(cancellationToken);
 
             // Subscribe to button events for logging
             remoteHandler.ButtonPressed += OnButtonPressed;
@@ -32,7 +32,7 @@ public class UsbRemoteHostedService(IUsbRemoteHandler remoteHandler, ILogger<Usb
         try
         {
             remoteHandler.ButtonPressed -= OnButtonPressed;
-            await remoteHandler.StopListeningAsync();
+            await remoteHandler.StopListening();
 
             logger.LogInformation("USB remote service stopped");
         }

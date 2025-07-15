@@ -9,8 +9,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfraredServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var useRealGpio = configuration.GetValue<bool>("Infrared:UseRealGpio", false);
-        var gpioPin = configuration.GetValue<int>("Infrared:GpioPin", 18);
+        var useRealGpio = configuration.GetValue("Infrared:UseRealGpio", false);
+        var gpioPin = configuration.GetValue("Infrared:GpioPin", 18);
 
         if (useRealGpio)
         {
