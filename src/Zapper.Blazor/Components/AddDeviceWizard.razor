@@ -17,6 +17,10 @@
             {
                 <span>Add New Device - Scan for @_selectedDeviceTypeName Devices</span>
             }
+            else if (_currentStep == WizardStep.WebOSScan)
+            {
+                <span>Add New Device - Scan for @_selectedDeviceTypeName TVs</span>
+            }
             else if (_currentStep == WizardStep.Configuration)
             {
                 <span>Add New Device - Configure @_selectedDeviceTypeName</span>
@@ -30,7 +34,7 @@
             <MudGrid>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.Bluetooth, false)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.Bluetooth, "Bluetooth"))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.Bluetooth, "Bluetooth"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Bluetooth" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">Bluetooth</MudText>
@@ -42,7 +46,7 @@
                 </MudItem>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.InfraredIr, false)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.InfraredIr, "Infrared"))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.InfraredIr, "Infrared"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Sensors" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">Infrared</MudText>
@@ -54,7 +58,7 @@
                 </MudItem>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.NetworkTcp, false)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.NetworkTcp, "Network"))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.NetworkTcp, "Network"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Wifi" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">Network</MudText>
@@ -66,7 +70,7 @@
                 </MudItem>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.NetworkWebSocket, true)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.NetworkWebSocket, "Roku", true))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.NetworkWebSocket, "Roku", true))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Cast" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">Roku</MudText>
@@ -78,7 +82,7 @@
                 </MudItem>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.Usb, false)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.Usb, "USB"))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.Usb, "USB"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Usb" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">USB</MudText>
@@ -90,7 +94,7 @@
                 </MudItem>
                 <MudItem xs="6" sm="4">
                     <MudCard Class="@GetCardClass(ConnectionType.WebOs, false)" 
-                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceType(ConnectionType.WebOs, "WebOS"))">
+                             Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.WebOs, "WebOS"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Tv" Size="Size.Large" Class="mb-2" />
                             <MudText Typo="Typo.h6">WebOS</MudText>
@@ -162,6 +166,80 @@
                 </MudButton>
             }
         }
+        else if (_currentStep == WizardStep.WebOSScan)
+        {
+            <MudText Class="mb-4">Scanning for available WebOS TVs on your network...</MudText>
+            
+            @if (_isWebOSScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for WebOS TVs...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your TV is powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_webOSScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_webOSScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOSScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredWebOSDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredWebOSDevices.Count() TV(s). Select the TV you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredWebOSDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedWebOSDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedWebOSDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectWebOSDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Tv" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    @if (!string.IsNullOrEmpty(device.ModelName))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.ModelName</MudText>
+                                    }
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartWebOSScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No WebOS TVs found on your network. Make sure your TV is powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOSScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualWebOSIpAddress" Label="TV IP Address" 
+                         HelperText="Enter the IP address of your WebOS TV (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualWebOSIP" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualWebOSIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.Configuration)
         {
             <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
@@ -210,15 +288,20 @@
         @if (_currentStep == WizardStep.DeviceType)
         {
             <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedConnectionType == null)">
-                Next
-            </MudButton>
         }
         else if (_currentStep == WizardStep.BluetoothScan)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(string.IsNullOrEmpty(_selectedBluetoothDevice))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.WebOSScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="@(() => IsVisible = false)">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOSDevice == null && string.IsNullOrWhiteSpace(_manualWebOSIpAddress))">
                 Next
             </MudButton>
         }
@@ -259,6 +342,7 @@
     {
         DeviceType,
         BluetoothScan,
+        WebOSScan,
         Configuration
     }
 
@@ -275,6 +359,13 @@
     private List<string> _discoveredBluetoothDevices = new();
     private string _selectedBluetoothDevice = "";
     
+    // WebOS scanning variables
+    private bool _isWebOSScanning = false;
+    private string _webOSScanError = "";
+    private List<WebOSDevice> _discoveredWebOSDevices = new();
+    private WebOSDevice? _selectedWebOSDevice = null;
+    private string _manualWebOSIpAddress = "";
+    
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
     
@@ -286,6 +377,12 @@
         _selectedDeviceTypeName = typeName;
         _isRokuDevice = isRoku;
         _newDevice.ConnectionType = connectionType;
+    }
+
+    private async Task SelectDeviceTypeAndProceed(ConnectionType connectionType, string typeName, bool isRoku = false)
+    {
+        SelectDeviceType(connectionType, typeName, isRoku);
+        await NextStep();
     }
 
     private string GetCardClass(ConnectionType connectionType, bool isRoku = false)
@@ -303,6 +400,11 @@
                 _currentStep = WizardStep.BluetoothScan;
                 await StartBluetoothScan();
             }
+            else if (_selectedConnectionType == ConnectionType.WebOs)
+            {
+                _currentStep = WizardStep.WebOSScan;
+                await StartWebOSScan();
+            }
             else
             {
                 _currentStep = WizardStep.Configuration;
@@ -317,6 +419,30 @@
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.WebOSScan && (_selectedWebOSDevice != null || !string.IsNullOrWhiteSpace(_manualWebOSIpAddress)))
+        {
+            // Pre-populate device info with selected WebOS TV
+            if (_selectedWebOSDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedWebOSDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedWebOSDevice.IpAddress;
+                _newDevice.Brand = "LG";
+                _newDevice.Model = _selectedWebOSDevice.ModelName ?? "";
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualWebOSIpAddress))
+            {
+                _newDevice.IpAddress = _manualWebOSIpAddress.Trim();
+                _newDevice.Brand = "LG";
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"WebOS TV ({_manualWebOSIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
     }
 
     private void PreviousStep()
@@ -327,12 +453,16 @@
             {
                 _currentStep = WizardStep.BluetoothScan;
             }
+            else if (_selectedConnectionType == ConnectionType.WebOs)
+            {
+                _currentStep = WizardStep.WebOSScan;
+            }
             else
             {
                 _currentStep = WizardStep.DeviceType;
             }
         }
-        else if (_currentStep == WizardStep.BluetoothScan)
+        else if (_currentStep == WizardStep.BluetoothScan || _currentStep == WizardStep.WebOSScan)
         {
             _currentStep = WizardStep.DeviceType;
         }
@@ -444,6 +574,66 @@
                 });
             });
 
+            // Subscribe to WebOS scanning events
+            _hubConnection.On("WebOSScanStarted", () =>
+            {
+                InvokeAsync(() =>
+                {
+                    _isWebOSScanning = true;
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<object>("WebOSDeviceFound", (device) =>
+            {
+                InvokeAsync(() =>
+                {
+                    var deviceType = device?.GetType();
+                    var name = deviceType?.GetProperty("Name")?.GetValue(device)?.ToString();
+                    var ipAddress = deviceType?.GetProperty("IpAddress")?.GetValue(device)?.ToString();
+                    var modelName = deviceType?.GetProperty("ModelName")?.GetValue(device)?.ToString();
+                    var modelNumber = deviceType?.GetProperty("ModelNumber")?.GetValue(device)?.ToString();
+                    var port = deviceType?.GetProperty("Port")?.GetValue(device)?.ToString();
+
+                    if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(ipAddress))
+                    {
+                        var webOSDevice = new WebOSDevice
+                        {
+                            Name = name,
+                            IpAddress = ipAddress,
+                            ModelName = modelName,
+                            ModelNumber = modelNumber,
+                            Port = !string.IsNullOrEmpty(port) ? int.Parse(port) : 3000
+                        };
+
+                        if (!_discoveredWebOSDevices.Any(d => d.IpAddress == webOSDevice.IpAddress))
+                        {
+                            _discoveredWebOSDevices.Add(webOSDevice);
+                            StateHasChanged();
+                        }
+                    }
+                });
+            });
+
+            _hubConnection.On("WebOSScanCompleted", () =>
+            {
+                InvokeAsync(() =>
+                {
+                    _isWebOSScanning = false;
+                    StateHasChanged();
+                });
+            });
+
+            _hubConnection.On<string>("WebOSScanError", (error) =>
+            {
+                InvokeAsync(() =>
+                {
+                    _webOSScanError = error;
+                    _isWebOSScanning = false;
+                    StateHasChanged();
+                });
+            });
+
             await _hubConnection.StartAsync();
         }
     }
@@ -451,6 +641,69 @@
     private void SelectBluetoothDevice(string deviceName)
     {
         _selectedBluetoothDevice = deviceName;
+    }
+
+    private async Task StartWebOSScan()
+    {
+        if (ApiClient == null)
+        {
+            _webOSScanError = "API client not available. Cannot scan for WebOS TVs.";
+            return;
+        }
+
+        try
+        {
+            _isWebOSScanning = true;
+            _webOSScanError = "";
+            _discoveredWebOSDevices.Clear();
+            _selectedWebOSDevice = null;
+            _manualWebOSIpAddress = "";
+            StateHasChanged();
+
+            // Initialize SignalR connection if needed
+            await EnsureSignalRConnection();
+
+            // Start the scanning process via API
+            try
+            {
+                var scanRequest = new WebOSScanRequest { DurationSeconds = 15 };
+                var response = await ApiClient.Devices.StartWebOSScanAsync(scanRequest);
+                
+                if (!response.Success)
+                {
+                    _webOSScanError = response.Message ?? "Failed to start WebOS TV scan";
+                    _isWebOSScanning = false;
+                    StateHasChanged();
+                }
+                // Note: _isWebOSScanning will be set to false by SignalR WebOSScanCompleted event
+            }
+            catch (Exception ex)
+            {
+                _webOSScanError = $"Failed to start WebOS TV scan: {ex.Message}";
+                _isWebOSScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _webOSScanError = $"Failed to scan for WebOS TVs: {ex.Message}";
+            _isWebOSScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectWebOSDevice(WebOSDevice device)
+    {
+        _selectedWebOSDevice = device;
+        _manualWebOSIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualWebOSIP()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualWebOSIpAddress))
+        {
+            _selectedWebOSDevice = null; // Clear selected device when using manual IP
+        }
     }
 
     private async Task FinishWizard()
@@ -476,6 +729,13 @@
         _scanError = "";
         _discoveredBluetoothDevices.Clear();
         _selectedBluetoothDevice = "";
+        
+        // Reset WebOS scanning state
+        _isWebOSScanning = false;
+        _webOSScanError = "";
+        _discoveredWebOSDevices.Clear();
+        _selectedWebOSDevice = null;
+        _manualWebOSIpAddress = "";
     }
 
     private void ResetWizard()
@@ -513,3 +773,16 @@ public class BluetoothScanResponse
     public string? Message { get; set; }
     public bool IsScanning { get; set; }
 }
+
+public class WebOSScanRequest
+{
+    public int DurationSeconds { get; set; } = 15;
+}
+
+public class WebOSScanResponse
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public bool IsScanning { get; set; }
+}
+

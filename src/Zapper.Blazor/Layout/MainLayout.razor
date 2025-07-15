@@ -1,9 +1,11 @@
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@implements IDisposable
 
 <MudLayout>
     <MudAppBar Elevation="1" Class="top-navbar">
         <MudSpacer />
-        <MudText Typo="Typo.h5" Class="navbar-title">Zapper</MudText>
+        <MudText Typo="Typo.h5" Class="navbar-title">@GetPageTitle()</MudText>
         <MudSpacer />
     </MudAppBar>
     <MudMainContent Class="pb-16 pt-16">
@@ -15,3 +17,35 @@
         <NavMenu />
     </div>
 </MudLayout>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    private string GetPageTitle()
+    {
+        var uri = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        return uri.ToLowerInvariant() switch
+        {
+            "" or "/" => "Devices",
+            "devices" => "Devices", 
+            "remote" => "Remote",
+            "activities" => "Activities",
+            "settings" => "Settings",
+            _ => "Zapper"
+        };
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}
