@@ -4,10 +4,11 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Zapper.Device.Xbox.Models;
+using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox;
 
-public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
+public class XboxDiscovery(INetworkClientFactory networkClientFactory, ILogger<XboxDiscovery> logger) : IXboxDiscovery
 {
     private const int DiscoveryPort = 5050;
     private const string DiscoveryMessage = "{\"type\":\"discovery\",\"version\":2}";
@@ -21,7 +22,7 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
 
         try
         {
-            using var udpClient = new UdpClient();
+            using var udpClient = networkClientFactory.CreateUdpClient();
             udpClient.EnableBroadcast = true;
 
             var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, DiscoveryPort);
@@ -71,7 +72,7 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
         }
     }
 
-    private async Task<UdpReceiveResult?> ReceiveWithTimeoutAsync(UdpClient client, int timeoutMs, CancellationToken cancellationToken)
+    private async Task<UdpReceiveResult?> ReceiveWithTimeoutAsync(IUdpClientWrapper client, int timeoutMs, CancellationToken cancellationToken)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(timeoutMs);

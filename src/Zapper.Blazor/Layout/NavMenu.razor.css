@@ -6,6 +6,8 @@
     height: 100%;
     max-width: 400px;
     margin: 0 auto;
+    gap: 8px;
+    padding: 0 8px;
 }
 
 .bottom-nav-item {

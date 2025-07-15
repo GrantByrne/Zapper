@@ -1,22 +1,31 @@
+using System.Net;
+using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Zapper.Device.Xbox;
 using Zapper.Device.Xbox.Models;
+using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxDiscoveryTests
 {
+    private readonly Mock<INetworkClientFactory> _networkClientFactoryMock;
+    private readonly Mock<IUdpClientWrapper> _udpClientMock;
     private readonly Mock<ILogger<XboxDiscovery>> _loggerMock;
     private readonly XboxDiscovery _discovery;
 
     public XboxDiscoveryTests()
     {
+        _networkClientFactoryMock = new Mock<INetworkClientFactory>();
+        _udpClientMock = new Mock<IUdpClientWrapper>();
         _loggerMock = new Mock<ILogger<XboxDiscovery>>();
-        _discovery = new XboxDiscovery(_loggerMock.Object);
+
+        _networkClientFactoryMock.Setup(x => x.CreateUdpClient()).Returns(_udpClientMock.Object);
+        _discovery = new XboxDiscovery(_networkClientFactoryMock.Object, _loggerMock.Object);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task DiscoverDevicesAsync_WhenCancelled_ReturnsEmptyList()
     {
         var cts = new CancellationTokenSource();
@@ -28,9 +37,12 @@ public class XboxDiscoveryTests
         Assert.Empty(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task DiscoverDevicesAsync_WithShortTimeout_CompletesWithoutException()
     {
+        _udpClientMock.Setup(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new OperationCanceledException());
+
         var result = await _discovery.DiscoverDevicesAsync(TimeSpan.FromMilliseconds(100), CancellationToken.None);
 
         Assert.NotNull(result);

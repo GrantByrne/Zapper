@@ -1,23 +1,45 @@
+using System.Net;
+using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Zapper.Device.Network;
+using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxDeviceControllerTests
 {
     private readonly Mock<INetworkDeviceController> _networkControllerMock;
+    private readonly Mock<INetworkClientFactory> _networkClientFactoryMock;
+    private readonly Mock<ITcpClientWrapper> _tcpClientMock;
+    private readonly Mock<IUdpClientWrapper> _udpClientMock;
+    private readonly Mock<Stream> _streamMock;
     private readonly Mock<ILogger<XboxDeviceController>> _loggerMock;
     private readonly XboxDeviceController _controller;
 
     public XboxDeviceControllerTests()
     {
         _networkControllerMock = new Mock<INetworkDeviceController>();
+        _networkClientFactoryMock = new Mock<INetworkClientFactory>();
+        _tcpClientMock = new Mock<ITcpClientWrapper>();
+        _udpClientMock = new Mock<IUdpClientWrapper>();
+        _streamMock = new Mock<Stream>();
         _loggerMock = new Mock<ILogger<XboxDeviceController>>();
-        _controller = new XboxDeviceController(_networkControllerMock.Object, _loggerMock.Object);
+
+        _networkClientFactoryMock.Setup(x => x.CreateTcpClient()).Returns(_tcpClientMock.Object);
+        _networkClientFactoryMock.Setup(x => x.CreateUdpClient()).Returns(_udpClientMock.Object);
+        _tcpClientMock.Setup(x => x.GetStream()).Returns(_streamMock.Object);
+
+        // Setup mocks to simulate network failures by default
+        _tcpClientMock.Setup(x => x.ConnectAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .ThrowsAsync(new SocketException());
+        _udpClientMock.Setup(x => x.SendAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<IPEndPoint>()))
+            .ThrowsAsync(new SocketException());
+
+        _controller = new XboxDeviceController(_networkControllerMock.Object, _networkClientFactoryMock.Object, _loggerMock.Object);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task ConnectAsync_WithValidDevice_ReturnsTrue()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
@@ -27,7 +49,7 @@ public class XboxDeviceControllerTests
         Assert.True(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task ConnectAsync_WithoutIpAddress_ReturnsFalse()
     {
         var device = new Zapper.Core.Models.Device { Name = "Test Xbox" };
@@ -44,7 +66,7 @@ public class XboxDeviceControllerTests
             Times.Once);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task DisconnectAsync_WithValidDevice_ReturnsTrue()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
@@ -55,7 +77,7 @@ public class XboxDeviceControllerTests
         Assert.True(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommandAsync_PowerCommand_ReturnsResult()
     {
         var device = new Zapper.Core.Models.Device
@@ -71,7 +93,7 @@ public class XboxDeviceControllerTests
         Assert.False(result); // Will fail without actual Xbox
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommandAsync_DirectionalCommand_HandlesAllDirections()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
@@ -91,7 +113,7 @@ public class XboxDeviceControllerTests
         }
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommandAsync_WithoutIpAddress_ReturnsFalse()
     {
         var device = new Zapper.Core.Models.Device { Name = "Test Xbox" };
@@ -102,7 +124,7 @@ public class XboxDeviceControllerTests
         Assert.False(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task TestConnectionAsync_WithValidIpAddress_ReturnsResult()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
@@ -112,7 +134,7 @@ public class XboxDeviceControllerTests
         Assert.False(result); // Will fail without actual Xbox
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task PowerOnAsync_WithoutLiveId_ReturnsFalse()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
@@ -129,7 +151,7 @@ public class XboxDeviceControllerTests
             Times.Once);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendTextAsync_WithValidDevice_SendsText()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
