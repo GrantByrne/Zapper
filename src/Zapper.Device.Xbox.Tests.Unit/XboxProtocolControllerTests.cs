@@ -40,7 +40,7 @@ public class XboxProtocolControllerTests
         Assert.False(_controller.SupportsDevice(device));
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommandAsync_WithXboxDevice_CallsXboxController()
     {
         var device = new Zapper.Core.Models.Device
@@ -60,7 +60,7 @@ public class XboxProtocolControllerTests
         _xboxControllerMock.Verify(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommandAsync_WithNonXboxDevice_ReturnsFalse()
     {
         var device = new Zapper.Core.Models.Device
@@ -76,7 +76,7 @@ public class XboxProtocolControllerTests
         _xboxControllerMock.Verify(x => x.SendCommandAsync(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<Zapper.Core.Models.DeviceCommand>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task TestConnectionAsync_WithXboxDevice_CallsXboxController()
     {
         var device = new Zapper.Core.Models.Device
@@ -95,7 +95,7 @@ public class XboxProtocolControllerTests
         _xboxControllerMock.Verify(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task GetStatusAsync_WithXboxDevice_ReturnsOnlineStatus()
     {
         var device = new Zapper.Core.Models.Device
@@ -114,7 +114,7 @@ public class XboxProtocolControllerTests
         Assert.Equal("Xbox is online", result.StatusMessage);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task GetStatusAsync_WithNonXboxDevice_ReturnsOfflineStatus()
     {
         var device = new Zapper.Core.Models.Device

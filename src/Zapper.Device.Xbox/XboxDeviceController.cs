@@ -5,10 +5,11 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Zapper.Device.Network;
+using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox;
 
-public class XboxDeviceController(INetworkDeviceController networkController, ILogger<XboxDeviceController> logger) : IXboxDeviceController
+public class XboxDeviceController(INetworkDeviceController networkController, INetworkClientFactory networkClientFactory, ILogger<XboxDeviceController> logger) : IXboxDeviceController
 {
     private readonly INetworkDeviceController _networkController = networkController;
     private readonly ConcurrentDictionary<string, XboxConnection> _connections = new();
@@ -190,7 +191,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
     {
         try
         {
-            using var tcpClient = new TcpClient();
+            using var tcpClient = networkClientFactory.CreateTcpClient();
             await tcpClient.ConnectAsync(ipAddress, CommandPort);
 
             var json = JsonSerializer.Serialize(payload);
@@ -212,7 +213,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
     {
         try
         {
-            using var udpClient = new UdpClient();
+            using var udpClient = networkClientFactory.CreateUdpClient();
             var endpoint = new IPEndPoint(IPAddress.Parse(ipAddress), CommandPort);
 
             var json = JsonSerializer.Serialize(payload);
