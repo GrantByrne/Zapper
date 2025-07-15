@@ -55,7 +55,7 @@ public class AndroidTvBluetoothControllerTests
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithNonBluetoothDevice_ShouldReturnFalse()
+    public async Task SendCommand_WithNonBluetoothDevice_ShouldReturnFalse()
     {
         // Arrange
         var device = new Zapper.Core.Models.Device
@@ -67,14 +67,14 @@ public class AndroidTvBluetoothControllerTests
         var command = new DeviceCommand { Type = CommandType.Power };
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithBluetoothDeviceButNoMacAddress_ShouldReturnFalse()
+    public async Task SendCommand_WithBluetoothDeviceButNoMacAddress_ShouldReturnFalse()
     {
         // Arrange
         var device = new Zapper.Core.Models.Device
@@ -87,7 +87,7 @@ public class AndroidTvBluetoothControllerTests
         var command = new DeviceCommand { Type = CommandType.Power };
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeFalse();
@@ -100,17 +100,17 @@ public class AndroidTvBluetoothControllerTests
         var device = CreateTestBluetoothDevice();
         var command = new DeviceCommand { Type = CommandType.Power };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeyAsync(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>())
+        _mockHidController.SendKey(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendKeyAsync(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendKey(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -120,17 +120,17 @@ public class AndroidTvBluetoothControllerTests
         var device = CreateTestBluetoothDevice();
         var command = new DeviceCommand { Type = CommandType.VolumeUp };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeyAsync(device.MacAddress!, HidKeyCode.VolumeUp, Arg.Any<CancellationToken>())
+        _mockHidController.SendKey(device.MacAddress!, HidKeyCode.VolumeUp, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendKeyAsync(device.MacAddress!, HidKeyCode.VolumeUp, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendKey(device.MacAddress!, HidKeyCode.VolumeUp, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -140,17 +140,17 @@ public class AndroidTvBluetoothControllerTests
         var device = CreateTestBluetoothDevice();
         var command = new DeviceCommand { Type = CommandType.DirectionalUp };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeyAsync(device.MacAddress!, HidKeyCode.DPadUp, Arg.Any<CancellationToken>())
+        _mockHidController.SendKey(device.MacAddress!, HidKeyCode.DPadUp, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendKeyAsync(device.MacAddress!, HidKeyCode.DPadUp, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendKey(device.MacAddress!, HidKeyCode.DPadUp, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -164,17 +164,17 @@ public class AndroidTvBluetoothControllerTests
             NetworkPayload = "5"
         };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeyAsync(device.MacAddress!, HidKeyCode.Key5, Arg.Any<CancellationToken>())
+        _mockHidController.SendKey(device.MacAddress!, HidKeyCode.Key5, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendKeyAsync(device.MacAddress!, HidKeyCode.Key5, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendKey(device.MacAddress!, HidKeyCode.Key5, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -188,17 +188,17 @@ public class AndroidTvBluetoothControllerTests
             NetworkPayload = "text:Hello World"
         };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendTextAsync(device.MacAddress!, "Hello World", Arg.Any<CancellationToken>())
+        _mockHidController.SendText(device.MacAddress!, "Hello World", Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendTextAsync(device.MacAddress!, "Hello World", Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendText(device.MacAddress!, "Hello World", Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -212,9 +212,9 @@ public class AndroidTvBluetoothControllerTests
             NetworkPayload = "netflix"
         };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeySequenceAsync(
+        _mockHidController.SendKeySequence(
             device.MacAddress!,
             Arg.Is<HidKeyCode[]>(keys => keys.SequenceEqual(new[] { HidKeyCode.Home, HidKeyCode.N })),
             100,
@@ -222,11 +222,11 @@ public class AndroidTvBluetoothControllerTests
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).SendKeySequenceAsync(
+        await _mockHidController.Received(1).SendKeySequence(
             device.MacAddress!,
             Arg.Is<HidKeyCode[]>(keys => keys.SequenceEqual(new[] { HidKeyCode.Home, HidKeyCode.N })),
             100,
@@ -240,20 +240,20 @@ public class AndroidTvBluetoothControllerTests
         var device = CreateTestBluetoothDevice();
         var command = new DeviceCommand { Type = CommandType.Home };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(false);
-        _mockHidController.ConnectAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.Connect(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(true);
-        _mockHidController.SendKeyAsync(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>())
+        _mockHidController.SendKey(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeTrue();
-        await _mockHidController.Received(1).ConnectAsync(device.MacAddress!, Arg.Any<CancellationToken>());
-        await _mockHidController.Received(1).SendKeyAsync(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).Connect(device.MacAddress!, Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).SendKey(device.MacAddress!, HidKeyCode.Home, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -263,18 +263,18 @@ public class AndroidTvBluetoothControllerTests
         var device = CreateTestBluetoothDevice();
         var command = new DeviceCommand { Type = CommandType.Home };
 
-        _mockHidController.IsConnectedAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.IsConnected(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(false);
-        _mockHidController.ConnectAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockHidController.Connect(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(false);
 
         // Act
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // Assert
         result.Should().BeFalse();
-        await _mockHidController.Received(1).ConnectAsync(device.MacAddress!, Arg.Any<CancellationToken>());
-        await _mockHidController.DidNotReceive().SendKeyAsync(Arg.Any<string>(), Arg.Any<HidKeyCode>(), Arg.Any<CancellationToken>());
+        await _mockHidController.Received(1).Connect(device.MacAddress!, Arg.Any<CancellationToken>());
+        await _mockHidController.DidNotReceive().SendKey(Arg.Any<string>(), Arg.Any<HidKeyCode>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -289,15 +289,15 @@ public class AndroidTvBluetoothControllerTests
             IsConnected = true
         };
 
-        _mockBluetoothService.GetDeviceAsync(device.MacAddress!, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(device.MacAddress!, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         // Assert
         result.Should().BeTrue();
-        await _mockBluetoothService.Received(1).GetDeviceAsync(device.MacAddress!, Arg.Any<CancellationToken>());
+        await _mockBluetoothService.Received(1).GetDevice(device.MacAddress!, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class AndroidTvBluetoothControllerTests
         };
 
         // Act
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         // Assert
         result.Should().BeFalse();
@@ -344,11 +344,11 @@ public class AndroidTvBluetoothControllerTests
             }
         };
 
-        _mockBluetoothService.GetDevicesAsync(Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevices(Arg.Any<CancellationToken>())
             .Returns(devices);
 
         // Act
-        var result = await _controller.DiscoverPairedDevicesAsync();
+        var result = await _controller.DiscoverPairedDevices();
 
         // Assert
         result.Should().HaveCount(2);

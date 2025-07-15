@@ -7,10 +7,10 @@ public class ExternalIrCodeCache
     public int Id { get; set; }
 
     [Required]
-    public string CacheKey { get; set; } = string.Empty;
+    public string CacheKey { get; set; } = "";
 
     [Required]
-    public string CachedData { get; set; } = string.Empty;
+    public string CachedData { get; set; } = "";
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -55,8 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Roku", "Roku", "{3B8F3477-0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Contracts", "Zapper.Contracts\Zapper.Contracts.csproj", "{A2D91318-15FF-4865-9D8E-E7BE093D1A18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Client.Abstractions", "Zapper.Client.Abstractions\Zapper.Client.Abstractions.csproj", "{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Client", "Zapper.Client\Zapper.Client.csproj", "{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.Xbox", "Zapper.Device.Xbox\Zapper.Device.Xbox.csproj", "{EC2EEF70-40D4-4BE9-9FE6-94EB66C75D5A}"
@@ -321,18 +319,6 @@ Global
 		{A2D91318-15FF-4865-9D8E-E7BE093D1A18}.Release|x64.Build.0 = Release|Any CPU
 		{A2D91318-15FF-4865-9D8E-E7BE093D1A18}.Release|x86.ActiveCfg = Release|Any CPU
 		{A2D91318-15FF-4865-9D8E-E7BE093D1A18}.Release|x86.Build.0 = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|x64.Build.0 = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Debug|x86.Build.0 = Debug|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|x64.ActiveCfg = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|x64.Build.0 = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|x86.ActiveCfg = Release|Any CPU
-		{11EA2144-D4DF-42C3-BDD4-D5DF48F754E2}.Release|x86.Build.0 = Release|Any CPU
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D4E4D89-19EE-43E9-A6BA-B19F3EEAA93F}.Debug|x64.ActiveCfg = Debug|Any CPU

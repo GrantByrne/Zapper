@@ -12,13 +12,19 @@ public class ExecuteActivityEndpoint(IActivityService activityService) : Endpoin
         Summary(s =>
         {
             s.Summary = "Execute an activity";
-            s.Description = "Execute all steps in an activity sequence";
+            s.Description = "Execute all steps in an activity sequence. This will run all configured device commands in the specified order with the defined delays between commands.";
+            s.ExampleRequest = new ExecuteActivityRequest { Id = 1 };
+            s.Responses[200] = "Activity executed successfully";
+            s.Responses[400] = "Failed to execute activity - invalid activity ID or execution error";
+            s.Responses[404] = "Activity not found";
+            s.Responses[500] = "Internal server error";
         });
+        Tags("Activities");
     }
 
     public override async Task HandleAsync(ExecuteActivityRequest req, CancellationToken ct)
     {
-        var success = await activityService.ExecuteActivityAsync(req.Id, ct);
+        var success = await activityService.ExecuteActivity(req.Id, ct);
         if (!success)
         {
             await SendAsync(new ExecuteActivityResponse

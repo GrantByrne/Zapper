@@ -18,7 +18,7 @@ public class SonosProtocolControllerTests
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithSonosDevice_CallsSonosController()
+    public async Task SendCommand_WithSonosDevice_CallsSonosController()
     {
         var device = new DeviceModel
         {
@@ -27,17 +27,17 @@ public class SonosProtocolControllerTests
             Name = "Test Sonos"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        _sonosControllerMock.Setup(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()))
+        _sonosControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _sonosControllerMock.Verify(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        _sonosControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithNonSonosDevice_ReturnsFalse()
+    public async Task SendCommand_WithNonSonosDevice_ReturnsFalse()
     {
         var device = new DeviceModel
         {
@@ -47,7 +47,7 @@ public class SonosProtocolControllerTests
         };
         var command = new DeviceCommand { Type = CommandType.Power };
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
         _loggerMock.Verify(x => x.Log(
@@ -60,7 +60,7 @@ public class SonosProtocolControllerTests
     }
 
     [Fact]
-    public async Task TestConnectionAsync_WithSonosDevice_CallsSonosController()
+    public async Task TestConnection_WithSonosDevice_CallsSonosController()
     {
         var device = new DeviceModel
         {
@@ -68,17 +68,17 @@ public class SonosProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Sonos"
         };
-        _sonosControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _sonosControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _sonosControllerMock.Verify(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()), Times.Once);
+        _sonosControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task GetStatusAsync_WithSonosDevice_ReturnsOnlineStatus()
+    public async Task GetStatus_WithSonosDevice_ReturnsOnlineStatus()
     {
         var device = new DeviceModel
         {
@@ -86,10 +86,10 @@ public class SonosProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Sonos"
         };
-        _sonosControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _sonosControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var status = await _controller.GetStatusAsync(device);
+        var status = await _controller.GetStatus(device);
 
         Assert.NotNull(status);
         Assert.True(status.IsOnline);

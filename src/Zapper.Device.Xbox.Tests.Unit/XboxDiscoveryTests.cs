@@ -22,24 +22,24 @@ public class XboxDiscoveryTests
     }
 
     [Fact(Timeout = 5000)]
-    public async Task DiscoverDevicesAsync_WhenCancelled_ReturnsEmptyList()
+    public async Task DiscoverDevices_WhenCancelled_ReturnsEmptyList()
     {
         var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        var result = await _discovery.DiscoverDevicesAsync(TimeSpan.FromSeconds(5), cts.Token);
+        var result = await _discovery.DiscoverDevices(TimeSpan.FromSeconds(5), cts.Token);
 
         Assert.NotNull(result);
         Assert.Empty(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task DiscoverDevicesAsync_WithShortTimeout_CompletesWithoutException()
+    public async Task DiscoverDevices_WithShortTimeout_CompletesWithoutException()
     {
         _udpClientMock.Setup(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _discovery.DiscoverDevicesAsync(TimeSpan.FromMilliseconds(100), CancellationToken.None);
+        var result = await _discovery.DiscoverDevices(TimeSpan.FromMilliseconds(100), CancellationToken.None);
 
         Assert.NotNull(result);
         _loggerMock.Verify(x => x.Log(

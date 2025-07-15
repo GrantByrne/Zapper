@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
-using Zapper.Client.Abstractions;
+// using Zapper.Client; // No need to reference own namespace
 
 namespace Zapper.Client;
 

@@ -4,7 +4,7 @@ namespace Zapper.API.Models.Requests;
 
 public class CreateDeviceRequest
 {
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
     public string? Brand { get; set; }
     public string? Model { get; set; }
     public DeviceType Type { get; set; }

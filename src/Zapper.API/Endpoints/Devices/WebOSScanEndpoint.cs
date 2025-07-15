@@ -32,7 +32,7 @@ public class WebOsScanEndpoint(
             {
                 try
                 {
-                    var devices = await webOsDiscovery.DiscoverDevicesAsync(TimeSpan.FromSeconds(req.DurationSeconds), ct);
+                    var devices = await webOsDiscovery.DiscoverDevices(TimeSpan.FromSeconds(req.DurationSeconds), ct);
 
                     foreach (var device in devices)
                     {

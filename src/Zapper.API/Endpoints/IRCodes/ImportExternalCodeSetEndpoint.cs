@@ -12,12 +12,21 @@ public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCode
         Summary(s =>
         {
             s.Summary = "Import IR code set from external database";
-            s.Description = "Imports a complete IR code set from the IRDB external database into the local database";
+            s.Description = "Imports a complete IR code set from the IRDB external database into the local database. This is useful for quickly adding support for new devices without manually programming IR codes.";
+            s.ExampleRequest = new ImportExternalCodeSetRequest
+            {
+                Manufacturer = "Samsung",
+                DeviceType = "TV",
+                Device = "UN55MU8000",
+                Subdevice = ""
+            };
             s.Responses[200] = "Import successful";
             s.Responses[404] = "Code set not found in external database";
             s.Responses[409] = "Code set already exists locally";
+            s.Responses[500] = "Internal server error";
             s.Responses[503] = "External service unavailable";
         });
+        Tags("IR Codes", "External");
     }
 
     public override async Task HandleAsync(ImportExternalCodeSetRequest req, CancellationToken ct)

@@ -18,7 +18,7 @@ public class PlayStationProtocolControllerTests
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithPlayStationDevice_CallsPlayStationController()
+    public async Task SendCommand_WithPlayStationDevice_CallsPlayStationController()
     {
         var device = new DeviceModel
         {
@@ -27,17 +27,17 @@ public class PlayStationProtocolControllerTests
             Name = "Test PlayStation"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        _playStationControllerMock.Setup(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()))
+        _playStationControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _playStationControllerMock.Verify(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        _playStationControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithNonPlayStationDevice_ReturnsFalse()
+    public async Task SendCommand_WithNonPlayStationDevice_ReturnsFalse()
     {
         var device = new DeviceModel
         {
@@ -47,7 +47,7 @@ public class PlayStationProtocolControllerTests
         };
         var command = new DeviceCommand { Type = CommandType.Power };
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
         _loggerMock.Verify(x => x.Log(
@@ -60,7 +60,7 @@ public class PlayStationProtocolControllerTests
     }
 
     [Fact]
-    public async Task TestConnectionAsync_WithPlayStationDevice_CallsPlayStationController()
+    public async Task TestConnection_WithPlayStationDevice_CallsPlayStationController()
     {
         var device = new DeviceModel
         {
@@ -68,17 +68,17 @@ public class PlayStationProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test PlayStation"
         };
-        _playStationControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _playStationControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _playStationControllerMock.Verify(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()), Times.Once);
+        _playStationControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task GetStatusAsync_WithPlayStationDevice_ReturnsOnlineStatus()
+    public async Task GetStatus_WithPlayStationDevice_ReturnsOnlineStatus()
     {
         var device = new DeviceModel
         {
@@ -86,10 +86,10 @@ public class PlayStationProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test PlayStation"
         };
-        _playStationControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _playStationControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var status = await _controller.GetStatusAsync(device);
+        var status = await _controller.GetStatus(device);
 
         Assert.NotNull(status);
         Assert.True(status.IsOnline);

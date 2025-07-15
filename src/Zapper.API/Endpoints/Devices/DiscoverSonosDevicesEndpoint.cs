@@ -21,7 +21,7 @@ public class DiscoverSonosDevicesEndpoint(ISonosDiscovery sonosDiscovery) : Endp
     public override async Task HandleAsync(DiscoverSonosDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await sonosDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await sonosDiscovery.DiscoverDevices(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

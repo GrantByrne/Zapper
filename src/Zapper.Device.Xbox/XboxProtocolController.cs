@@ -5,7 +5,7 @@ namespace Zapper.Device.Xbox;
 
 public class XboxProtocolController(IXboxDeviceController xboxController, ILogger<XboxProtocolController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -13,10 +13,10 @@ public class XboxProtocolController(IXboxDeviceController xboxController, ILogge
             return false;
         }
 
-        return await xboxController.SendCommandAsync(device, command);
+        return await xboxController.SendCommand(device, command);
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -24,10 +24,10 @@ public class XboxProtocolController(IXboxDeviceController xboxController, ILogge
             return false;
         }
 
-        return await xboxController.TestConnectionAsync(device);
+        return await xboxController.TestConnection(device);
     }
 
-    public async Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public async Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -38,7 +38,7 @@ public class XboxProtocolController(IXboxDeviceController xboxController, ILogge
             };
         }
 
-        var isOnline = await xboxController.TestConnectionAsync(device);
+        var isOnline = await xboxController.TestConnection(device);
         return new DeviceStatus
         {
             IsOnline = isOnline,

@@ -2,8 +2,8 @@ namespace Zapper.Device.Bluetooth;
 
 public class BluetoothDeviceInfo
 {
-    public string Address { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
+    public string Address { get; set; } = "";
+    public string Name { get; set; } = "";
     public string? Alias { get; set; }
     public bool IsConnected { get; set; }
     public bool IsPaired { get; set; }

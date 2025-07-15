@@ -32,7 +32,7 @@ public class DiscoverXboxDevicesEndpoint(IXboxDiscovery xboxDiscovery, IHubConte
             };
         }
 
-        var devices = await xboxDiscovery.DiscoverDevicesAsync(TimeSpan.FromSeconds(req.DurationSeconds), ct);
+        var devices = await xboxDiscovery.DiscoverDevices(TimeSpan.FromSeconds(req.DurationSeconds), ct);
 
         await SendOkAsync(new DiscoverXboxDevicesResponse
         {

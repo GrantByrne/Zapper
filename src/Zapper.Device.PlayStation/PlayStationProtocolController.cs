@@ -5,7 +5,7 @@ namespace Zapper.Device.PlayStation;
 
 public class PlayStationProtocolController(IPlayStationDeviceController playStationController, ILogger<PlayStationProtocolController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -13,10 +13,10 @@ public class PlayStationProtocolController(IPlayStationDeviceController playStat
             return false;
         }
 
-        return await playStationController.SendCommandAsync(device, command);
+        return await playStationController.SendCommand(device, command);
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -24,10 +24,10 @@ public class PlayStationProtocolController(IPlayStationDeviceController playStat
             return false;
         }
 
-        return await playStationController.TestConnectionAsync(device);
+        return await playStationController.TestConnection(device);
     }
 
-    public async Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public async Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -38,7 +38,7 @@ public class PlayStationProtocolController(IPlayStationDeviceController playStat
             };
         }
 
-        var isOnline = await playStationController.TestConnectionAsync(device);
+        var isOnline = await playStationController.TestConnection(device);
         return new DeviceStatus
         {
             IsOnline = isOnline,

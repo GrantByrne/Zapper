@@ -34,7 +34,7 @@ public class StopBluetoothScanEndpoint(
                 return;
             }
 
-            var stopped = await bluetoothService.StopDiscoveryAsync(ct);
+            var stopped = await bluetoothService.StopDiscovery(ct);
 
             if (stopped)
             {

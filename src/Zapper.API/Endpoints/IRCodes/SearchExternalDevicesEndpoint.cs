@@ -12,10 +12,17 @@ public class SearchExternalDevicesEndpoint(IExternalIrCodeService externalIrCode
         Summary(s =>
         {
             s.Summary = "Search devices in external IR database";
-            s.Description = "Search for devices by manufacturer and/or device type in the IRDB external database";
+            s.Description = "Search for devices by manufacturer and/or device type in the IRDB external database. This allows importing IR codes from a community-maintained database.";
+            s.ExampleRequest = new SearchExternalDevicesRequest
+            {
+                Manufacturer = "Samsung",
+                DeviceType = "TV"
+            };
             s.Responses[200] = "List of matching devices";
+            s.Responses[500] = "Internal server error";
             s.Responses[503] = "External service unavailable";
         });
+        Tags("IR Codes", "External");
     }
 
     public override async Task HandleAsync(SearchExternalDevicesRequest req, CancellationToken ct)

@@ -7,22 +7,22 @@ public class IrCode
     public int Id { get; set; }
 
     [Required]
-    public string Brand { get; set; } = string.Empty;
+    public string Brand { get; set; } = "";
 
     [Required]
-    public string Model { get; set; } = string.Empty;
+    public string Model { get; set; } = "";
 
     [Required]
     public DeviceType DeviceType { get; set; }
 
     [Required]
-    public string CommandName { get; set; } = string.Empty;
+    public string CommandName { get; set; } = "";
 
     [Required]
-    public string Protocol { get; set; } = string.Empty;
+    public string Protocol { get; set; } = "";
 
     [Required]
-    public string HexCode { get; set; } = string.Empty;
+    public string HexCode { get; set; } = "";
 
     public int Frequency { get; set; } = 38000;
 

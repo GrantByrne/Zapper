@@ -1,4 +1,4 @@
-namespace Zapper.Client.Abstractions;
+namespace Zapper.Client;
 
 /// <summary>
 /// Main client interface for the Zapper API

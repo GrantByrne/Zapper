@@ -13,13 +13,16 @@ public class GetAllDevicesEndpoint(IDeviceService deviceService) : EndpointWitho
         Summary(s =>
         {
             s.Summary = "Get all devices";
-            s.Description = "Retrieve a list of all configured devices";
+            s.Description = "Retrieve a list of all configured devices in the system. Devices can include TVs, receivers, streaming devices, and other controllable equipment.";
+            s.Responses[200] = "List of devices retrieved successfully";
+            s.Responses[500] = "Internal server error";
         });
+        Tags("Devices");
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var devices = await deviceService.GetAllDevicesAsync();
+        var devices = await deviceService.GetAllDevices();
         await SendOkAsync(devices, ct);
     }
 }

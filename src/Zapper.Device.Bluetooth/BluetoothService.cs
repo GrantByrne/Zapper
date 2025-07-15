@@ -28,7 +28,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
     public bool IsDiscovering => _adapter.IsDiscovering;
     public bool IsPowered => _adapter.IsPowered;
 
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    public async Task Initialize(CancellationToken cancellationToken = default)
     {
         lock (_lock)
         {
@@ -52,7 +52,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         }
     }
 
-    public async Task<bool> SetPoweredAsync(bool powered, CancellationToken cancellationToken = default)
+    public async Task<bool> SetPowered(bool powered, CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -63,7 +63,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.SetPoweredAsync(powered, cancellationToken);
     }
 
-    public async Task<bool> StartDiscoveryAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> StartDiscovery(CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -74,7 +74,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.StartDiscoveryAsync(cancellationToken);
     }
 
-    public async Task<bool> StopDiscoveryAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> StopDiscovery(CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -85,7 +85,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.StopDiscoveryAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<BluetoothDeviceInfo>> GetDevicesAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<BluetoothDeviceInfo>> GetDevices(CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -96,7 +96,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.GetDevicesAsync(cancellationToken);
     }
 
-    public async Task<BluetoothDeviceInfo?> GetDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<BluetoothDeviceInfo?> GetDevice(string address, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(address))
         {
@@ -113,7 +113,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.GetDeviceAsync(address, cancellationToken);
     }
 
-    public async Task<bool> PairDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> PairDevice(string address, CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -124,7 +124,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.PairDeviceAsync(address, cancellationToken);
     }
 
-    public async Task<bool> ConnectDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> ConnectDevice(string address, CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -135,7 +135,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.ConnectDeviceAsync(address, cancellationToken);
     }
 
-    public async Task<bool> DisconnectDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> DisconnectDevice(string address, CancellationToken cancellationToken = default)
     {
         if (!IsInitialized)
         {
@@ -146,11 +146,11 @@ public class BluetoothService : BackgroundService, IBluetoothService
         return await _adapter.DisconnectDeviceAsync(address, cancellationToken);
     }
 
-    public async Task<bool> RemoveDeviceAsync(string address, CancellationToken cancellationToken = default)
+    public async Task<bool> RemoveDevice(string address, CancellationToken cancellationToken = default)
     {
         try
         {
-            await DisconnectDeviceAsync(address, cancellationToken);
+            await DisconnectDevice(address, cancellationToken);
             _logger.LogWarning("Device removal not implemented in current Linux.Bluetooth version. Device {Address} disconnected but not removed.", address);
             return true;
         }
@@ -165,7 +165,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
     {
         try
         {
-            await InitializeAsync(stoppingToken);
+            await Initialize(stoppingToken);
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -184,7 +184,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         {
             if (IsDiscovering)
             {
-                await StopDiscoveryAsync();
+                await StopDiscovery();
             }
         }
     }

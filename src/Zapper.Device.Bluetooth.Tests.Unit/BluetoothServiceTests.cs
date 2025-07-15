@@ -37,7 +37,7 @@ public class BluetoothServiceTests
     }
 
     [Fact]
-    public async Task InitializeAsync_WhenCalledMultipleTimes_ShouldNotReinitialize()
+    public async Task Initialize_WhenCalledMultipleTimes_ShouldNotReinitialize()
     {
         // Arrange
         var cancellationToken = CancellationToken.None;
@@ -47,8 +47,8 @@ public class BluetoothServiceTests
         try
         {
             // Act
-            await _bluetoothService.InitializeAsync(cancellationToken);
-            await _bluetoothService.InitializeAsync(cancellationToken);
+            await _bluetoothService.Initialize(cancellationToken);
+            await _bluetoothService.Initialize(cancellationToken);
 
             // Assert
             // Verify that logger was called appropriately
@@ -69,21 +69,21 @@ public class BluetoothServiceTests
     }
 
     [Fact]
-    public async Task GetDevicesAsync_WithoutInitialization_ShouldReturnEmptyList()
+    public async Task GetDevices_WithoutInitialization_ShouldReturnEmptyList()
     {
         // Act
-        var result = await _bluetoothService.GetDevicesAsync();
+        var result = await _bluetoothService.GetDevices();
 
         // Assert
         result.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task GetDeviceAsync_WithNullOrEmptyAddress_ShouldReturnNull()
+    public async Task GetDevice_WithNullOrEmptyAddress_ShouldReturnNull()
     {
         // Act
-        var result1 = await _bluetoothService.GetDeviceAsync(null!);
-        var result2 = await _bluetoothService.GetDeviceAsync(string.Empty);
+        var result1 = await _bluetoothService.GetDevice(null!);
+        var result2 = await _bluetoothService.GetDevice("");
 
         // Assert
         result1.Should().BeNull();
@@ -91,13 +91,13 @@ public class BluetoothServiceTests
     }
 
     [Fact]
-    public async Task PairDeviceAsync_WithValidAddress_ShouldHandleGracefully()
+    public async Task PairDevice_WithValidAddress_ShouldHandleGracefully()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
 
         // Act
-        var result = await _bluetoothService.PairDeviceAsync(deviceAddress);
+        var result = await _bluetoothService.PairDevice(deviceAddress);
 
         // Assert
         // Should not throw and return false when adapter not initialized
@@ -105,13 +105,13 @@ public class BluetoothServiceTests
     }
 
     [Fact]
-    public async Task ConnectDeviceAsync_WithValidAddress_ShouldHandleGracefully()
+    public async Task ConnectDevice_WithValidAddress_ShouldHandleGracefully()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
 
         // Act
-        var result = await _bluetoothService.ConnectDeviceAsync(deviceAddress);
+        var result = await _bluetoothService.ConnectDevice(deviceAddress);
 
         // Assert
         // Should not throw and return false when adapter not initialized
@@ -119,13 +119,13 @@ public class BluetoothServiceTests
     }
 
     [Fact]
-    public async Task DisconnectDeviceAsync_WithValidAddress_ShouldHandleGracefully()
+    public async Task DisconnectDevice_WithValidAddress_ShouldHandleGracefully()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
 
         // Act
-        var result = await _bluetoothService.DisconnectDeviceAsync(deviceAddress);
+        var result = await _bluetoothService.DisconnectDevice(deviceAddress);
 
         // Assert
         // Should not throw and return false when adapter not initialized

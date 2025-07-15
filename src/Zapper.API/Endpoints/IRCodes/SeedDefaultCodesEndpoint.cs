@@ -9,11 +9,19 @@ public class SeedDefaultCodesEndpoint(IIrCodeService irCodeService) : EndpointWi
     {
         Post("/api/ir-codes/seed");
         AllowAnonymous();
+        Summary(s =>
+        {
+            s.Summary = "Seed default IR codes";
+            s.Description = "Seeds the database with a default set of common IR codes for popular devices. This is useful for initial setup or testing.";
+            s.Responses[200] = "Default IR codes seeded successfully";
+            s.Responses[500] = "Internal server error";
+        });
+        Tags("IR Codes", "Admin");
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await irCodeService.SeedDefaultCodesAsync();
+        await irCodeService.SeedDefaultCodes();
         await SendOkAsync("Default IR codes seeded successfully", ct);
     }
 }

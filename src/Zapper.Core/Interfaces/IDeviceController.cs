@@ -4,8 +4,8 @@ namespace Zapper.Core.Interfaces;
 
 public interface IDeviceController
 {
-    Task<bool> SendCommandAsync(Device device, DeviceCommand command);
-    Task<bool> TestConnectionAsync(Device device);
-    Task<DeviceStatus> GetStatusAsync(Device device);
+    Task<bool> SendCommand(Device device, DeviceCommand command);
+    Task<bool> TestConnection(Device device);
+    Task<DeviceStatus> GetStatus(Device device);
     bool SupportsDevice(Device device);
 }

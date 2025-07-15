@@ -4,6 +4,6 @@ namespace Zapper.Device.Xbox;
 
 public interface IXboxDiscovery
 {
-    Task<IEnumerable<XboxDevice>> DiscoverDevicesAsync(TimeSpan timeout, CancellationToken cancellationToken = default);
+    Task<IEnumerable<XboxDevice>> DiscoverDevices(TimeSpan timeout, CancellationToken cancellationToken = default);
     event EventHandler<XboxDevice>? DeviceFound;
 }

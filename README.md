@@ -203,20 +203,3 @@ dotnet run --project Zapper
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Logitech Harmony** - Inspiration for this project
-- **LG Electronics** - WebOS protocol documentation
-- **.NET Community** - Amazing framework and tools
-- **Raspberry Pi Foundation** - Excellent hardware platform
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/GrantByrne/zapper-next-gen/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/GrantByrne/zapper-next-gen/discussions)
-- **Wiki**: [Project Wiki](https://github.com/GrantByrne/zapper-next-gen/wiki)
-
----
-
-**Built with ❤️ for the home automation community**

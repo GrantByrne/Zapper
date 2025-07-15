@@ -21,7 +21,7 @@ public class DiscoverYamahaDevicesEndpoint(IYamahaDiscovery yamahaDiscovery) : E
     public override async Task HandleAsync(DiscoverYamahaDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await yamahaDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await yamahaDiscovery.DiscoverDevices(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

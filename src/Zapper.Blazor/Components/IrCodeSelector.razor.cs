@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using System.Net.Http.Json;
-using Zapper.Client.Abstractions;
+using Zapper.Client;
 using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Components;

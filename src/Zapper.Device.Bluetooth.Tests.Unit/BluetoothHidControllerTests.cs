@@ -41,7 +41,7 @@ public class BluetoothHidControllerTests
     }
 
     [Fact]
-    public async Task SendKeyAsync_WithValidParameters_ShouldReturnTrue()
+    public async Task SendKey_WithValidParameters_ShouldReturnTrue()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -54,19 +54,19 @@ public class BluetoothHidControllerTests
             UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"] // HID Service UUID
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.SendKeyAsync(deviceAddress, keyCode);
+        var result = await _hidController.SendKey(deviceAddress, keyCode);
 
         // Assert
         result.Should().BeTrue();
-        await _mockBluetoothService.Received(1).GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>());
+        await _mockBluetoothService.Received(1).GetDevice(deviceAddress, Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task SendKeyAsync_WithNonHidDevice_ShouldReturnFalse()
+    public async Task SendKey_WithNonHidDevice_ShouldReturnFalse()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -79,35 +79,35 @@ public class BluetoothHidControllerTests
             UuiDs = ["0000180f-0000-1000-8000-00805f9b34fb"] // Battery Service UUID
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.SendKeyAsync(deviceAddress, keyCode);
+        var result = await _hidController.SendKey(deviceAddress, keyCode);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public async Task SendKeyAsync_WithDisconnectedDevice_ShouldReturnFalse()
+    public async Task SendKey_WithDisconnectedDevice_ShouldReturnFalse()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
         var keyCode = HidKeyCode.Home;
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns((BluetoothDeviceInfo?)null);
 
         // Act
-        var result = await _hidController.SendKeyAsync(deviceAddress, keyCode);
+        var result = await _hidController.SendKey(deviceAddress, keyCode);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public async Task SendKeySequenceAsync_WithValidSequence_ShouldReturnTrue()
+    public async Task SendKeySequence_WithValidSequence_ShouldReturnTrue()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -120,18 +120,18 @@ public class BluetoothHidControllerTests
             UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.SendKeySequenceAsync(deviceAddress, keyCodes, 10);
+        var result = await _hidController.SendKeySequence(deviceAddress, keyCodes, 10);
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task SendTextAsync_WithValidText_ShouldReturnTrue()
+    public async Task SendText_WithValidText_ShouldReturnTrue()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -144,64 +144,64 @@ public class BluetoothHidControllerTests
             UuiDs = ["00001124-0000-1000-8000-00805f9b34fb"]
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.SendTextAsync(deviceAddress, text);
+        var result = await _hidController.SendText(deviceAddress, text);
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task SendTextAsync_WithEmptyText_ShouldReturnTrue()
+    public async Task SendText_WithEmptyText_ShouldReturnTrue()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
         var text = "";
 
         // Act
-        var result = await _hidController.SendTextAsync(deviceAddress, text);
+        var result = await _hidController.SendText(deviceAddress, text);
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task ConnectAsync_WithValidAddress_ShouldCallBluetoothService()
+    public async Task Connect_WithValidAddress_ShouldCallBluetoothService()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        _mockBluetoothService.ConnectDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.ConnectDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _hidController.ConnectAsync(deviceAddress);
+        var result = await _hidController.Connect(deviceAddress);
 
         // Assert
         result.Should().BeTrue();
-        await _mockBluetoothService.Received(1).ConnectDeviceAsync(deviceAddress, Arg.Any<CancellationToken>());
+        await _mockBluetoothService.Received(1).ConnectDevice(deviceAddress, Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task DisconnectAsync_WithValidAddress_ShouldCallBluetoothService()
+    public async Task Disconnect_WithValidAddress_ShouldCallBluetoothService()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
-        _mockBluetoothService.DisconnectDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.DisconnectDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(true);
 
         // Act
-        var result = await _hidController.DisconnectAsync(deviceAddress);
+        var result = await _hidController.Disconnect(deviceAddress);
 
         // Assert
         result.Should().BeTrue();
-        await _mockBluetoothService.Received(1).DisconnectDeviceAsync(deviceAddress, Arg.Any<CancellationToken>());
+        await _mockBluetoothService.Received(1).DisconnectDevice(deviceAddress, Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task IsConnectedAsync_WithConnectedDevice_ShouldReturnTrue()
+    public async Task IsConnected_WithConnectedDevice_ShouldReturnTrue()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -212,18 +212,18 @@ public class BluetoothHidControllerTests
             IsConnected = true
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.IsConnectedAsync(deviceAddress);
+        var result = await _hidController.IsConnected(deviceAddress);
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public async Task IsConnectedAsync_WithDisconnectedDevice_ShouldReturnFalse()
+    public async Task IsConnected_WithDisconnectedDevice_ShouldReturnFalse()
     {
         // Arrange
         var deviceAddress = "AA:BB:CC:DD:EE:FF";
@@ -234,18 +234,18 @@ public class BluetoothHidControllerTests
             IsConnected = false
         };
 
-        _mockBluetoothService.GetDeviceAsync(deviceAddress, Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevice(deviceAddress, Arg.Any<CancellationToken>())
             .Returns(deviceInfo);
 
         // Act
-        var result = await _hidController.IsConnectedAsync(deviceAddress);
+        var result = await _hidController.IsConnected(deviceAddress);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public async Task GetConnectedDevicesAsync_WithMultipleDevices_ShouldReturnOnlyHidDevices()
+    public async Task GetConnectedDevices_WithMultipleDevices_ShouldReturnOnlyHidDevices()
     {
         // Arrange
         var devices = new[]
@@ -273,11 +273,11 @@ public class BluetoothHidControllerTests
             }
         };
 
-        _mockBluetoothService.GetDevicesAsync(Arg.Any<CancellationToken>())
+        _mockBluetoothService.GetDevices(Arg.Any<CancellationToken>())
             .Returns(devices);
 
         // Act
-        var result = await _hidController.GetConnectedDevicesAsync();
+        var result = await _hidController.GetConnectedDevices();
 
         // Assert
         result.Should().ContainSingle().Which.Should().Be("AA:BB:CC:DD:EE:FF");

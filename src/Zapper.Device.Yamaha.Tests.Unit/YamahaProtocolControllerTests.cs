@@ -18,7 +18,7 @@ public class YamahaProtocolControllerTests
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithYamahaDevice_CallsYamahaController()
+    public async Task SendCommand_WithYamahaDevice_CallsYamahaController()
     {
         var device = new DeviceModel
         {
@@ -27,17 +27,17 @@ public class YamahaProtocolControllerTests
             Name = "Test Yamaha"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        _yamahaControllerMock.Setup(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()))
+        _yamahaControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _yamahaControllerMock.Verify(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        _yamahaControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task SendCommandAsync_WithNonYamahaDevice_ReturnsFalse()
+    public async Task SendCommand_WithNonYamahaDevice_ReturnsFalse()
     {
         var device = new DeviceModel
         {
@@ -47,7 +47,7 @@ public class YamahaProtocolControllerTests
         };
         var command = new DeviceCommand { Type = CommandType.Power };
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
         _loggerMock.Verify(x => x.Log(
@@ -60,7 +60,7 @@ public class YamahaProtocolControllerTests
     }
 
     [Fact]
-    public async Task TestConnectionAsync_WithYamahaDevice_CallsYamahaController()
+    public async Task TestConnection_WithYamahaDevice_CallsYamahaController()
     {
         var device = new DeviceModel
         {
@@ -68,17 +68,17 @@ public class YamahaProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Yamaha"
         };
-        _yamahaControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _yamahaControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _yamahaControllerMock.Verify(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()), Times.Once);
+        _yamahaControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task GetStatusAsync_WithYamahaDevice_ReturnsOnlineStatus()
+    public async Task GetStatus_WithYamahaDevice_ReturnsOnlineStatus()
     {
         var device = new DeviceModel
         {
@@ -86,10 +86,10 @@ public class YamahaProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Yamaha"
         };
-        _yamahaControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
+        _yamahaControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var status = await _controller.GetStatusAsync(device);
+        var status = await _controller.GetStatus(device);
 
         Assert.NotNull(status);
         Assert.True(status.IsOnline);

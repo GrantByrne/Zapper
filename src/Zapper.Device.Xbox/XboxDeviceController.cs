@@ -14,7 +14,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
     private readonly ConcurrentDictionary<string, XboxConnection> _connections = new();
     private const int CommandPort = 5050;
 
-    public Task<bool> ConnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Connect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -33,7 +33,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
             var connection = new XboxConnection
             {
                 IpAddress = device.IpAddress,
-                LiveId = device.AuthToken ?? string.Empty,
+                LiveId = device.AuthToken ?? "",
                 LastActivity = DateTime.UtcNow
             };
 
@@ -48,7 +48,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         }
     }
 
-    public Task<bool> DisconnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Disconnect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return Task.FromResult(false);
@@ -58,7 +58,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         return Task.FromResult(true);
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Zapper.Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -94,7 +94,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -110,7 +110,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         }
     }
 
-    public async Task<bool> PowerOnAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOn(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress) || string.IsNullOrEmpty(device.AuthToken))
         {
@@ -135,7 +135,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         }
     }
 
-    public async Task<bool> PowerOffAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOff(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -143,7 +143,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         return await SendButtonAsync(device.IpAddress, "power", cancellationToken);
     }
 
-    public async Task<bool> SendTextAsync(Zapper.Core.Models.Device device, string text, CancellationToken cancellationToken = default)
+    public async Task<bool> SendText(Zapper.Core.Models.Device device, string text, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -191,7 +191,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
         try
         {
             using var tcpClient = networkClientFactory.CreateTcpClient();
-            await tcpClient.ConnectAsync(ipAddress, CommandPort);
+            await tcpClient.Connect(ipAddress, CommandPort);
 
             var json = JsonSerializer.Serialize(payload);
             var data = Encoding.UTF8.GetBytes(json);
@@ -232,15 +232,15 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
 
     private async Task<bool> HandlePowerCommand(Zapper.Core.Models.Device device, CancellationToken cancellationToken)
     {
-        var isPoweredOn = await TestConnectionAsync(device, cancellationToken);
+        var isPoweredOn = await TestConnection(device, cancellationToken);
 
         if (isPoweredOn)
         {
-            return await PowerOffAsync(device, cancellationToken);
+            return await PowerOff(device, cancellationToken);
         }
         else
         {
-            return await PowerOnAsync(device, cancellationToken);
+            return await PowerOn(device, cancellationToken);
         }
     }
 
@@ -318,8 +318,8 @@ public class XboxDeviceController(INetworkDeviceController networkController, IN
 
     private class XboxConnection
     {
-        public string IpAddress { get; set; } = string.Empty;
-        public string LiveId { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = "";
+        public string LiveId { get; set; } = "";
         public DateTime LastActivity { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace Zapper.Device.USB;
 
 public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDeviceController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -20,7 +20,7 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
         return await Task.FromResult(false);
     }
 
-    public Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
             return Task.FromResult(false);
@@ -36,7 +36,7 @@ public class UsbDeviceController(IUsbRemoteHandler remoteHandler, ILogger<UsbDev
         return Task.FromResult(isConnected);
     }
 
-    public Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {

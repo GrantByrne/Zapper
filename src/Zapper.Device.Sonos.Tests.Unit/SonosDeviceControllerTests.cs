@@ -22,21 +22,21 @@ public class SonosDeviceControllerTests
     }
 
     [Fact(Timeout = 5000)]
-    public async Task ConnectAsync_WithValidDevice_ReturnsTrue()
+    public async Task Connect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
-        var result = await _controller.ConnectAsync(device);
+        var result = await _controller.Connect(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task ConnectAsync_WithoutIpAddress_ReturnsFalse()
+    public async Task Connect_WithoutIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { Name = "Test Sonos" };
 
-        var result = await _controller.ConnectAsync(device);
+        var result = await _controller.Connect(device);
 
         Assert.False(result);
         _loggerMock.Verify(x => x.Log(
@@ -49,123 +49,123 @@ public class SonosDeviceControllerTests
     }
 
     [Fact(Timeout = 5000)]
-    public async Task DisconnectAsync_WithValidDevice_ReturnsTrue()
+    public async Task Disconnect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
-        await _controller.ConnectAsync(device);
+        await _controller.Connect(device);
 
-        var result = await _controller.DisconnectAsync(device);
+        var result = await _controller.Disconnect(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_PowerCommand_ReturnsResult()
+    public async Task SendCommand_PowerCommand_ReturnsResult()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
         var command = new DeviceCommand { Type = CommandType.Power };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result); // Will fail due to mock response
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_PlayPauseCommand_SendsCorrectRequest()
+    public async Task SendCommand_PlayPauseCommand_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
         var command = new DeviceCommand { Type = CommandType.PlayPause };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result); // Will fail due to mock response
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_VolumeCommand_AdjustsVolume()
+    public async Task SendCommand_VolumeCommand_AdjustsVolume()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
         var command = new DeviceCommand { Type = CommandType.VolumeUp };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response><CurrentVolume>50</CurrentVolume></response>");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result); // Will fail due to mock response
     }
 
     [Fact(Timeout = 5000)]
-    public async Task TestConnectionAsync_WithValidIpAddress_ReturnsResult()
+    public async Task TestConnection_WithValidIpAddress_ReturnsResult()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.OK, "<device></device>");
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task TestConnectionAsync_WithInvalidIpAddress_ReturnsFalse()
+    public async Task TestConnection_WithInvalidIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.NotFound, "");
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.False(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SetVolumeAsync_WithValidVolume_SendsCorrectRequest()
+    public async Task SetVolume_WithValidVolume_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.SetVolumeAsync(device, 75);
+        var result = await _controller.SetVolume(device, 75);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task PlayAsync_SendsCorrectSOAPRequest()
+    public async Task Play_SendsCorrectSOAPRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.PlayAsync(device);
+        var result = await _controller.Play(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task PauseAsync_SendsCorrectSOAPRequest()
+    public async Task Pause_SendsCorrectSOAPRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.PauseAsync(device);
+        var result = await _controller.Pause(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task StopAsync_SendsCorrectSOAPRequest()
+    public async Task Stop_SendsCorrectSOAPRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Sonos" };
 
         SetupHttpResponse(HttpStatusCode.OK, "<response></response>");
 
-        var result = await _controller.StopAsync(device);
+        var result = await _controller.Stop(device);
 
         Assert.True(result);
     }

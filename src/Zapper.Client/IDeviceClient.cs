@@ -1,6 +1,6 @@
 using Zapper.Contracts.Devices;
 
-namespace Zapper.Client.Abstractions;
+namespace Zapper.Client;
 
 /// <summary>
 /// Client interface for device management operations

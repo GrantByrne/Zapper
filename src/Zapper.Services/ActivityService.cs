@@ -291,13 +291,13 @@ public class ActivityService(
         return true;
     }
 
-    public async Task<Contracts.Activities.ActivityDto?> GetActivityDto(int id)
+    public async Task<ActivityDto?> GetActivityDto(int id)
     {
         var activity = await GetActivity(id);
         if (activity == null)
             return null;
 
-        return new Contracts.Activities.ActivityDto
+        return new ActivityDto
         {
             Id = activity.Id,
             Name = activity.Name,
@@ -307,7 +307,7 @@ public class ActivityService(
             IsEnabled = activity.IsEnabled,
             LastUsed = activity.LastUsed,
             CreatedAt = activity.CreatedAt,
-            Steps = activity.Steps?.Select(s => new Contracts.Activities.ActivityStepDto
+            Steps = activity.Steps?.Select(s => new ActivityStepDto
             {
                 Id = s.Id,
                 DeviceId = s.DeviceCommand.DeviceId,
@@ -319,7 +319,7 @@ public class ActivityService(
         };
     }
 
-    public async Task<Contracts.Activities.ActivityDto> CreateActivity(CreateActivityRequest request)
+    public async Task<ActivityDto> CreateActivity(CreateActivityRequest request)
     {
         var activity = new Activity
         {
@@ -345,10 +345,10 @@ public class ActivityService(
             }
         }
 
-        return await GetActivityDto(createdActivity.Id) ?? new Contracts.Activities.ActivityDto();
+        return await GetActivityDto(createdActivity.Id) ?? new ActivityDto();
     }
 
-    public async Task<Contracts.Activities.ActivityDto?> UpdateActivity(UpdateActivityRequest request)
+    public async Task<ActivityDto?> UpdateActivity(UpdateActivityRequest request)
     {
         var activity = await GetActivity(request.Id);
         if (activity == null)
@@ -363,6 +363,6 @@ public class ActivityService(
         if (updated == null)
             return null;
 
-        return await GetActivityDto(updated.Id) ?? new Contracts.Activities.ActivityDto();
+        return await GetActivityDto(updated.Id) ?? new ActivityDto();
     }
 }

@@ -23,7 +23,7 @@ public class PairWebOsDeviceEndpoint(IDeviceService deviceService, IWebOsDiscove
 
     public override async Task HandleAsync(PairWebOsDeviceRequest req, CancellationToken ct)
     {
-        var device = await deviceService.GetDeviceAsync(req.DeviceId);
+        var device = await deviceService.GetDevice(req.DeviceId);
         if (device == null)
         {
             await SendAsync(new PairWebOsDeviceResponse
@@ -44,10 +44,10 @@ public class PairWebOsDeviceEndpoint(IDeviceService deviceService, IWebOsDiscove
             return;
         }
 
-        var success = await webOsDiscovery.PairWithDeviceAsync(device, ct);
+        var success = await webOsDiscovery.PairWithDevice(device, ct);
         if (success)
         {
-            await deviceService.UpdateDeviceAsync(device.Id, device);
+            await deviceService.UpdateDevice(device.Id, device);
 
             await SendOkAsync(new PairWebOsDeviceResponse
             {

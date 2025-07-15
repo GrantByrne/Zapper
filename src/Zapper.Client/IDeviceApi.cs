@@ -1,7 +1,7 @@
 using Refit;
 using Zapper.Contracts;
 using Zapper.Contracts.Devices;
-using Zapper.Client.Abstractions;
+// using Zapper.Client; // No need to reference own namespace
 
 namespace Zapper.Client;
 

@@ -30,7 +30,7 @@ public class UsbDeviceControllerTests
         };
         var command = new DeviceCommand { Name = "Power" };
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         result.Should().BeFalse();
     }
@@ -46,7 +46,7 @@ public class UsbDeviceControllerTests
         };
         var command = new DeviceCommand { Name = "Power" };
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         // USB devices are input-only, so sending commands should return false
         result.Should().BeFalse();
@@ -62,7 +62,7 @@ public class UsbDeviceControllerTests
             ConnectionType = ConnectionType.Bluetooth
         };
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeFalse();
     }
@@ -81,7 +81,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0001:0002:remote1", "USB:0003:0004:remote2"]);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeTrue();
     }
@@ -100,7 +100,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0003:0004:remote2"]);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeFalse();
     }
@@ -118,7 +118,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:046D:C52B:LogitechRemote"]);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeTrue();
     }
@@ -133,7 +133,7 @@ public class UsbDeviceControllerTests
             ConnectionType = ConnectionType.Bluetooth
         };
 
-        var result = await _controller.GetStatusAsync(device);
+        var result = await _controller.GetStatus(device);
 
         result.IsOnline.Should().BeFalse();
         result.StatusMessage.Should().Be("Device not supported by USB controller");
@@ -154,7 +154,7 @@ public class UsbDeviceControllerTests
             .Returns(["USB:0001:0002:remote1", "USB:0003:0004:remote2"]);
         _mockRemoteHandler.IsListening.Returns(true);
 
-        var result = await _controller.GetStatusAsync(device);
+        var result = await _controller.GetStatus(device);
 
         result.IsOnline.Should().BeTrue();
         result.StatusMessage.Should().Contain("USB remote connected");
@@ -178,7 +178,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:0003:0004:remote2"]);
 
-        var result = await _controller.GetStatusAsync(device);
+        var result = await _controller.GetStatus(device);
 
         result.IsOnline.Should().BeFalse();
         result.StatusMessage.Should().Be("USB remote not found");
@@ -218,7 +218,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns([]);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeFalse();
     }
@@ -237,7 +237,7 @@ public class UsbDeviceControllerTests
         _mockRemoteHandler.GetConnectedRemotes()
             .Returns(["USB:046D:C52B:LogitechRemote"]);
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         result.Should().BeTrue();
     }

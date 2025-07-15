@@ -8,11 +8,11 @@ public interface IActivityService
 {
     Task<IEnumerable<Activity>> GetAllActivities();
     Task<Activity?> GetActivity(int id);
-    Task<Zapper.Contracts.Activities.ActivityDto?> GetActivityDto(int id);
+    Task<ActivityDto?> GetActivityDto(int id);
     Task<Activity> CreateActivity(Activity activity);
-    Task<Zapper.Contracts.Activities.ActivityDto> CreateActivity(CreateActivityRequest request);
+    Task<ActivityDto> CreateActivity(CreateActivityRequest request);
     Task<Activity?> UpdateActivity(int id, Activity activity);
-    Task<Zapper.Contracts.Activities.ActivityDto?> UpdateActivity(UpdateActivityRequest request);
+    Task<ActivityDto?> UpdateActivity(UpdateActivityRequest request);
     Task<bool> DeleteActivity(int id);
     Task<bool> ExecuteActivity(int activityId, CancellationToken cancellationToken = default);
     Task<bool> StopActivity(int activityId, CancellationToken cancellationToken = default);

@@ -1,4 +1,4 @@
-using Zapper.Client.Abstractions;
+// using Zapper.Client; // No need to reference own namespace
 using Zapper.Contracts.Devices;
 
 namespace Zapper.Client;

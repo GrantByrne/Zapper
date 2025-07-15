@@ -21,7 +21,7 @@ public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStatio
     public override async Task HandleAsync(DiscoverPlayStationDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await playStationDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await playStationDiscovery.DiscoverDevices(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

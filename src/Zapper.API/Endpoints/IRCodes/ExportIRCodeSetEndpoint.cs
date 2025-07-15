@@ -16,7 +16,7 @@ public class ExportIrCodeSetEndpoint(IIrCodeService irCodeService) : Endpoint<Ex
     {
         try
         {
-            var json = await irCodeService.ExportCodeSetAsync(req.Id);
+            var json = await irCodeService.ExportCodeSet(req.Id);
 
             HttpContext.Response.ContentType = "application/json";
             HttpContext.Response.Headers["Content-Disposition"] = $"attachment; filename=\"ir-codes-{req.Id}.json\"";

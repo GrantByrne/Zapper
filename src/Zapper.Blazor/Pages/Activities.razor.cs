@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Zapper.Client.Abstractions;
+using Zapper.Client;
 using Zapper.Contracts;
 using Zapper.Contracts.Activities;
 

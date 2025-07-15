@@ -5,7 +5,7 @@ namespace Zapper.Device.Sonos;
 
 public class SonosProtocolController(ISonosDeviceController sonosController, ILogger<SonosProtocolController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -13,10 +13,10 @@ public class SonosProtocolController(ISonosDeviceController sonosController, ILo
             return false;
         }
 
-        return await sonosController.SendCommandAsync(device, command);
+        return await sonosController.SendCommand(device, command);
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -24,10 +24,10 @@ public class SonosProtocolController(ISonosDeviceController sonosController, ILo
             return false;
         }
 
-        return await sonosController.TestConnectionAsync(device);
+        return await sonosController.TestConnection(device);
     }
 
-    public async Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public async Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -38,7 +38,7 @@ public class SonosProtocolController(ISonosDeviceController sonosController, ILo
             };
         }
 
-        var isOnline = await sonosController.TestConnectionAsync(device);
+        var isOnline = await sonosController.TestConnection(device);
         return new DeviceStatus
         {
             IsOnline = isOnline,

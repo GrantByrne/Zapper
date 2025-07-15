@@ -20,7 +20,7 @@ public class DiscoverSteamDeckDevicesEndpoint(SteamDeckBluetoothController steam
 
     public override async Task HandleAsync(DiscoverSteamDeckDevicesRequest req, CancellationToken ct)
     {
-        var devices = await steamDeckController.DiscoverPairedDevicesAsync(ct);
+        var devices = await steamDeckController.DiscoverPairedDevices(ct);
         await SendOkAsync(devices, ct);
     }
 }

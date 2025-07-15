@@ -15,7 +15,7 @@ public class InfraredDeviceController : IDeviceController
         _logger = logger;
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -50,12 +50,12 @@ public class InfraredDeviceController : IDeviceController
         }
     }
 
-    public Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         return Task.FromResult(_transmitter.IsAvailable && SupportsDevice(device));
     }
 
-    public Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         return Task.FromResult(new DeviceStatus
         {

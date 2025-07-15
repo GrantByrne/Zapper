@@ -20,8 +20,8 @@ public class BluetoothDiscoveryEndpoint(
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var androidDevices = await androidTvController.DiscoverPairedDevicesAsync(ct);
-        var appleDevices = await appleTvController.DiscoverPairedDevicesAsync(ct);
+        var androidDevices = await androidTvController.DiscoverPairedDevices(ct);
+        var appleDevices = await appleTvController.DiscoverPairedDevices(ct);
 
         var allDevices = androidDevices.Concat(appleDevices).Distinct();
         await SendOkAsync(allDevices, ct);

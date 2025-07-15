@@ -10,14 +10,14 @@ public interface IBluetoothService
     bool IsDiscovering { get; }
     bool IsPowered { get; }
 
-    Task InitializeAsync(CancellationToken cancellationToken = default);
-    Task<bool> SetPoweredAsync(bool powered, CancellationToken cancellationToken = default);
-    Task<bool> StartDiscoveryAsync(CancellationToken cancellationToken = default);
-    Task<bool> StopDiscoveryAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<BluetoothDeviceInfo>> GetDevicesAsync(CancellationToken cancellationToken = default);
-    Task<BluetoothDeviceInfo?> GetDeviceAsync(string address, CancellationToken cancellationToken = default);
-    Task<bool> PairDeviceAsync(string address, CancellationToken cancellationToken = default);
-    Task<bool> ConnectDeviceAsync(string address, CancellationToken cancellationToken = default);
-    Task<bool> DisconnectDeviceAsync(string address, CancellationToken cancellationToken = default);
-    Task<bool> RemoveDeviceAsync(string address, CancellationToken cancellationToken = default);
+    Task Initialize(CancellationToken cancellationToken = default);
+    Task<bool> SetPowered(bool powered, CancellationToken cancellationToken = default);
+    Task<bool> StartDiscovery(CancellationToken cancellationToken = default);
+    Task<bool> StopDiscovery(CancellationToken cancellationToken = default);
+    Task<IEnumerable<BluetoothDeviceInfo>> GetDevices(CancellationToken cancellationToken = default);
+    Task<BluetoothDeviceInfo?> GetDevice(string address, CancellationToken cancellationToken = default);
+    Task<bool> PairDevice(string address, CancellationToken cancellationToken = default);
+    Task<bool> ConnectDevice(string address, CancellationToken cancellationToken = default);
+    Task<bool> DisconnectDevice(string address, CancellationToken cancellationToken = default);
+    Task<bool> RemoveDevice(string address, CancellationToken cancellationToken = default);
 }

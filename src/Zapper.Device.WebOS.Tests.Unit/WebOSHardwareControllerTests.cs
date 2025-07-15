@@ -46,7 +46,7 @@ public class WebOsHardwareControllerTests
                        .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOsDevice, powerCommand);
+        var result = await _controller.SendCommand(_webOsDevice, powerCommand);
 
         // Assert
         result.Should().BeTrue();
@@ -63,7 +63,7 @@ public class WebOsHardwareControllerTests
                        .Returns(false);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOsDevice, command);
+        var result = await _controller.SendCommand(_webOsDevice, command);
 
         // Assert
         result.Should().BeFalse();
@@ -80,7 +80,7 @@ public class WebOsHardwareControllerTests
                        .Returns(true);
 
         // Act
-        var result = await _controller.TestConnectionAsync(_webOsDevice);
+        var result = await _controller.TestConnection(_webOsDevice);
 
         // Assert
         result.Should().BeTrue();
@@ -94,7 +94,7 @@ public class WebOsHardwareControllerTests
                        .Returns(false);
 
         // Act
-        var result = await _controller.TestConnectionAsync(_webOsDevice);
+        var result = await _controller.TestConnection(_webOsDevice);
 
         // Assert
         result.Should().BeFalse();
@@ -124,7 +124,7 @@ public class WebOsHardwareControllerTests
                        .Returns(true);
 
         // Act
-        var result = await _controller.SendCommandAsync(_webOsDevice, command);
+        var result = await _controller.SendCommand(_webOsDevice, command);
 
         // Assert
         result.Should().BeTrue();

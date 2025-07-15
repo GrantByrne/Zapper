@@ -5,7 +5,7 @@ namespace Zapper.Device.Yamaha;
 
 public class YamahaProtocolController(IYamahaDeviceController yamahaController, ILogger<YamahaProtocolController> logger) : IDeviceController
 {
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -13,10 +13,10 @@ public class YamahaProtocolController(IYamahaDeviceController yamahaController, 
             return false;
         }
 
-        return await yamahaController.SendCommandAsync(device, command);
+        return await yamahaController.SendCommand(device, command);
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -24,10 +24,10 @@ public class YamahaProtocolController(IYamahaDeviceController yamahaController, 
             return false;
         }
 
-        return await yamahaController.TestConnectionAsync(device);
+        return await yamahaController.TestConnection(device);
     }
 
-    public async Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public async Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
         {
@@ -38,7 +38,7 @@ public class YamahaProtocolController(IYamahaDeviceController yamahaController, 
             };
         }
 
-        var isOnline = await yamahaController.TestConnectionAsync(device);
+        var isOnline = await yamahaController.TestConnection(device);
         return new DeviceStatus
         {
             IsOnline = isOnline,

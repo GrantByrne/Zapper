@@ -1,7 +1,7 @@
 using Zapper.Contracts;
 using Zapper.Contracts.Activities;
 
-namespace Zapper.Client.Abstractions;
+namespace Zapper.Client;
 
 /// <summary>
 /// Client interface for activity management operations

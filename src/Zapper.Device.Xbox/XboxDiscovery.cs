@@ -15,7 +15,7 @@ public class XboxDiscovery(INetworkClientFactory networkClientFactory, ILogger<X
 
     public event EventHandler<XboxDevice>? DeviceFound;
 
-    public async Task<IEnumerable<XboxDevice>> DiscoverDevicesAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<XboxDevice>> DiscoverDevices(TimeSpan timeout, CancellationToken cancellationToken = default)
     {
         var devices = new List<XboxDevice>();
         var discoveredDevices = new HashSet<string>();
@@ -107,7 +107,7 @@ public class XboxDiscovery(INetworkClientFactory networkClientFactory, ILogger<X
                 device.Name = nameElement.GetString() ?? "Xbox Console";
 
             if (root.TryGetProperty("id", out var idElement))
-                device.LiveId = idElement.GetString() ?? string.Empty;
+                device.LiveId = idElement.GetString() ?? "";
 
             if (root.TryGetProperty("device_type", out var deviceTypeElement))
             {
@@ -123,7 +123,7 @@ public class XboxDiscovery(INetworkClientFactory networkClientFactory, ILogger<X
             }
 
             if (root.TryGetProperty("certificate", out var certElement))
-                device.Certificate = certElement.GetString() ?? string.Empty;
+                device.Certificate = certElement.GetString() ?? "";
 
             return device;
         }

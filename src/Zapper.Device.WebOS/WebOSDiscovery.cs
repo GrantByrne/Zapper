@@ -15,7 +15,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
 
     public event EventHandler<Zapper.Core.Models.Device>? DeviceDiscovered;
 
-    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevices(TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
         if (timeout == default)
             timeout = TimeSpan.FromSeconds(10);
@@ -52,7 +52,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         }
     }
 
-    public async Task<Zapper.Core.Models.Device?> DiscoverDeviceByIpAsync(string ipAddress, CancellationToken cancellationToken = default)
+    public async Task<Zapper.Core.Models.Device?> DiscoverDeviceByIp(string ipAddress, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -93,7 +93,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
         }
     }
 
-    public async Task<bool> PairWithDeviceAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PairWithDevice(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (device.ConnectionType != ConnectionType.WebOs || string.IsNullOrEmpty(device.NetworkAddress))
         {
@@ -218,7 +218,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
                     {
                         if (address.AddressFamily == AddressFamily.InterNetwork)
                         {
-                            var device = await DiscoverDeviceByIpAsync(address.ToString(), cancellationToken);
+                            var device = await DiscoverDeviceByIp(address.ToString(), cancellationToken);
                             if (device != null)
                             {
                                 device.Name = $"WebOS TV ({hostname})";
@@ -337,7 +337,7 @@ public class WebOsDiscovery(ILogger<WebOsDiscovery> logger, IWebOsClient webOsCl
                 // Only try WebOS discovery if ping succeeds and we haven't been cancelled
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    var device = await DiscoverDeviceByIpAsync(address.ToString(), cancellationToken);
+                    var device = await DiscoverDeviceByIp(address.ToString(), cancellationToken);
                     if (device != null)
                     {
                         AddDiscoveredDevice(device);

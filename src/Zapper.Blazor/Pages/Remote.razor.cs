@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using Zapper.Client.Abstractions;
+using Zapper.Client;
 using Zapper.Contracts.Devices;
 
 namespace Zapper.Blazor.Pages;

@@ -15,8 +15,23 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
         Summary(s =>
         {
             s.Summary = "Create a new device";
-            s.Description = "Create a new device configuration";
+            s.Description = "Create a new device configuration in the system. Devices can be controlled via IR, network, or Bluetooth connections.";
+            s.ExampleRequest = new CreateDeviceRequest
+            {
+                Name = "Living Room TV",
+                Brand = "Samsung",
+                Model = "UN55MU8000",
+                Type = Zapper.Core.Models.DeviceType.Television,
+                ConnectionType = Zapper.Core.Models.ConnectionType.InfraredIr,
+                IpAddress = "192.168.1.100",
+                Port = 8001,
+                IrCodeSetId = 1
+            };
+            s.Responses[200] = "Device created successfully";
+            s.Responses[400] = "Invalid request - validation errors";
+            s.Responses[500] = "Internal server error";
         });
+        Tags("Devices");
     }
 
     public override async Task HandleAsync(CreateDeviceRequest req, CancellationToken ct)
@@ -35,7 +50,7 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
             IrCodeSetId = req.IrCodeSetId
         };
 
-        var createdDevice = await deviceService.CreateDeviceAsync(device);
+        var createdDevice = await deviceService.CreateDevice(device);
 
         var response = new CreateDeviceResponse
         {

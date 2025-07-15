@@ -2,14 +2,14 @@ namespace Zapper.Device.Sonos;
 
 public interface ISonosDeviceController
 {
-    Task<bool> ConnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> DisconnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default);
-    Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> PowerOnAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> PowerOffAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> SetVolumeAsync(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default);
-    Task<bool> PlayAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> PauseAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
-    Task<bool> StopAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> Connect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> Disconnect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default);
+    Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> PowerOn(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> PowerOff(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> SetVolume(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default);
+    Task<bool> Play(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> Pause(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
+    Task<bool> Stop(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default);
 }

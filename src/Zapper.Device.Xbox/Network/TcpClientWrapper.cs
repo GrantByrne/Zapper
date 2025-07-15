@@ -11,7 +11,7 @@ public class TcpClientWrapper : ITcpClientWrapper
         _tcpClient = new TcpClient();
     }
 
-    public Task ConnectAsync(string hostname, int port)
+    public Task Connect(string hostname, int port)
     {
         return _tcpClient.ConnectAsync(hostname, port);
     }

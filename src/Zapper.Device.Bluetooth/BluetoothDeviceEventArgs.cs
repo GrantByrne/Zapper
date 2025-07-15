@@ -1,11 +1,6 @@
 namespace Zapper.Device.Bluetooth;
 
-public class BluetoothDeviceEventArgs : EventArgs
+public class BluetoothDeviceEventArgs(BluetoothDeviceInfo device) : EventArgs
 {
-    public BluetoothDeviceInfo Device { get; }
-
-    public BluetoothDeviceEventArgs(BluetoothDeviceInfo device)
-    {
-        Device = device ?? throw new ArgumentNullException(nameof(device));
-    }
+    public BluetoothDeviceInfo Device { get; } = device ?? throw new ArgumentNullException(nameof(device));
 }

@@ -12,7 +12,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
     private readonly ConcurrentDictionary<string, PlayStationConnection> _connections = new();
     private const int RemotePlayPort = 9295;
 
-    public Task<bool> ConnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Connect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -45,7 +45,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         }
     }
 
-    public Task<bool> DisconnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Disconnect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return Task.FromResult(false);
@@ -55,7 +55,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         return Task.FromResult(true);
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -90,7 +90,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -106,7 +106,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         }
     }
 
-    public async Task<bool> PowerOnAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOn(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -130,7 +130,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         }
     }
 
-    public async Task<bool> PowerOffAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOff(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -138,7 +138,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
         return await SendButtonAsync(device.IpAddress, "power", cancellationToken);
     }
 
-    public async Task<bool> NavigateAsync(Zapper.Core.Models.Device device, string direction, CancellationToken cancellationToken = default)
+    public async Task<bool> Navigate(Zapper.Core.Models.Device device, string direction, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -213,15 +213,15 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
 
     private async Task<bool> HandlePowerCommand(Zapper.Core.Models.Device device, CancellationToken cancellationToken)
     {
-        var isPoweredOn = await TestConnectionAsync(device, cancellationToken);
+        var isPoweredOn = await TestConnection(device, cancellationToken);
 
         if (isPoweredOn)
         {
-            return await PowerOffAsync(device, cancellationToken);
+            return await PowerOff(device, cancellationToken);
         }
         else
         {
-            return await PowerOnAsync(device, cancellationToken);
+            return await PowerOn(device, cancellationToken);
         }
     }
 
@@ -268,7 +268,7 @@ public class PlayStationDeviceController(ILogger<PlayStationDeviceController> lo
 
     private class PlayStationConnection
     {
-        public string IpAddress { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = "";
         public DateTime LastActivity { get; set; }
     }
 }

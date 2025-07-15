@@ -7,10 +7,10 @@ public class IrCodeSet
     public int Id { get; set; }
 
     [Required]
-    public string Brand { get; set; } = string.Empty;
+    public string Brand { get; set; } = "";
 
     [Required]
-    public string Model { get; set; } = string.Empty;
+    public string Model { get; set; } = "";
 
     [Required]
     public DeviceType DeviceType { get; set; }

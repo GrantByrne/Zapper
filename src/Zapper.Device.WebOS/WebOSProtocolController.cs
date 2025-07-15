@@ -7,7 +7,7 @@ namespace Zapper.Device.WebOS;
 public class WebOsProtocolController(IWebOsDeviceController webOsController, ILogger<WebOsProtocolController> logger) : IDeviceController
 {
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, DeviceCommand command)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, DeviceCommand command)
     {
         if (!SupportsDevice(device))
         {
@@ -36,7 +36,7 @@ public class WebOsProtocolController(IWebOsDeviceController webOsController, ILo
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device)
     {
         if (!SupportsDevice(device))
             return false;
@@ -52,11 +52,11 @@ public class WebOsProtocolController(IWebOsDeviceController webOsController, ILo
         }
     }
 
-    public async Task<DeviceStatus> GetStatusAsync(Zapper.Core.Models.Device device)
+    public async Task<DeviceStatus> GetStatus(Zapper.Core.Models.Device device)
     {
         try
         {
-            var isOnline = await TestConnectionAsync(device);
+            var isOnline = await TestConnection(device);
             return new DeviceStatus
             {
                 IsOnline = isOnline,

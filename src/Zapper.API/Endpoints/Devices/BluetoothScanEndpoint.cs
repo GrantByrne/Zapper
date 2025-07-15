@@ -27,13 +27,13 @@ public class BluetoothScanEndpoint(
             // Initialize Bluetooth service if needed
             if (!bluetoothService.IsInitialized)
             {
-                await bluetoothService.InitializeAsync(ct);
+                await bluetoothService.Initialize(ct);
             }
 
             // Ensure Bluetooth is powered on
             if (!bluetoothService.IsPowered)
             {
-                var powered = await bluetoothService.SetPoweredAsync(true, ct);
+                var powered = await bluetoothService.SetPowered(true, ct);
                 if (!powered)
                 {
                     await SendAsync(new BluetoothScanResponse
@@ -50,7 +50,7 @@ public class BluetoothScanEndpoint(
             bluetoothService.DeviceFound += OnDeviceFound;
 
             // Start discovery
-            var started = await bluetoothService.StartDiscoveryAsync(ct);
+            var started = await bluetoothService.StartDiscovery(ct);
             if (!started)
             {
                 await SendAsync(new BluetoothScanResponse
@@ -71,7 +71,7 @@ public class BluetoothScanEndpoint(
                 try
                 {
                     await Task.Delay(TimeSpan.FromSeconds(req.DurationSeconds), ct);
-                    await bluetoothService.StopDiscoveryAsync(ct);
+                    await bluetoothService.StopDiscovery(ct);
                     bluetoothService.DeviceFound -= OnDeviceFound;
                     await hubContext.Clients.All.SendAsync("BluetoothScanCompleted", cancellationToken: ct);
                 }

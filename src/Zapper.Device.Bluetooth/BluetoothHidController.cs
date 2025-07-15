@@ -17,11 +17,11 @@ public class BluetoothHidController : IBluetoothHidController
         _bluetoothService.DeviceDisconnected += OnDeviceDisconnected;
     }
 
-    public async Task<bool> SendKeyAsync(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
+    public async Task<bool> SendKey(string deviceAddress, HidKeyCode keyCode, CancellationToken cancellationToken = default)
     {
         try
         {
-            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            var device = await _bluetoothService.GetDevice(deviceAddress, cancellationToken);
             if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
@@ -50,11 +50,11 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<bool> SendKeySequenceAsync(string deviceAddress, HidKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
+    public async Task<bool> SendKeySequence(string deviceAddress, HidKeyCode[] keyCodes, int delayMs = 50, CancellationToken cancellationToken = default)
     {
         try
         {
-            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            var device = await _bluetoothService.GetDevice(deviceAddress, cancellationToken);
             if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
@@ -75,7 +75,7 @@ public class BluetoothHidController : IBluetoothHidController
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (!await SendKeyAsync(deviceAddress, keyCode, cancellationToken))
+                if (!await SendKey(deviceAddress, keyCode, cancellationToken))
                 {
                     _logger.LogWarning("Failed to send key {KeyCode} in sequence to device {Address}",
                         keyCode, deviceAddress);
@@ -102,14 +102,14 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<bool> SendTextAsync(string deviceAddress, string text, CancellationToken cancellationToken = default)
+    public async Task<bool> SendText(string deviceAddress, string text, CancellationToken cancellationToken = default)
     {
         try
         {
             if (string.IsNullOrEmpty(text))
                 return true;
 
-            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            var device = await _bluetoothService.GetDevice(deviceAddress, cancellationToken);
             if (device == null || !device.IsConnected)
             {
                 _logger.LogWarning("Device {Address} is not connected", deviceAddress);
@@ -139,7 +139,7 @@ public class BluetoothHidController : IBluetoothHidController
                 }
             }
 
-            return await SendKeySequenceAsync(deviceAddress, keyCodes.ToArray(), 50, cancellationToken);
+            return await SendKeySequence(deviceAddress, keyCodes.ToArray(), 50, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -148,12 +148,12 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<bool> ConnectAsync(string deviceAddress, CancellationToken cancellationToken = default)
+    public async Task<bool> Connect(string deviceAddress, CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Connecting to HID device {Address}...", deviceAddress);
-            return await _bluetoothService.ConnectDeviceAsync(deviceAddress, cancellationToken);
+            return await _bluetoothService.ConnectDevice(deviceAddress, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -162,12 +162,12 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<bool> DisconnectAsync(string deviceAddress, CancellationToken cancellationToken = default)
+    public async Task<bool> Disconnect(string deviceAddress, CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Disconnecting from HID device {Address}...", deviceAddress);
-            return await _bluetoothService.DisconnectDeviceAsync(deviceAddress, cancellationToken);
+            return await _bluetoothService.DisconnectDevice(deviceAddress, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -176,11 +176,11 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<bool> IsConnectedAsync(string deviceAddress, CancellationToken cancellationToken = default)
+    public async Task<bool> IsConnected(string deviceAddress, CancellationToken cancellationToken = default)
     {
         try
         {
-            var device = await _bluetoothService.GetDeviceAsync(deviceAddress, cancellationToken);
+            var device = await _bluetoothService.GetDevice(deviceAddress, cancellationToken);
             return device?.IsConnected ?? false;
         }
         catch (Exception ex)
@@ -190,11 +190,11 @@ public class BluetoothHidController : IBluetoothHidController
         }
     }
 
-    public async Task<IEnumerable<string>> GetConnectedDevicesAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetConnectedDevices(CancellationToken cancellationToken = default)
     {
         try
         {
-            var devices = await _bluetoothService.GetDevicesAsync(cancellationToken);
+            var devices = await _bluetoothService.GetDevices(cancellationToken);
             return devices
                 .Where(d => d.IsConnected && IsHidDevice(d))
                 .Select(d => d.Address)

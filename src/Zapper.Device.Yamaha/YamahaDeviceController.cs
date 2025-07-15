@@ -9,7 +9,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
     private readonly ConcurrentDictionary<string, YamahaConnection> _connections = new();
     private const int MusicCastPort = 80;
 
-    public Task<bool> ConnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Connect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -43,7 +43,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public Task<bool> DisconnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Disconnect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return Task.FromResult(false);
@@ -53,7 +53,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         return Task.FromResult(true);
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -68,7 +68,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
                 Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
                 Core.Models.CommandType.VolumeUp => await AdjustVolumeAsync(device, 5, cancellationToken),
                 Core.Models.CommandType.VolumeDown => await AdjustVolumeAsync(device, -5, cancellationToken),
-                Core.Models.CommandType.Mute => await MuteAsync(device, cancellationToken),
+                Core.Models.CommandType.Mute => await Mute(device, cancellationToken),
                 Core.Models.CommandType.Input => await HandleInputCommand(device, command, cancellationToken),
                 Core.Models.CommandType.Custom => await HandleCustomCommand(device, command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
@@ -81,7 +81,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -99,7 +99,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> PowerOnAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOn(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -118,7 +118,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> PowerOffAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOff(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -137,7 +137,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> SetVolumeAsync(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default)
+    public async Task<bool> SetVolume(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -157,7 +157,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> SetInputAsync(Zapper.Core.Models.Device device, string input, CancellationToken cancellationToken = default)
+    public async Task<bool> SetInput(Zapper.Core.Models.Device device, string input, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -176,7 +176,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
         }
     }
 
-    public async Task<bool> MuteAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> Mute(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -203,11 +203,11 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
 
         if (isPoweredOn)
         {
-            return await PowerOffAsync(device, cancellationToken);
+            return await PowerOff(device, cancellationToken);
         }
         else
         {
-            return await PowerOnAsync(device, cancellationToken);
+            return await PowerOn(device, cancellationToken);
         }
     }
 
@@ -219,7 +219,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
             return false;
         }
 
-        return await SetInputAsync(device, command.NetworkPayload, cancellationToken);
+        return await SetInput(device, command.NetworkPayload, cancellationToken);
     }
 
     private async Task<bool> HandleCustomCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken)
@@ -250,7 +250,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
 
         if (inputMap.TryGetValue(payload, out var input))
         {
-            return await SetInputAsync(device, input, cancellationToken);
+            return await SetInput(device, input, cancellationToken);
         }
 
         logger.LogWarning("Unknown custom command: {Payload}", command.NetworkPayload);
@@ -317,7 +317,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
     {
         var currentVolume = await GetCurrentVolumeAsync(device, cancellationToken);
         var newVolume = Math.Clamp(currentVolume + adjustment, 0, 100);
-        return await SetVolumeAsync(device, newVolume, cancellationToken);
+        return await SetVolume(device, newVolume, cancellationToken);
     }
 
     private async Task<int> GetCurrentVolumeAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken)
@@ -356,7 +356,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
 
     private class YamahaConnection
     {
-        public string IpAddress { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = "";
         public DateTime LastActivity { get; set; }
         public YamahaProtocolType ProtocolType { get; set; }
     }
@@ -369,9 +369,9 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
 
     private class YamahaStatusResponse
     {
-        public string Power { get; set; } = string.Empty;
+        public string Power { get; set; } = "";
         public int Volume { get; set; }
         public bool Mute { get; set; }
-        public string Input { get; set; } = string.Empty;
+        public string Input { get; set; } = "";
     }
 }

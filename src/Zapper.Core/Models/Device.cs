@@ -8,15 +8,15 @@ public class Device
 
     [Required]
     [MaxLength(100)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
 
     [Required]
     [MaxLength(50)]
-    public string Brand { get; set; } = string.Empty;
+    public string Brand { get; set; } = "";
 
     [Required]
     [MaxLength(50)]
-    public string Model { get; set; } = string.Empty;
+    public string Model { get; set; } = "";
 
     [Required]
     public DeviceType Type { get; set; }

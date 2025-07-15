@@ -13,16 +13,23 @@ public class TestIrCodeEndpoint(IIrCodeService irCodeService, IDeviceController 
         Summary(s =>
         {
             s.Summary = "Test an IR code by sending it through the transmitter";
-            s.Description = "Sends a specific IR command to test if the code works with the target device";
+            s.Description = "Sends a specific IR command to test if the code works with the target device. This is useful for verifying IR codes before assigning them to devices.";
+            s.ExampleRequest = new TestIrCodeRequest
+            {
+                CodeSetId = 1,
+                CommandName = "Power"
+            };
             s.Responses[200] = "Command sent successfully";
             s.Responses[404] = "Code set or command not found";
+            s.Responses[500] = "Internal server error";
             s.Responses[503] = "IR transmitter not available";
         });
+        Tags("IR Codes");
     }
 
     public override async Task HandleAsync(TestIrCodeRequest req, CancellationToken ct)
     {
-        var codeSet = await irCodeService.GetCodeSetAsync(req.CodeSetId);
+        var codeSet = await irCodeService.GetCodeSet(req.CodeSetId);
         if (codeSet == null)
         {
             await SendAsync(new TestIrCodeResponse
@@ -63,7 +70,7 @@ public class TestIrCodeEndpoint(IIrCodeService irCodeService, IDeviceController 
                 Name = "Test Device"
             };
 
-            var result = await deviceController.SendCommandAsync(testDevice, deviceCommand);
+            var result = await deviceController.SendCommand(testDevice, deviceCommand);
 
             if (result)
             {

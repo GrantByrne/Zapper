@@ -22,21 +22,21 @@ public class YamahaDeviceControllerTests
     }
 
     [Fact(Timeout = 5000)]
-    public async Task ConnectAsync_WithValidDevice_ReturnsTrue()
+    public async Task Connect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
-        var result = await _controller.ConnectAsync(device);
+        var result = await _controller.Connect(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task ConnectAsync_WithoutIpAddress_ReturnsFalse()
+    public async Task Connect_WithoutIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { Name = "Test Yamaha" };
 
-        var result = await _controller.ConnectAsync(device);
+        var result = await _controller.Connect(device);
 
         Assert.False(result);
         _loggerMock.Verify(x => x.Log(
@@ -49,140 +49,140 @@ public class YamahaDeviceControllerTests
     }
 
     [Fact(Timeout = 5000)]
-    public async Task DisconnectAsync_WithValidDevice_ReturnsTrue()
+    public async Task Disconnect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
-        await _controller.ConnectAsync(device);
+        await _controller.Connect(device);
 
-        var result = await _controller.DisconnectAsync(device);
+        var result = await _controller.Disconnect(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_PowerCommand_ReturnsResult()
+    public async Task SendCommand_PowerCommand_ReturnsResult()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
         var command = new DeviceCommand { Type = CommandType.Power };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"power\":\"on\"}");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result); // Will fail due to mock response format
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_VolumeCommand_AdjustsVolume()
+    public async Task SendCommand_VolumeCommand_AdjustsVolume()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
         var command = new DeviceCommand { Type = CommandType.VolumeUp };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"volume\":50}");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.False(result); // Will fail due to mock response format
     }
 
     [Fact(Timeout = 5000)]
-    public async Task TestConnectionAsync_WithValidIpAddress_ReturnsResult()
+    public async Task TestConnection_WithValidIpAddress_ReturnsResult()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"system\":{\"model_name\":\"RX-V685\"}}");
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task TestConnectionAsync_WithInvalidIpAddress_ReturnsFalse()
+    public async Task TestConnection_WithInvalidIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.NotFound, "");
 
-        var result = await _controller.TestConnectionAsync(device);
+        var result = await _controller.TestConnection(device);
 
         Assert.False(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task PowerOnAsync_SendsCorrectRequest()
+    public async Task PowerOn_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.PowerOnAsync(device);
+        var result = await _controller.PowerOn(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task PowerOffAsync_SendsCorrectRequest()
+    public async Task PowerOff_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.PowerOffAsync(device);
+        var result = await _controller.PowerOff(device);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SetVolumeAsync_WithValidVolume_SendsCorrectRequest()
+    public async Task SetVolume_WithValidVolume_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.SetVolumeAsync(device, 75);
+        var result = await _controller.SetVolume(device, 75);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SetVolumeAsync_WithVolumeAbove100_ClampsTo100()
+    public async Task SetVolume_WithVolumeAbove100_ClampsTo100()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.SetVolumeAsync(device, 150);
+        var result = await _controller.SetVolume(device, 150);
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SetInputAsync_SendsCorrectRequest()
+    public async Task SetInput_SendsCorrectRequest()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.SetInputAsync(device, "hdmi1");
+        var result = await _controller.SetInput(device, "hdmi1");
 
         Assert.True(result);
     }
 
     [Fact(Timeout = 5000)]
-    public async Task MuteAsync_TogglesCorrectly()
+    public async Task Mute_TogglesCorrectly()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"mute\":false}");
 
-        var result = await _controller.MuteAsync(device);
+        var result = await _controller.Mute(device);
 
         Assert.False(result); // Will fail due to mock response format
     }
 
     [Fact(Timeout = 5000)]
-    public async Task SendCommandAsync_CustomInputCommand_HandlesInputs()
+    public async Task SendCommand_CustomInputCommand_HandlesInputs()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test Yamaha" };
         var command = new DeviceCommand
@@ -193,7 +193,7 @@ public class YamahaDeviceControllerTests
 
         SetupHttpResponse(HttpStatusCode.OK, "{\"response_code\":0}");
 
-        var result = await _controller.SendCommandAsync(device, command);
+        var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
     }

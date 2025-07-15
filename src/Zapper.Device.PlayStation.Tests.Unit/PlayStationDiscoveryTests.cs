@@ -15,11 +15,11 @@ public class PlayStationDiscoveryTests
     }
 
     [Fact(Timeout = 10000)]
-    public async Task DiscoverDevicesAsync_WithTimeout_ReturnsEmptyList()
+    public async Task DiscoverDevices_WithTimeout_ReturnsEmptyList()
     {
         var timeout = TimeSpan.FromSeconds(1);
 
-        var devices = await _discovery.DiscoverDevicesAsync(timeout);
+        var devices = await _discovery.DiscoverDevices(timeout);
 
         Assert.NotNull(devices);
         Assert.Empty(devices); // Will be empty without actual PlayStation devices

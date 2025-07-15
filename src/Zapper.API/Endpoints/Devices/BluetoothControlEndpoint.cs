@@ -66,7 +66,7 @@ public class BluetoothControlEndpoint(IBluetoothHidController bluetoothControlle
         {
             return false;
         }
-        return await bluetoothController.ConnectAsync(req.DeviceId, ct);
+        return await bluetoothController.Connect(req.DeviceId, ct);
     }
 
     private async Task<bool> HandleDisconnect(BluetoothControlRequest req, CancellationToken ct)
@@ -75,7 +75,7 @@ public class BluetoothControlEndpoint(IBluetoothHidController bluetoothControlle
         {
             return false;
         }
-        return await bluetoothController.DisconnectAsync(req.DeviceId, ct);
+        return await bluetoothController.Disconnect(req.DeviceId, ct);
     }
 
     private async Task<bool> HandleSendKey(BluetoothControlRequest req, CancellationToken ct)
@@ -85,7 +85,7 @@ public class BluetoothControlEndpoint(IBluetoothHidController bluetoothControlle
         {
             return false;
         }
-        return await bluetoothController.SendKeyAsync(req.DeviceId, keyCode, ct);
+        return await bluetoothController.SendKey(req.DeviceId, keyCode, ct);
     }
 
     private async Task<bool> HandleSendText(BluetoothControlRequest req, CancellationToken ct)
@@ -94,12 +94,12 @@ public class BluetoothControlEndpoint(IBluetoothHidController bluetoothControlle
         {
             return false;
         }
-        return await bluetoothController.SendTextAsync(req.DeviceId, req.Text, ct);
+        return await bluetoothController.SendText(req.DeviceId, req.Text, ct);
     }
 
     private async Task<bool> HandleGetConnectedDevices(BluetoothControlRequest req, CancellationToken ct)
     {
-        var devices = await bluetoothController.GetConnectedDevicesAsync(ct);
+        var devices = await bluetoothController.GetConnectedDevices(ct);
         return devices != null;
     }
 }

@@ -28,7 +28,7 @@ public class WebOsDiscoveryTests
     public async Task DiscoverDevicesAsync_WithDefaultTimeout_ShouldComplete()
     {
         // Act
-        var result = await _discovery.DiscoverDevicesAsync();
+        var result = await _discovery.DiscoverDevices();
 
         // Assert
         result.Should().NotBeNull();
@@ -43,7 +43,7 @@ public class WebOsDiscoveryTests
         cts.Cancel();
 
         // Act
-        var result = await _discovery.DiscoverDevicesAsync(TimeSpan.FromSeconds(5), cts.Token);
+        var result = await _discovery.DiscoverDevices(TimeSpan.FromSeconds(5), cts.Token);
 
         // Assert
         result.Should().NotBeNull();
@@ -58,7 +58,7 @@ public class WebOsDiscoveryTests
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
         // Act
-        var result = await _discovery.DiscoverDevicesAsync(shortTimeout);
+        var result = await _discovery.DiscoverDevices(shortTimeout);
         stopwatch.Stop();
 
         // Assert

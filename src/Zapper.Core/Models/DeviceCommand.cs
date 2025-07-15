@@ -10,7 +10,7 @@ public class DeviceCommand
 
     [Required]
     [MaxLength(50)]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
 
     [Required]
     public CommandType Type { get; set; }

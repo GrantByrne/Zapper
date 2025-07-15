@@ -13,10 +13,12 @@ public class DeleteActivityEndpoint(IActivityService activityService) : Endpoint
         Summary(s =>
         {
             s.Summary = "Delete an activity";
-            s.Description = "Deletes the specified activity by ID";
+            s.Description = "Permanently deletes the specified activity and all its associated steps. This action cannot be undone.";
             s.Responses[204] = "Activity deleted successfully";
             s.Responses[404] = "Activity not found";
+            s.Responses[500] = "Internal server error";
         });
+        Tags("Activities");
     }
 
     public override async Task HandleAsync(DeleteActivityRequest req, CancellationToken ct)

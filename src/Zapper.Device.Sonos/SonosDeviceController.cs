@@ -10,7 +10,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
     private readonly ConcurrentDictionary<string, SonosConnection> _connections = new();
     private const int SonosPort = 1400;
 
-    public Task<bool> ConnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Connect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -43,7 +43,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public Task<bool> DisconnectAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public Task<bool> Disconnect(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return Task.FromResult(false);
@@ -53,7 +53,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         return Task.FromResult(true);
     }
 
-    public async Task<bool> SendCommandAsync(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(Zapper.Core.Models.Device device, Core.Models.DeviceCommand command, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
         {
@@ -67,7 +67,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
             {
                 Core.Models.CommandType.Power => await HandlePowerCommand(device, cancellationToken),
                 Core.Models.CommandType.PlayPause => await HandlePlayPauseCommand(device, cancellationToken),
-                Core.Models.CommandType.Stop => await StopAsync(device, cancellationToken),
+                Core.Models.CommandType.Stop => await Stop(device, cancellationToken),
                 Core.Models.CommandType.VolumeUp => await AdjustVolumeAsync(device, 5, cancellationToken),
                 Core.Models.CommandType.VolumeDown => await AdjustVolumeAsync(device, -5, cancellationToken),
                 Core.Models.CommandType.Mute => await MuteAsync(device, cancellationToken),
@@ -81,7 +81,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public async Task<bool> TestConnectionAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> TestConnection(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -99,17 +99,17 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public async Task<bool> PowerOnAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOn(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
-        return await PlayAsync(device, cancellationToken);
+        return await Play(device, cancellationToken);
     }
 
-    public async Task<bool> PowerOffAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> PowerOff(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
-        return await PauseAsync(device, cancellationToken);
+        return await Pause(device, cancellationToken);
     }
 
-    public async Task<bool> SetVolumeAsync(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default)
+    public async Task<bool> SetVolume(Zapper.Core.Models.Device device, int volume, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -138,7 +138,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public async Task<bool> PlayAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> Play(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -166,7 +166,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public async Task<bool> PauseAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> Pause(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -193,7 +193,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
         }
     }
 
-    public async Task<bool> StopAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
+    public async Task<bool> Stop(Zapper.Core.Models.Device device, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(device.IpAddress))
             return false;
@@ -246,11 +246,11 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
 
         if (isPlaying)
         {
-            return await PauseAsync(device, cancellationToken);
+            return await Pause(device, cancellationToken);
         }
         else
         {
-            return await PlayAsync(device, cancellationToken);
+            return await Play(device, cancellationToken);
         }
     }
 
@@ -260,11 +260,11 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
 
         if (isPlaying)
         {
-            return await PauseAsync(device, cancellationToken);
+            return await Pause(device, cancellationToken);
         }
         else
         {
-            return await PlayAsync(device, cancellationToken);
+            return await Play(device, cancellationToken);
         }
     }
 
@@ -310,7 +310,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
     {
         var currentVolume = await GetCurrentVolumeAsync(device, cancellationToken);
         var newVolume = Math.Clamp(currentVolume + adjustment, 0, 100);
-        return await SetVolumeAsync(device, newVolume, cancellationToken);
+        return await SetVolume(device, newVolume, cancellationToken);
     }
 
     private async Task<int> GetCurrentVolumeAsync(Zapper.Core.Models.Device device, CancellationToken cancellationToken)
@@ -395,7 +395,7 @@ public class SonosDeviceController(HttpClient httpClient, ILogger<SonosDeviceCon
 
     private class SonosConnection
     {
-        public string IpAddress { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = "";
         public DateTime LastActivity { get; set; }
     }
 }

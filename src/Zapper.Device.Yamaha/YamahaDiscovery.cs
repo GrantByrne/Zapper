@@ -13,7 +13,7 @@ public class YamahaDiscovery(ILogger<YamahaDiscovery> logger, HttpClient httpCli
 
     public event EventHandler<Zapper.Core.Models.Device>? DeviceDiscovered;
 
-    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevicesAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Zapper.Core.Models.Device>> DiscoverDevices(TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
         if (timeout == default)
             timeout = TimeSpan.FromSeconds(10);

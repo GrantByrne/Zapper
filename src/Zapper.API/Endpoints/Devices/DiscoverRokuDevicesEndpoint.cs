@@ -21,7 +21,7 @@ public class DiscoverRokuDevicesEndpoint(IRokuDiscovery rokuDiscovery) : Endpoin
     public override async Task HandleAsync(DiscoverRokuDevicesRequest req, CancellationToken ct)
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
-        var devices = await rokuDiscovery.DiscoverDevicesAsync(timeout, ct);
+        var devices = await rokuDiscovery.DiscoverDevices(timeout, ct);
         await SendOkAsync(devices, ct);
     }
 }

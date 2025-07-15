@@ -14,13 +14,17 @@ public class DeleteDeviceEndpoint(IDeviceService deviceService) : Endpoint<Delet
         Summary(s =>
         {
             s.Summary = "Delete a device";
-            s.Description = "Delete an existing device configuration";
+            s.Description = "Permanently delete a device configuration from the system. This will also remove the device from any activities using it.";
+            s.Responses[204] = "Device deleted successfully";
+            s.Responses[404] = "Device not found";
+            s.Responses[500] = "Internal server error";
         });
+        Tags("Devices");
     }
 
     public override async Task HandleAsync(DeleteDeviceRequest req, CancellationToken ct)
     {
-        var success = await deviceService.DeleteDeviceAsync(req.Id);
+        var success = await deviceService.DeleteDevice(req.Id);
         if (!success)
         {
             await SendNotFoundAsync(ct);
