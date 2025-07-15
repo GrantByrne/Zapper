@@ -46,6 +46,8 @@ public class Device
 
     public string? IrCodeSet { get; set; }
 
+    public int? IrCodeSetId { get; set; }
+
     public bool IsOnline { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

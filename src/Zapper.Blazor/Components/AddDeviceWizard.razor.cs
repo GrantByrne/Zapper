@@ -5,6 +5,7 @@ using MudBlazor;
 using Zapper.Client.Abstractions;
 using Zapper.Contracts;
 using Zapper.Contracts.Devices;
+using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Components;
 
@@ -22,15 +23,17 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         DeviceType,
         BluetoothScan,
         WebOsScan,
+        IrCodeSelection,
         Configuration
     }
 
     private WizardStep _currentStep = WizardStep.DeviceType;
-    private ConnectionType? _selectedConnectionType;
+    private Zapper.Contracts.ConnectionType? _selectedConnectionType;
     private string _selectedDeviceTypeName = "";
     private bool _isRokuDevice = false;
     private CreateDeviceRequest _newDevice = new();
     private string _selectedIrCodeSet = "";
+    private IrCodeSet? _selectedIrCodeSetData;
 
     // Bluetooth scanning variables
     private bool _isScanning = false;
@@ -50,7 +53,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
 
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-    private void SelectDeviceType(ConnectionType connectionType, string typeName, bool isRoku = false)
+    private void SelectDeviceType(Zapper.Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         _selectedConnectionType = connectionType;
         _selectedDeviceTypeName = typeName;
@@ -58,13 +61,13 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _newDevice.ConnectionType = connectionType;
     }
 
-    private async Task SelectDeviceTypeAndProceed(ConnectionType connectionType, string typeName, bool isRoku = false)
+    private async Task SelectDeviceTypeAndProceed(Zapper.Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         SelectDeviceType(connectionType, typeName, isRoku);
         await NextStep();
     }
 
-    private string GetCardClass(ConnectionType connectionType, bool isRoku = false)
+    private string GetCardClass(Zapper.Contracts.ConnectionType connectionType, bool isRoku = false)
     {
         bool isSelected = _selectedConnectionType == connectionType && (_isRokuDevice == isRoku || !isRoku);
         return $"device-type-card {(isSelected ? "selected" : "")}";
@@ -74,15 +77,19 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     {
         if (_currentStep == WizardStep.DeviceType && _selectedConnectionType.HasValue)
         {
-            if (_selectedConnectionType == ConnectionType.Bluetooth)
+            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
                 await StartBluetoothScan();
             }
-            else if (_selectedConnectionType == ConnectionType.WebOs)
+            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
                 await StartWebOsScan();
+            }
+            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr)
+            {
+                _currentStep = WizardStep.IrCodeSelection;
             }
             else
             {
@@ -122,19 +129,37 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.IrCodeSelection && _selectedIrCodeSetData != null)
+        {
+            // Store the selected IR code set ID
+            _selectedIrCodeSet = _selectedIrCodeSetData.Id.ToString();
+            if (string.IsNullOrEmpty(_newDevice.Brand))
+            {
+                _newDevice.Brand = _selectedIrCodeSetData.Brand;
+            }
+            if (string.IsNullOrEmpty(_newDevice.Model))
+            {
+                _newDevice.Model = _selectedIrCodeSetData.Model;
+            }
+            _currentStep = WizardStep.Configuration;
+        }
     }
 
     private async Task PreviousStep()
     {
         if (_currentStep == WizardStep.Configuration)
         {
-            if (_selectedConnectionType == ConnectionType.Bluetooth)
+            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
             }
-            else if (_selectedConnectionType == ConnectionType.WebOs)
+            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
+            }
+            else if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr)
+            {
+                _currentStep = WizardStep.IrCodeSelection;
             }
             else
             {
@@ -149,6 +174,10 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         else if (_currentStep == WizardStep.WebOsScan)
         {
             await StopWebOsScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.IrCodeSelection)
+        {
             _currentStep = WizardStep.DeviceType;
         }
     }
@@ -391,10 +420,22 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
+    private void HandleIrCodeSetSelected(IrCodeSet codeSet)
+    {
+        _selectedIrCodeSetData = codeSet;
+    }
+
     private async Task FinishWizard()
     {
         if (!string.IsNullOrWhiteSpace(_newDevice.Name))
         {
+            // Store the IR code set ID in device metadata or custom field
+            if (_selectedConnectionType == Zapper.Contracts.ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
+            {
+                // Store IR code set ID - this will need to be handled in the API
+                _newDevice.IrCodeSetId = _selectedIrCodeSetData.Id;
+            }
+
             await OnDeviceAdded.InvokeAsync(_newDevice);
             ResetWizard();
         }
@@ -408,6 +449,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _isRokuDevice = false;
         _newDevice = new CreateDeviceRequest();
         _selectedIrCodeSet = "";
+        _selectedIrCodeSetData = null;
 
         // Reset Bluetooth scanning state
         _isScanning = false;
@@ -531,6 +573,24 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         {
             await _hubConnection.DisposeAsync();
         }
+    }
+
+    private Zapper.Core.Models.DeviceType MapToCoreDeviceType(Zapper.Contracts.DeviceType deviceType)
+    {
+        return deviceType switch
+        {
+            Zapper.Contracts.DeviceType.Television => Zapper.Core.Models.DeviceType.Television,
+            Zapper.Contracts.DeviceType.SmartTv => Zapper.Core.Models.DeviceType.SmartTv,
+            Zapper.Contracts.DeviceType.SoundBar => Zapper.Core.Models.DeviceType.SoundBar,
+            Zapper.Contracts.DeviceType.StreamingDevice => Zapper.Core.Models.DeviceType.StreamingDevice,
+            Zapper.Contracts.DeviceType.AppleTv => Zapper.Core.Models.DeviceType.AppleTv,
+            Zapper.Contracts.DeviceType.CableBox => Zapper.Core.Models.DeviceType.CableBox,
+            Zapper.Contracts.DeviceType.GameConsole => Zapper.Core.Models.DeviceType.GameConsole,
+            Zapper.Contracts.DeviceType.Receiver => Zapper.Core.Models.DeviceType.Receiver,
+            Zapper.Contracts.DeviceType.DvdPlayer => Zapper.Core.Models.DeviceType.DvdPlayer,
+            Zapper.Contracts.DeviceType.BluRayPlayer => Zapper.Core.Models.DeviceType.BluRayPlayer,
+            _ => Zapper.Core.Models.DeviceType.Television
+        };
     }
 
 }

@@ -31,7 +31,8 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
             IpAddress = req.IpAddress,
             Port = req.Port,
             MacAddress = req.MacAddress,
-            AuthenticationToken = req.AuthenticationToken
+            AuthenticationToken = req.AuthenticationToken,
+            IrCodeSetId = req.IrCodeSetId
         };
 
         var createdDevice = await deviceService.CreateDeviceAsync(device);

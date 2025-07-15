@@ -13,4 +13,5 @@ public class CreateDeviceRequest
     public int? Port { get; set; }
     public string? MacAddress { get; set; }
     public string? AuthenticationToken { get; set; }
+    public int? IrCodeSetId { get; set; }
 }

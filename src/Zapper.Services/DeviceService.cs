@@ -16,6 +16,7 @@ public class DeviceService(
     IWebOsDeviceController webOsController,
     IRokuDeviceController rokuController,
     INotificationService notificationService,
+    IIrCodeService irCodeService,
     ILogger<DeviceService> logger) : IDeviceService
 {
 
@@ -42,8 +43,67 @@ public class DeviceService(
         context.Devices.Add(device);
         await context.SaveChangesAsync();
 
+        // If IR code set is specified, create commands from it
+        if (device.ConnectionType == ConnectionType.InfraredIr && device.IrCodeSetId.HasValue)
+        {
+            var codeSet = await irCodeService.GetCodeSetAsync(device.IrCodeSetId.Value);
+            if (codeSet != null)
+            {
+                foreach (var irCode in codeSet.Codes)
+                {
+                    var command = new DeviceCommand
+                    {
+                        DeviceId = device.Id,
+                        Name = irCode.CommandName,
+                        Type = MapCommandType(irCode.CommandName),
+                        IrCode = irCode.HexCode,
+                        IsRepeatable = IsRepeatableCommand(irCode.CommandName)
+                    };
+                    context.DeviceCommands.Add(command);
+                }
+                await context.SaveChangesAsync();
+                logger.LogInformation("Created {Count} IR commands for device {DeviceName} from code set {CodeSetId}",
+                    codeSet.Codes.Count, device.Name, device.IrCodeSetId);
+            }
+        }
+
         logger.LogInformation("Created device: {DeviceName} ({DeviceType})", device.Name, device.Type);
         return device;
+    }
+
+    private static bool IsRepeatableCommand(string commandName)
+    {
+        var repeatableCommands = new[] { "VolumeUp", "VolumeDown", "ChannelUp", "ChannelDown",
+            "DirectionalUp", "DirectionalDown", "DirectionalLeft", "DirectionalRight" };
+        return repeatableCommands.Any(cmd => commandName.Contains(cmd, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static CommandType MapCommandType(string commandName)
+    {
+        return commandName.ToLowerInvariant() switch
+        {
+            "power" => CommandType.Power,
+            "volumeup" => CommandType.VolumeUp,
+            "volumedown" => CommandType.VolumeDown,
+            "mute" => CommandType.Mute,
+            "channelup" => CommandType.ChannelUp,
+            "channeldown" => CommandType.ChannelDown,
+            "input" => CommandType.Input,
+            "menu" => CommandType.Menu,
+            "back" => CommandType.Back,
+            "home" => CommandType.Home,
+            "ok" => CommandType.Ok,
+            "directionalup" or "up" => CommandType.DirectionalUp,
+            "directionaldown" or "down" => CommandType.DirectionalDown,
+            "directionalleft" or "left" => CommandType.DirectionalLeft,
+            "directionalright" or "right" => CommandType.DirectionalRight,
+            "play" or "pause" or "playpause" => CommandType.PlayPause,
+            "stop" => CommandType.Stop,
+            "fastforward" or "forward" => CommandType.FastForward,
+            "rewind" => CommandType.Rewind,
+            "record" => CommandType.Record,
+            _ => CommandType.Custom
+        };
     }
 
     public async Task<Zapper.Core.Models.Device?> UpdateDeviceAsync(int id, Zapper.Core.Models.Device device)

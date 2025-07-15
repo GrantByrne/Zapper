@@ -17,6 +17,10 @@
             {
                 <span>Add New Device - Scan for @_selectedDeviceTypeName TVs</span>
             }
+            else if (_currentStep == WizardStep.IrCodeSelection)
+            {
+                <span>Add New Device - Select IR Codes</span>
+            }
             else if (_currentStep == WizardStep.Configuration)
             {
                 <span>Add New Device - Configure @_selectedDeviceTypeName</span>
@@ -212,6 +216,11 @@
                 Use This IP Address
             </MudButton>
         }
+        else if (_currentStep == WizardStep.IrCodeSelection)
+        {
+            <MudText Class="mb-4">Select or search for IR codes for your device:</MudText>
+            <IrCodeSelector DeviceType="@MapToCoreDeviceType(_newDevice.Type)" OnCodeSetSelected="HandleIrCodeSetSelected" />
+        }
         else if (_currentStep == WizardStep.Configuration)
         {
             <MudTextField @bind-Value="_newDevice.Name" Label="Device Name" Required="true" Class="mb-4" />
@@ -237,15 +246,11 @@
                               HelperText="Enter the device's IP address (e.g., 192.168.1.100)" />
             }
 
-            @if (_selectedConnectionType == ConnectionType.InfraredIr)
+            @if (_selectedConnectionType == ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
             {
-                <MudText Class="mb-2">IR Code Set</MudText>
-                <MudSelect T="string" @bind-Value="_selectedIrCodeSet" Label="Select IR Code Set" Class="mb-4">
-                    <MudSelectItem Value="@("samsung-tv")">Samsung TV</MudSelectItem>
-                    <MudSelectItem Value="@("lg-tv")">LG TV</MudSelectItem>
-                    <MudSelectItem Value="@("sony-tv")">Sony TV</MudSelectItem>
-                    <MudSelectItem Value="@("generic-tv")">Generic TV</MudSelectItem>
-                </MudSelect>
+                <MudAlert Severity="Severity.Info" Class="mb-4">
+                    Using IR codes: @_selectedIrCodeSetData.Brand @_selectedIrCodeSetData.Model
+                </MudAlert>
             }
 
             @if (_selectedConnectionType == ConnectionType.Bluetooth)
@@ -274,6 +279,14 @@
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOsDevice == null && string.IsNullOrWhiteSpace(_manualWebOsIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.IrCodeSelection)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedIrCodeSetData == null)">
                 Next
             </MudButton>
         }
