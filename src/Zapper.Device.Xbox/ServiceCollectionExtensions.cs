@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IXboxDiscovery, XboxDiscovery>();
         services.AddSingleton<IXboxDeviceController, XboxDeviceController>();
         services.AddSingleton<IDeviceController, XboxProtocolController>();
-        
+
         return services;
     }
 }

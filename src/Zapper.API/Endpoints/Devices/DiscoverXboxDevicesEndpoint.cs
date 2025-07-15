@@ -17,7 +17,7 @@ public class DiscoverXboxDevicesEndpoint(IXboxDiscovery xboxDiscovery, IHubConte
     public override async Task HandleAsync(DiscoverXboxDevicesRequest req, CancellationToken ct)
     {
         var connectionId = HttpContext.Request.Headers["X-SignalR-ConnectionId"].FirstOrDefault();
-        
+
         if (!string.IsNullOrEmpty(connectionId))
         {
             xboxDiscovery.DeviceFound += async (sender, device) =>

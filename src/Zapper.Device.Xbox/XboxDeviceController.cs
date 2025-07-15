@@ -192,12 +192,12 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
         {
             using var tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(ipAddress, CommandPort);
-            
+
             var json = JsonSerializer.Serialize(payload);
             var data = Encoding.UTF8.GetBytes(json);
-            
+
             await tcpClient.GetStream().WriteAsync(data, 0, data.Length, cancellationToken);
-            
+
             logger.LogDebug("Sent TCP command to Xbox at {IpAddress}: {Command}", ipAddress, json);
             return true;
         }
@@ -214,12 +214,12 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
         {
             using var udpClient = new UdpClient();
             var endpoint = new IPEndPoint(IPAddress.Parse(ipAddress), CommandPort);
-            
+
             var json = JsonSerializer.Serialize(payload);
             var data = Encoding.UTF8.GetBytes(json);
-            
+
             await udpClient.SendAsync(data, data.Length, endpoint);
-            
+
             logger.LogDebug("Sent UDP command to Xbox at {IpAddress}: {Command}", ipAddress, json);
             return true;
         }
@@ -233,7 +233,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
     private async Task<bool> HandlePowerCommand(Zapper.Core.Models.Device device, CancellationToken cancellationToken)
     {
         var isPoweredOn = await TestConnectionAsync(device, cancellationToken);
-        
+
         if (isPoweredOn)
         {
             return await PowerOffAsync(device, cancellationToken);
@@ -282,7 +282,7 @@ public class XboxDeviceController(INetworkDeviceController networkController, IL
         }
 
         var payload = command.NetworkPayload.ToLowerInvariant();
-        
+
         var buttonMap = new Dictionary<string, string>
         {
             ["a"] = "a",

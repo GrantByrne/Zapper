@@ -11,7 +11,7 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
 {
     private const int DiscoveryPort = 5050;
     private const string DiscoveryMessage = "{\"type\":\"discovery\",\"version\":2}";
-    
+
     public event EventHandler<XboxDevice>? DeviceFound;
 
     public async Task<IEnumerable<XboxDevice>> DiscoverDevicesAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
@@ -23,27 +23,27 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
         {
             using var udpClient = new UdpClient();
             udpClient.EnableBroadcast = true;
-            
+
             var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, DiscoveryPort);
             var message = Encoding.UTF8.GetBytes(DiscoveryMessage);
-            
+
             logger.LogInformation("Starting Xbox console discovery for {Timeout} seconds", timeout.TotalSeconds);
-            
+
             await udpClient.SendAsync(message, message.Length, broadcastEndpoint);
-            
+
             var endTime = DateTime.UtcNow.Add(timeout);
             udpClient.Client.ReceiveTimeout = 1000;
-            
+
             while (DateTime.UtcNow < endTime && !cancellationToken.IsCancellationRequested)
             {
                 try
                 {
                     var result = await ReceiveWithTimeoutAsync(udpClient, 1000, cancellationToken);
                     if (result == null) continue;
-                    
+
                     var response = Encoding.UTF8.GetString(result.Value.Buffer);
                     var device = ParseDiscoveryResponse(response, result.Value.RemoteEndPoint.Address.ToString());
-                    
+
                     if (device != null && discoveredDevices.Add(device.IpAddress))
                     {
                         devices.Add(device);
@@ -60,7 +60,7 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
                     logger.LogWarning(ex, "Error processing discovery response");
                 }
             }
-            
+
             logger.LogInformation("Xbox discovery completed. Found {Count} consoles", devices.Count);
             return devices;
         }
@@ -75,7 +75,7 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         cts.CancelAfter(timeoutMs);
-        
+
         try
         {
             return await client.ReceiveAsync(cts.Token);
@@ -92,22 +92,22 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
         {
             using var doc = JsonDocument.Parse(response);
             var root = doc.RootElement;
-            
+
             if (!root.TryGetProperty("type", out var typeElement) || typeElement.GetString() != "device")
                 return null;
-            
+
             var device = new XboxDevice
             {
                 IpAddress = ipAddress,
                 LastSeen = DateTime.UtcNow
             };
-            
+
             if (root.TryGetProperty("name", out var nameElement))
                 device.Name = nameElement.GetString() ?? "Xbox Console";
-            
+
             if (root.TryGetProperty("id", out var idElement))
                 device.LiveId = idElement.GetString() ?? string.Empty;
-            
+
             if (root.TryGetProperty("device_type", out var deviceTypeElement))
             {
                 device.ConsoleType = deviceTypeElement.GetString()?.ToLowerInvariant() switch
@@ -120,10 +120,10 @@ public class XboxDiscovery(ILogger<XboxDiscovery> logger) : IXboxDiscovery
                     _ => XboxConsoleType.Unknown
                 };
             }
-            
+
             if (root.TryGetProperty("certificate", out var certElement))
                 device.Certificate = certElement.GetString() ?? string.Empty;
-            
+
             return device;
         }
         catch (Exception ex)

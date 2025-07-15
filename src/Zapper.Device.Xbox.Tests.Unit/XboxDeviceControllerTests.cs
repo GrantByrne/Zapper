@@ -58,9 +58,9 @@ public class XboxDeviceControllerTests
     [Fact]
     public async Task SendCommandAsync_PowerCommand_ReturnsResult()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
-            IpAddress = "192.168.1.100", 
+        var device = new Zapper.Core.Models.Device
+        {
+            IpAddress = "192.168.1.100",
             Name = "Test Xbox",
             AuthToken = "test-live-id"
         };
@@ -75,12 +75,12 @@ public class XboxDeviceControllerTests
     public async Task SendCommandAsync_DirectionalCommand_HandlesAllDirections()
     {
         var device = new Zapper.Core.Models.Device { IpAddress = "192.168.1.100", Name = "Test Xbox" };
-        var directions = new[] 
-        { 
-            Zapper.Core.Models.CommandType.DirectionalUp, 
-            Zapper.Core.Models.CommandType.DirectionalDown, 
-            Zapper.Core.Models.CommandType.DirectionalLeft, 
-            Zapper.Core.Models.CommandType.DirectionalRight 
+        var directions = new[]
+        {
+            Zapper.Core.Models.CommandType.DirectionalUp,
+            Zapper.Core.Models.CommandType.DirectionalDown,
+            Zapper.Core.Models.CommandType.DirectionalLeft,
+            Zapper.Core.Models.CommandType.DirectionalRight
         };
 
         foreach (var direction in directions)

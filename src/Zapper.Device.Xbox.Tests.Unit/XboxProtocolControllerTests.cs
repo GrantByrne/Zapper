@@ -19,8 +19,8 @@ public class XboxProtocolControllerTests
     [Fact]
     public void SupportsDevice_WithXboxDevice_ReturnsTrue()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Xbox,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network
         };
@@ -31,8 +31,8 @@ public class XboxProtocolControllerTests
     [Fact]
     public void SupportsDevice_WithNonXboxDevice_ReturnsFalse()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Television,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network
         };
@@ -43,14 +43,14 @@ public class XboxProtocolControllerTests
     [Fact]
     public async Task SendCommandAsync_WithXboxDevice_CallsXboxController()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Xbox,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
         var command = new Zapper.Core.Models.DeviceCommand { Type = Zapper.Core.Models.CommandType.Ok };
-        
+
         _xboxControllerMock.Setup(x => x.SendCommandAsync(device, command, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
@@ -63,8 +63,8 @@ public class XboxProtocolControllerTests
     [Fact]
     public async Task SendCommandAsync_WithNonXboxDevice_ReturnsFalse()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Television,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network
         };
@@ -79,13 +79,13 @@ public class XboxProtocolControllerTests
     [Fact]
     public async Task TestConnectionAsync_WithXboxDevice_CallsXboxController()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Xbox,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
-        
+
         _xboxControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
@@ -98,13 +98,13 @@ public class XboxProtocolControllerTests
     [Fact]
     public async Task GetStatusAsync_WithXboxDevice_ReturnsOnlineStatus()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Xbox,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network,
             IpAddress = "192.168.1.100"
         };
-        
+
         _xboxControllerMock.Setup(x => x.TestConnectionAsync(device, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
@@ -117,8 +117,8 @@ public class XboxProtocolControllerTests
     [Fact]
     public async Task GetStatusAsync_WithNonXboxDevice_ReturnsOfflineStatus()
     {
-        var device = new Zapper.Core.Models.Device 
-        { 
+        var device = new Zapper.Core.Models.Device
+        {
             Type = Zapper.Core.Models.DeviceType.Television,
             ConnectionType = Zapper.Core.Models.ConnectionType.Network
         };
