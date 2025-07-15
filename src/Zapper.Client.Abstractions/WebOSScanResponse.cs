@@ -1,6 +1,6 @@
 namespace Zapper.Client.Abstractions;
 
-public class WebOSScanResponse
+public class WebOsScanResponse
 {
     public bool Success { get; set; }
     public string? Message { get; set; }

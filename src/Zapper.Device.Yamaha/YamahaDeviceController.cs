@@ -366,7 +366,7 @@ public class YamahaDeviceController(HttpClient httpClient, ILogger<YamahaDeviceC
     private enum YamahaProtocolType
     {
         MusicCast,
-        YNCA
+        Ynca
     }
 
     private class YamahaStatusResponse

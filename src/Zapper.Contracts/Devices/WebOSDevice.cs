@@ -1,6 +1,6 @@
 namespace Zapper.Contracts.Devices;
 
-public class WebOSDevice
+public class WebOsDevice
 {
     public string Name { get; set; } = "";
     public string IpAddress { get; set; } = "";

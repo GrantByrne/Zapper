@@ -4,8 +4,8 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class StopWebOSScanEndpoint(
-    IHubContext<ZapperSignalR> hubContext) : EndpointWithoutRequest<StopWebOSScanResponse>
+public class StopWebOsScanEndpoint(
+    IHubContext<ZapperSignalR> hubContext) : EndpointWithoutRequest<StopWebOsScanResponse>
 {
     public override void Configure()
     {
@@ -27,7 +27,7 @@ public class StopWebOSScanEndpoint(
             // The background task will continue but UI clients will receive the completion signal
             await hubContext.Clients.All.SendAsync("WebOSScanCompleted", cancellationToken: ct);
 
-            await SendOkAsync(new StopWebOSScanResponse
+            await SendOkAsync(new StopWebOsScanResponse
             {
                 Success = true,
                 Message = "WebOS scanning stopped (UI updated)"
@@ -35,7 +35,7 @@ public class StopWebOSScanEndpoint(
         }
         catch (Exception ex)
         {
-            await SendAsync(new StopWebOSScanResponse
+            await SendAsync(new StopWebOsScanResponse
             {
                 Success = false,
                 Message = ex.Message

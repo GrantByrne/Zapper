@@ -55,9 +55,9 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
         return await deviceApi.StartBluetoothScanAsync(request, cancellationToken);
     }
 
-    public async Task<WebOSScanResponse> StartWebOSScanAsync(WebOSScanRequest request, CancellationToken cancellationToken = default)
+    public async Task<WebOsScanResponse> StartWebOsScanAsync(WebOsScanRequest request, CancellationToken cancellationToken = default)
     {
-        return await deviceApi.StartWebOSScanAsync(request, cancellationToken);
+        return await deviceApi.StartWebOsScanAsync(request, cancellationToken);
     }
 
     public async Task<StopBluetoothScanResponse> StopBluetoothScanAsync(CancellationToken cancellationToken = default)
@@ -65,8 +65,8 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
         return await deviceApi.StopBluetoothScanAsync(cancellationToken);
     }
 
-    public async Task<StopWebOSScanResponse> StopWebOSScanAsync(CancellationToken cancellationToken = default)
+    public async Task<StopWebOsScanResponse> StopWebOsScanAsync(CancellationToken cancellationToken = default)
     {
-        return await deviceApi.StopWebOSScanAsync(cancellationToken);
+        return await deviceApi.StopWebOsScanAsync(cancellationToken);
     }
 }

@@ -5,9 +5,9 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class WebOSScanEndpoint(
+public class WebOsScanEndpoint(
     IWebOsDiscovery webOsDiscovery,
-    IHubContext<ZapperSignalR> hubContext) : Endpoint<WebOSScanRequest, WebOSScanResponse>
+    IHubContext<ZapperSignalR> hubContext) : Endpoint<WebOsScanRequest, WebOsScanResponse>
 {
     public override void Configure()
     {
@@ -20,7 +20,7 @@ public class WebOSScanEndpoint(
         });
     }
 
-    public override async Task HandleAsync(WebOSScanRequest req, CancellationToken ct)
+    public override async Task HandleAsync(WebOsScanRequest req, CancellationToken ct)
     {
         try
         {
@@ -56,7 +56,7 @@ public class WebOSScanEndpoint(
                 }
             }, ct);
 
-            await SendOkAsync(new WebOSScanResponse
+            await SendOkAsync(new WebOsScanResponse
             {
                 Success = true,
                 Message = $"WebOS TV scanning started for {req.DurationSeconds} seconds",
@@ -65,7 +65,7 @@ public class WebOSScanEndpoint(
         }
         catch (Exception ex)
         {
-            await SendAsync(new WebOSScanResponse
+            await SendAsync(new WebOsScanResponse
             {
                 Success = false,
                 Message = ex.Message,

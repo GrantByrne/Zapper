@@ -15,13 +15,13 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     [Parameter] public EventCallback<CreateDeviceRequest> OnDeviceAdded { get; set; }
 
     [Inject] public IZapperApiClient? ApiClient { get; set; }
-    [Inject] public IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = default!;
 
     private enum WizardStep
     {
         DeviceType,
         BluetoothScan,
-        WebOSScan,
+        WebOsScan,
         Configuration
     }
 
@@ -39,11 +39,11 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     private string _selectedBluetoothDevice = "";
 
     // WebOS scanning variables
-    private bool _isWebOSScanning = false;
-    private string _webOSScanError = "";
-    private List<WebOSDevice> _discoveredWebOSDevices = new();
-    private WebOSDevice? _selectedWebOSDevice = null;
-    private string _manualWebOSIpAddress = "";
+    private bool _isWebOsScanning = false;
+    private string _webOsScanError = "";
+    private List<WebOsDevice> _discoveredWebOsDevices = new();
+    private WebOsDevice? _selectedWebOsDevice = null;
+    private string _manualWebOsIpAddress = "";
 
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
@@ -81,8 +81,8 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             }
             else if (_selectedConnectionType == ConnectionType.WebOs)
             {
-                _currentStep = WizardStep.WebOSScan;
-                await StartWebOSScan();
+                _currentStep = WizardStep.WebOsScan;
+                await StartWebOsScan();
             }
             else
             {
@@ -98,26 +98,26 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             }
             _currentStep = WizardStep.Configuration;
         }
-        else if (_currentStep == WizardStep.WebOSScan && (_selectedWebOSDevice != null || !string.IsNullOrWhiteSpace(_manualWebOSIpAddress)))
+        else if (_currentStep == WizardStep.WebOsScan && (_selectedWebOsDevice != null || !string.IsNullOrWhiteSpace(_manualWebOsIpAddress)))
         {
             // Pre-populate device info with selected WebOS TV
-            if (_selectedWebOSDevice != null)
+            if (_selectedWebOsDevice != null)
             {
                 if (string.IsNullOrEmpty(_newDevice.Name))
                 {
-                    _newDevice.Name = _selectedWebOSDevice.Name;
+                    _newDevice.Name = _selectedWebOsDevice.Name;
                 }
-                _newDevice.IpAddress = _selectedWebOSDevice.IpAddress;
+                _newDevice.IpAddress = _selectedWebOsDevice.IpAddress;
                 _newDevice.Brand = "LG";
-                _newDevice.Model = _selectedWebOSDevice.ModelName ?? "";
+                _newDevice.Model = _selectedWebOsDevice.ModelName ?? "";
             }
-            else if (!string.IsNullOrWhiteSpace(_manualWebOSIpAddress))
+            else if (!string.IsNullOrWhiteSpace(_manualWebOsIpAddress))
             {
-                _newDevice.IpAddress = _manualWebOSIpAddress.Trim();
+                _newDevice.IpAddress = _manualWebOsIpAddress.Trim();
                 _newDevice.Brand = "LG";
                 if (string.IsNullOrEmpty(_newDevice.Name))
                 {
-                    _newDevice.Name = $"WebOS TV ({_manualWebOSIpAddress.Trim()})";
+                    _newDevice.Name = $"WebOS TV ({_manualWebOsIpAddress.Trim()})";
                 }
             }
             _currentStep = WizardStep.Configuration;
@@ -134,7 +134,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             }
             else if (_selectedConnectionType == ConnectionType.WebOs)
             {
-                _currentStep = WizardStep.WebOSScan;
+                _currentStep = WizardStep.WebOsScan;
             }
             else
             {
@@ -146,9 +146,9 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             await StopBluetoothScan();
             _currentStep = WizardStep.DeviceType;
         }
-        else if (_currentStep == WizardStep.WebOSScan)
+        else if (_currentStep == WizardStep.WebOsScan)
         {
-            await StopWebOSScan();
+            await StopWebOsScan();
             _currentStep = WizardStep.DeviceType;
         }
     }
@@ -211,7 +211,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
     {
         if (_hubConnection == null)
         {
-            var baseUri = await JSRuntime.InvokeAsync<string>("eval", "window.location.origin");
+            var baseUri = await JsRuntime.InvokeAsync<string>("eval", "window.location.origin");
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl($"{baseUri}/hubs/zapper")
                 .WithAutomaticReconnect()
@@ -264,7 +264,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             {
                 InvokeAsync(() =>
                 {
-                    _isWebOSScanning = true;
+                    _isWebOsScanning = true;
                     StateHasChanged();
                 });
             });
@@ -282,7 +282,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
 
                     if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(ipAddress))
                     {
-                        var webOSDevice = new WebOSDevice
+                        var webOsDevice = new WebOsDevice
                         {
                             Name = name,
                             IpAddress = ipAddress,
@@ -291,9 +291,9 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
                             Port = !string.IsNullOrEmpty(port) ? int.Parse(port) : 3000
                         };
 
-                        if (!_discoveredWebOSDevices.Any(d => d.IpAddress == webOSDevice.IpAddress))
+                        if (!_discoveredWebOsDevices.Any(d => d.IpAddress == webOsDevice.IpAddress))
                         {
-                            _discoveredWebOSDevices.Add(webOSDevice);
+                            _discoveredWebOsDevices.Add(webOsDevice);
                             StateHasChanged();
                         }
                     }
@@ -304,7 +304,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             {
                 InvokeAsync(() =>
                 {
-                    _isWebOSScanning = false;
+                    _isWebOsScanning = false;
                     StateHasChanged();
                 });
             });
@@ -313,8 +313,8 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             {
                 InvokeAsync(() =>
                 {
-                    _webOSScanError = error;
-                    _isWebOSScanning = false;
+                    _webOsScanError = error;
+                    _isWebOsScanning = false;
                     StateHasChanged();
                 });
             });
@@ -328,21 +328,21 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _selectedBluetoothDevice = deviceName;
     }
 
-    private async Task StartWebOSScan()
+    private async Task StartWebOsScan()
     {
         if (ApiClient == null)
         {
-            _webOSScanError = "API client not available. Cannot scan for WebOS TVs.";
+            _webOsScanError = "API client not available. Cannot scan for WebOS TVs.";
             return;
         }
 
         try
         {
-            _isWebOSScanning = true;
-            _webOSScanError = "";
-            _discoveredWebOSDevices.Clear();
-            _selectedWebOSDevice = null;
-            _manualWebOSIpAddress = "";
+            _isWebOsScanning = true;
+            _webOsScanError = "";
+            _discoveredWebOsDevices.Clear();
+            _selectedWebOsDevice = null;
+            _manualWebOsIpAddress = "";
             StateHasChanged();
 
             // Initialize SignalR connection if needed
@@ -351,43 +351,43 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             // Start the scanning process via API
             try
             {
-                var scanRequest = new WebOSScanRequest { DurationSeconds = 15 };
-                var response = await ApiClient.Devices.StartWebOSScanAsync(scanRequest);
+                var scanRequest = new WebOsScanRequest { DurationSeconds = 15 };
+                var response = await ApiClient.Devices.StartWebOsScanAsync(scanRequest);
 
                 if (!response.Success)
                 {
-                    _webOSScanError = response.Message ?? "Failed to start WebOS TV scan";
-                    _isWebOSScanning = false;
+                    _webOsScanError = response.Message ?? "Failed to start WebOS TV scan";
+                    _isWebOsScanning = false;
                     StateHasChanged();
                 }
                 // Note: _isWebOSScanning will be set to false by SignalR WebOSScanCompleted event
             }
             catch (Exception ex)
             {
-                _webOSScanError = $"Failed to start WebOS TV scan: {ex.Message}";
-                _isWebOSScanning = false;
+                _webOsScanError = $"Failed to start WebOS TV scan: {ex.Message}";
+                _isWebOsScanning = false;
                 StateHasChanged();
             }
         }
         catch (Exception ex)
         {
-            _webOSScanError = $"Failed to scan for WebOS TVs: {ex.Message}";
-            _isWebOSScanning = false;
+            _webOsScanError = $"Failed to scan for WebOS TVs: {ex.Message}";
+            _isWebOsScanning = false;
             StateHasChanged();
         }
     }
 
-    private void SelectWebOSDevice(WebOSDevice device)
+    private void SelectWebOsDevice(WebOsDevice device)
     {
-        _selectedWebOSDevice = device;
-        _manualWebOSIpAddress = ""; // Clear manual IP when device is selected
+        _selectedWebOsDevice = device;
+        _manualWebOsIpAddress = ""; // Clear manual IP when device is selected
     }
 
-    private void UseManualWebOSIP()
+    private void UseManualWebOsip()
     {
-        if (!string.IsNullOrWhiteSpace(_manualWebOSIpAddress))
+        if (!string.IsNullOrWhiteSpace(_manualWebOsIpAddress))
         {
-            _selectedWebOSDevice = null; // Clear selected device when using manual IP
+            _selectedWebOsDevice = null; // Clear selected device when using manual IP
         }
     }
 
@@ -416,11 +416,11 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         _selectedBluetoothDevice = "";
 
         // Reset WebOS scanning state
-        _isWebOSScanning = false;
-        _webOSScanError = "";
-        _discoveredWebOSDevices.Clear();
-        _selectedWebOSDevice = null;
-        _manualWebOSIpAddress = "";
+        _isWebOsScanning = false;
+        _webOsScanError = "";
+        _discoveredWebOsDevices.Clear();
+        _selectedWebOsDevice = null;
+        _manualWebOsIpAddress = "";
     }
 
     private void ResetWizard()
@@ -437,9 +437,9 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         {
             await StopBluetoothScan();
         }
-        else if (_currentStep == WizardStep.WebOSScan && _isWebOSScanning)
+        else if (_currentStep == WizardStep.WebOsScan && _isWebOsScanning)
         {
-            await StopWebOSScan();
+            await StopWebOsScan();
         }
 
         ResetWizard();
@@ -481,38 +481,38 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task StopWebOSScan()
+    private async Task StopWebOsScan()
     {
-        if (_isWebOSScanning && ApiClient != null)
+        if (_isWebOsScanning && ApiClient != null)
         {
             try
             {
-                var response = await ApiClient.Devices.StopWebOSScanAsync();
+                var response = await ApiClient.Devices.StopWebOsScanAsync();
 
                 if (response.Success)
                 {
-                    _isWebOSScanning = false;
-                    _webOSScanError = "";
+                    _isWebOsScanning = false;
+                    _webOsScanError = "";
                 }
                 else
                 {
-                    _webOSScanError = response.Message ?? "Failed to stop WebOS scan";
-                    _isWebOSScanning = false;
+                    _webOsScanError = response.Message ?? "Failed to stop WebOS scan";
+                    _isWebOsScanning = false;
                 }
                 StateHasChanged();
             }
             catch (Exception ex)
             {
-                _webOSScanError = $"Failed to stop WebOS scan: {ex.Message}";
-                _isWebOSScanning = false;
+                _webOsScanError = $"Failed to stop WebOS scan: {ex.Message}";
+                _isWebOsScanning = false;
                 StateHasChanged();
             }
         }
-        else if (_isWebOSScanning)
+        else if (_isWebOsScanning)
         {
             // Fallback if API client is not available
-            _isWebOSScanning = false;
-            _webOSScanError = "";
+            _isWebOsScanning = false;
+            _webOsScanError = "";
             StateHasChanged();
         }
     }
@@ -535,7 +535,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
 
 }
 
-public class WebOSDevice
+public class WebOsDevice
 {
     public string Name { get; set; } = "";
     public string IpAddress { get; set; } = "";

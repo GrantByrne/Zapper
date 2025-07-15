@@ -13,7 +13,7 @@
             {
                 <span>Add New Device - Scan for @_selectedDeviceTypeName Devices</span>
             }
-            else if (_currentStep == WizardStep.WebOSScan)
+            else if (_currentStep == WizardStep.WebOsScan)
             {
                 <span>Add New Device - Scan for @_selectedDeviceTypeName TVs</span>
             }
@@ -138,11 +138,11 @@
                 </MudButton>
             }
         }
-        else if (_currentStep == WizardStep.WebOSScan)
+        else if (_currentStep == WizardStep.WebOsScan)
         {
             <MudText Class="mb-4">Scanning for available WebOS TVs on your network...</MudText>
             
-            @if (_isWebOSScanning)
+            @if (_isWebOsScanning)
             {
                 <div class="d-flex justify-center align-center" style="min-height: 200px;">
                     <div class="text-center">
@@ -154,25 +154,25 @@
                     </div>
                 </div>
             }
-            else if (!string.IsNullOrEmpty(_webOSScanError))
+            else if (!string.IsNullOrEmpty(_webOsScanError))
             {
                 <MudAlert Severity="Severity.Error" Class="mb-4">
-                    @_webOSScanError
+                    @_webOsScanError
                 </MudAlert>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOSScan" Class="mb-4">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOsScan" Class="mb-4">
                     Retry Scan
                 </MudButton>
             }
-            else if (_discoveredWebOSDevices.Any())
+            else if (_discoveredWebOsDevices.Any())
             {
-                <MudText Class="mb-3">Found @_discoveredWebOSDevices.Count() TV(s). Select the TV you want to add:</MudText>
+                <MudText Class="mb-3">Found @_discoveredWebOsDevices.Count() TV(s). Select the TV you want to add:</MudText>
                 <div class="mb-4">
-                    @foreach (var device in _discoveredWebOSDevices)
+                    @foreach (var device in _discoveredWebOsDevices)
                     {
                         <MudButton FullWidth="true" 
-                                  Color="@(_selectedWebOSDevice?.Name == device.Name ? Color.Primary : Color.Default)"
-                                  Variant="@(_selectedWebOSDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
-                                  OnClick="@(() => SelectWebOSDevice(device))"
+                                  Color="@(_selectedWebOsDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedWebOsDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectWebOsDevice(device))"
                                   Class="mb-2">
                             <div class="d-flex align-center">
                                 <MudIcon Icon="@Icons.Material.Filled.Tv" Class="mr-3" />
@@ -188,7 +188,7 @@
                         </MudButton>
                     }
                 </div>
-                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartWebOSScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartWebOsScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
                     Rescan
                 </MudButton>
             }
@@ -197,18 +197,18 @@
                 <MudAlert Severity="Severity.Warning" Class="mb-4">
                     No WebOS TVs found on your network. Make sure your TV is powered on and connected to the same network.
                 </MudAlert>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOSScan" Class="mb-4">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartWebOsScan" Class="mb-4">
                     Start Scan
                 </MudButton>
             }
             
             <MudDivider Class="my-4" />
             <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
-            <MudTextField @bind-Value="_manualWebOSIpAddress" Label="TV IP Address" 
+            <MudTextField @bind-Value="_manualWebOsIpAddress" Label="TV IP Address" 
                          HelperText="Enter the IP address of your WebOS TV (e.g., 192.168.1.100)" 
                          Class="mb-2" />
-            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualWebOSIP" 
-                      Disabled="@(string.IsNullOrWhiteSpace(_manualWebOSIpAddress))" Class="mb-4">
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualWebOsip" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualWebOsIpAddress))" Class="mb-4">
                 Use This IP Address
             </MudButton>
         }
@@ -269,11 +269,11 @@
                 Next
             </MudButton>
         }
-        else if (_currentStep == WizardStep.WebOSScan)
+        else if (_currentStep == WizardStep.WebOsScan)
         {
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOSDevice == null && string.IsNullOrWhiteSpace(_manualWebOSIpAddress))">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedWebOsDevice == null && string.IsNullOrWhiteSpace(_manualWebOsIpAddress))">
                 Next
             </MudButton>
         }

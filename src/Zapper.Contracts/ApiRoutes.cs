@@ -14,14 +14,14 @@ public static class ApiRoutes
         public const string Delete = $"{Base}/{{id}}";
         public const string SendCommand = $"{Base}/{{id}}/command";
         public const string DiscoverRoku = $"{Base}/discover/roku";
-        public const string DiscoverWebOS = $"{Base}/discover/webos";
-        public const string PairWebOS = $"{Base}/pair/webos";
+        public const string DiscoverWebOs = $"{Base}/discover/webos";
+        public const string PairWebOs = $"{Base}/pair/webos";
         public const string BluetoothControl = $"{Base}/bluetooth/control";
         public const string BluetoothDiscovery = $"{Base}/discover/bluetooth";
         public const string BluetoothScan = $"{Base}/scan/bluetooth";
         public const string BluetoothScanStop = $"{Base}/scan/bluetooth/stop";
-        public const string WebOSScan = $"{Base}/scan/webos";
-        public const string WebOSScanStop = $"{Base}/scan/webos/stop";
+        public const string WebOsScan = $"{Base}/scan/webos";
+        public const string WebOsScanStop = $"{Base}/scan/webos/stop";
     }
 
     public static class Activities
@@ -31,7 +31,7 @@ public static class ApiRoutes
         public const string Execute = $"{Base}/{{id}}/execute";
     }
 
-    public static class IRCodes
+    public static class IrCodes
     {
         public const string Base = $"{BaseUrl}/ircodes";
         public const string GetAll = Base;

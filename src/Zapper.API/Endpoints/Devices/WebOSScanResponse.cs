@@ -1,6 +1,6 @@
 namespace Zapper.Endpoints.Devices;
 
-public class WebOSScanResponse
+public class WebOsScanResponse
 {
     public bool Success { get; set; }
     public string? Message { get; set; }

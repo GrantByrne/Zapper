@@ -41,9 +41,9 @@ public class YamahaDiscovery(ILogger<YamahaDiscovery> logger, HttpClient httpCli
             var localIPs = GetLocalNetworkAddresses();
             var tasks = new List<Task>();
 
-            foreach (var localIP in localIPs)
+            foreach (var localIp in localIPs)
             {
-                var networkBase = GetNetworkBase(localIP);
+                var networkBase = GetNetworkBase(localIp);
                 for (int i = 1; i < 255; i++)
                 {
                     var ipToCheck = $"{networkBase}.{i}";

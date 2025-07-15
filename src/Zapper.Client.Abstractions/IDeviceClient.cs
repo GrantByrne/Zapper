@@ -50,7 +50,7 @@ public interface IDeviceClient
     /// <summary>
     /// Start WebOS TV scanning with real-time updates
     /// </summary>
-    Task<WebOSScanResponse> StartWebOSScanAsync(WebOSScanRequest request, CancellationToken cancellationToken = default);
+    Task<WebOsScanResponse> StartWebOsScanAsync(WebOsScanRequest request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Stop Bluetooth device scanning
@@ -60,5 +60,5 @@ public interface IDeviceClient
     /// <summary>
     /// Stop WebOS TV scanning
     /// </summary>
-    Task<StopWebOSScanResponse> StopWebOSScanAsync(CancellationToken cancellationToken = default);
+    Task<StopWebOsScanResponse> StopWebOsScanAsync(CancellationToken cancellationToken = default);
 }

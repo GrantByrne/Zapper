@@ -1,6 +1,6 @@
 namespace Zapper.Client.Abstractions;
 
-public class WebOSScanRequest
+public class WebOsScanRequest
 {
     public int DurationSeconds { get; set; } = 15;
 }
