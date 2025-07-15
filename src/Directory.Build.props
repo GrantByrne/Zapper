@@ -19,4 +19,13 @@
     <!-- We'll suppress this for now to avoid having to document everything immediately -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
+  
+  <!-- Code Coverage Settings -->
+  <PropertyGroup>
+    <CollectCoverage>true</CollectCoverage>
+    <CoverletOutputFormat>cobertura</CoverletOutputFormat>
+    <CoverletOutput>./coverage.cobertura.xml</CoverletOutput>
+    <ExcludeByFile>**/Migrations/**</ExcludeByFile>
+    <Exclude>[*.Tests]*,[xunit.*]*,[*]*.Program,[*]*.Startup</Exclude>
+  </PropertyGroup>
 </Project>

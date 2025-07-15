@@ -1,0 +1,74 @@
+name: Code Coverage Report
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  coverage-report:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore src/zapper-next-gen.sln
+      
+    - name: Build solution
+      run: dotnet build src/zapper-next-gen.sln --no-restore --configuration Release
+      
+    - name: Run tests with coverage
+      run: |
+        dotnet test src/zapper-next-gen.sln \
+          --no-build \
+          --configuration Release \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          
+    - name: Generate detailed coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.2.0
+      with:
+        reports: 'TestResults/**/coverage.opencover.xml'
+        targetdir: 'coverage'
+        reporttypes: 'Html;Badges;TextSummary;MarkdownSummaryGithub'
+        sourcedirs: 'src'
+        historydir: 'coverage-history'
+        title: 'Zapper Code Coverage Report'
+        tag: '${{ github.sha }}'
+        
+    - name: Create coverage badges
+      run: |
+        mkdir -p .github/badges
+        cp coverage/badge_combined.svg .github/badges/coverage.svg || true
+        cp coverage/badge_linecoverage.svg .github/badges/line-coverage.svg || true
+        cp coverage/badge_branchcoverage.svg .github/badges/branch-coverage.svg || true
+        
+    - name: Publish coverage report
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./coverage
+        destination_dir: coverage
+        
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: 5monkeys/cobertura-action@master
+      with:
+        path: TestResults/**/coverage.cobertura.xml
+        minimum_coverage: 80
+        show_line: true
+        show_branch: true
+        show_missing: true
