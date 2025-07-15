@@ -1,15 +1,15 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
+using Zapper.Contracts.Devices;
 using Zapper.Device.PlayStation;
 
 namespace Zapper.API.Endpoints.Devices;
 
-public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStationDiscovery) : Endpoint<DiscoverPlayStationDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
+public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStationDiscovery) : EndpointWithoutRequest<IEnumerable<PlayStationDeviceDto>>
 {
 
     public override void Configure()
     {
-        Post("/api/devices/discover/playstation");
+        Get("/api/devices/discover/playstation");
         AllowAnonymous();
         Summary(s =>
         {
@@ -18,10 +18,18 @@ public class DiscoverPlayStationDevicesEndpoint(IPlayStationDiscovery playStatio
         });
     }
 
-    public override async Task HandleAsync(DiscoverPlayStationDevicesRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
+        var timeout = TimeSpan.FromSeconds(10); // Default timeout
         var devices = await playStationDiscovery.DiscoverDevices(timeout, ct);
-        await SendOkAsync(devices, ct);
+
+        var response = devices.Select(d => new PlayStationDeviceDto
+        {
+            Name = d.Name,
+            IpAddress = d.IpAddress ?? string.Empty,
+            Model = d.Model ?? "PlayStation"
+        });
+
+        await SendOkAsync(response, ct);
     }
 }
