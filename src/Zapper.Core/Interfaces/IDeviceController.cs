@@ -9,10 +9,3 @@ public interface IDeviceController
     Task<DeviceStatus> GetStatusAsync(Device device);
     bool SupportsDevice(Device device);
 }
-
-public class DeviceStatus
-{
-    public bool IsOnline { get; set; }
-    public string? StatusMessage { get; set; }
-    public Dictionary<string, object> Properties { get; set; } = new();
-}

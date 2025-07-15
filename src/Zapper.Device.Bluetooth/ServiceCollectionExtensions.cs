@@ -17,6 +17,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<AndroidTvBluetoothController>();
         services.AddSingleton<IBluetoothDeviceController, AppleTvBluetoothController>();
         services.AddSingleton<AppleTvBluetoothController>();
+        services.AddSingleton<IBluetoothDeviceController, SteamDeckBluetoothController>();
+        services.AddSingleton<SteamDeckBluetoothController>();
 
         return services;
     }

@@ -12,5 +12,9 @@ public enum DeviceType
     BluRayPlayer,
     SmartTv,
     AppleTv,
-    Xbox
+    Xbox,
+    SteamDeck,
+    PlayStation,
+    Sonos,
+    YamahaReceiver
 }

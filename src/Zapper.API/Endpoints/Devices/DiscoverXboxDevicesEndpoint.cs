@@ -49,23 +49,3 @@ public class DiscoverXboxDevicesEndpoint(IXboxDiscovery xboxDiscovery, IHubConte
         }, ct);
     }
 }
-
-public class DiscoverXboxDevicesRequest
-{
-    public int DurationSeconds { get; set; } = 15;
-}
-
-public class DiscoverXboxDevicesResponse
-{
-    public bool Success { get; set; }
-    public List<XboxDeviceDto> Devices { get; set; } = new();
-}
-
-public class XboxDeviceDto
-{
-    public string Name { get; set; } = string.Empty;
-    public string IpAddress { get; set; } = string.Empty;
-    public string LiveId { get; set; } = string.Empty;
-    public string ConsoleType { get; set; } = string.Empty;
-    public bool IsAuthenticated { get; set; }
-}

@@ -5,18 +5,6 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class WebOSScanRequest
-{
-    public int DurationSeconds { get; set; } = 15;
-}
-
-public class WebOSScanResponse
-{
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-    public bool IsScanning { get; set; }
-}
-
 public class WebOSScanEndpoint(
     IWebOsDiscovery webOsDiscovery,
     IHubContext<ZapperSignalR> hubContext) : Endpoint<WebOSScanRequest, WebOSScanResponse>

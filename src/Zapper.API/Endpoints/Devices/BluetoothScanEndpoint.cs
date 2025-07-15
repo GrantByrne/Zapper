@@ -5,18 +5,6 @@ using Zapper.Services;
 
 namespace Zapper.Endpoints.Devices;
 
-public class BluetoothScanRequest
-{
-    public int DurationSeconds { get; set; } = 30;
-}
-
-public class BluetoothScanResponse
-{
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-    public bool IsScanning { get; set; }
-}
-
 public class BluetoothScanEndpoint(
     IBluetoothService bluetoothService,
     IHubContext<ZapperSignalR> hubContext) : Endpoint<BluetoothScanRequest, BluetoothScanResponse>

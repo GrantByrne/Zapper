@@ -26,6 +26,10 @@
     <ProjectReference Include="..\Zapper.Device.Roku\Zapper.Device.Roku.csproj" />
     <ProjectReference Include="..\Zapper.Device.USB\Zapper.Device.USB.csproj" />
     <ProjectReference Include="..\Zapper.Device.Network\Zapper.Device.Network.csproj" />
+    <ProjectReference Include="..\Zapper.Device.PlayStation\Zapper.Device.PlayStation.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Sonos\Zapper.Device.Sonos.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Yamaha\Zapper.Device.Yamaha.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Xbox\Zapper.Device.Xbox.csproj" />
     <ProjectReference Include="..\Zapper.API\Zapper.API.csproj" />
     <ProjectReference Include="..\Zapper.Blazor\Zapper.Blazor.csproj" />
   </ItemGroup>

@@ -2,24 +2,6 @@ using FastEndpoints;
 
 namespace Zapper.Endpoints.System;
 
-public class StatusResponse
-{
-    public string Status { get; set; } = "OK";
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    public string Version { get; set; } = "1.0.0";
-    public int ConnectedClients { get; set; }
-    public SystemInfo System { get; set; } = new();
-}
-
-public class SystemInfo
-{
-    public string MachineName { get; set; } = Environment.MachineName;
-    public string Platform { get; set; } = Environment.OSVersion.Platform.ToString();
-    public string OsVersion { get; set; } = Environment.OSVersion.VersionString;
-    public long WorkingSet { get; set; } = Environment.WorkingSet;
-    public TimeSpan Uptime { get; set; } = TimeSpan.FromMilliseconds(Environment.TickCount64);
-}
-
 public class StatusEndpoint : EndpointWithoutRequest<StatusResponse>
 {
     public override void Configure()

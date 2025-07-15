@@ -124,7 +124,7 @@ public partial class Activities : ComponentBase
             }
 
             var response = await ApiClient.Activities.ExecuteActivityAsync(activity.Id);
-            
+
             if (response.Success)
             {
                 activity.LastUsed = DateTime.Now;

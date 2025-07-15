@@ -452,7 +452,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             try
             {
                 var response = await ApiClient.Devices.StopBluetoothScanAsync();
-                
+
                 if (response.Success)
                 {
                     _isScanning = false;
@@ -488,7 +488,7 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
             try
             {
                 var response = await ApiClient.Devices.StopWebOSScanAsync();
-                
+
                 if (response.Success)
                 {
                     _isWebOSScanning = false;

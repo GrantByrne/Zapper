@@ -10,13 +10,3 @@ public class XboxDevice
     public bool IsAuthenticated { get; set; }
     public DateTime LastSeen { get; set; }
 }
-
-public enum XboxConsoleType
-{
-    Unknown,
-    XboxOne,
-    XboxOneS,
-    XboxOneX,
-    XboxSeriesS,
-    XboxSeriesX
-}

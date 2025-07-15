@@ -348,22 +348,3 @@ public class IrCodeService(ZapperContext context, ILogger<IrCodeService> logger)
         ];
     }
 }
-
-public class IrCodeSetImport
-{
-    public string Brand { get; set; } = string.Empty;
-    public string Model { get; set; } = string.Empty;
-    public DeviceType DeviceType { get; set; }
-    public string? Description { get; set; }
-    public List<IrCodeImport> Codes { get; set; } = [];
-}
-
-public class IrCodeImport
-{
-    public string CommandName { get; set; } = string.Empty;
-    public string Protocol { get; set; } = string.Empty;
-    public string HexCode { get; set; } = string.Empty;
-    public int Frequency { get; set; } = 38000;
-    public string? RawData { get; set; }
-    public string? Notes { get; set; }
-}

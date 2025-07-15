@@ -10,6 +10,9 @@ using Zapper.Device.Roku;
 using Zapper.Device.USB;
 using Zapper.Device.Bluetooth;
 using Zapper.Device.Xbox;
+using Zapper.Device.PlayStation;
+using Zapper.Device.Sonos;
+using Zapper.Device.Yamaha;
 using Zapper.Endpoints.Devices;
 using Zapper.Services;
 
@@ -75,6 +78,15 @@ builder.Services.AddBluetoothServices();
 
 // Register Xbox services
 builder.Services.AddXboxDevice();
+
+// Register PlayStation services
+builder.Services.AddPlayStationDevice();
+
+// Register Sonos services
+builder.Services.AddSonosDevice();
+
+// Register Yamaha services
+builder.Services.AddYamahaDevice();
 
 // Register protocol implementations
 builder.Services.AddTransient<Zapper.Device.Infrared.InfraredDeviceController>();

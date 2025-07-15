@@ -20,6 +20,9 @@
     <ProjectReference Include="..\Zapper.Device.WebOS\Zapper.Device.WebOS.csproj" />
     <ProjectReference Include="..\Zapper.Device.Roku\Zapper.Device.Roku.csproj" />
     <ProjectReference Include="..\Zapper.Device.Xbox\Zapper.Device.Xbox.csproj" />
+    <ProjectReference Include="..\Zapper.Device.PlayStation\Zapper.Device.PlayStation.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Sonos\Zapper.Device.Sonos.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Yamaha\Zapper.Device.Yamaha.csproj" />
   </ItemGroup>
 
 </Project>
