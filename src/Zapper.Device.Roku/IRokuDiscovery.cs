@@ -1,5 +1,3 @@
-using Zapper.Core.Models;
-
 namespace Zapper.Device.Roku;
 
 public interface IRokuDiscovery

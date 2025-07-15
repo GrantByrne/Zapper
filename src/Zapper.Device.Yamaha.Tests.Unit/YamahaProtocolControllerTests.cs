@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
-using Zapper.Core.Interfaces;
 using Zapper.Core.Models;
-using Device = Zapper.Core.Models.Device;
 
 namespace Zapper.Device.Yamaha.Tests.Unit;
 

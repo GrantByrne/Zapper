@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Zapper.Device.Xbox.Network;
 
 public interface INetworkClientFactory

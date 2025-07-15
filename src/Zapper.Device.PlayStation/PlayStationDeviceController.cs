@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Network;
 
 namespace Zapper.Device.PlayStation;
 

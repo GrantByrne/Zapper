@@ -1,9 +1,5 @@
-using System.Net;
-using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Zapper.Device.Xbox;
-using Zapper.Device.Xbox.Models;
 using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox.Tests.Unit;

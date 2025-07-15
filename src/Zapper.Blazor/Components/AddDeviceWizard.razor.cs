@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using MudBlazor;
 using Zapper.Client.Abstractions;
-using Zapper.Contracts;
 using Zapper.Contracts.Devices;
 using Zapper.Core.Models;
 

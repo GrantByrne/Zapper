@@ -1,4 +1,3 @@
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Models;
 using Zapper.Device.Network;

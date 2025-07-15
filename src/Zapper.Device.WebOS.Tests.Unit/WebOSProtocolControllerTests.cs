@@ -1,7 +1,6 @@
 using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using Xunit;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.WebOS.Tests.Unit;

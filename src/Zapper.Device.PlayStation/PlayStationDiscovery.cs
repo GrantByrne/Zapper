@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Models;
 

@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Net.Http;
 using System.Text;
 using System.Xml;
 using Microsoft.Extensions.Logging;

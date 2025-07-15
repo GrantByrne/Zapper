@@ -1,5 +1,3 @@
-using Zapper.Core.Models;
-
 namespace Zapper.Device.Yamaha;
 
 public interface IYamahaDiscovery

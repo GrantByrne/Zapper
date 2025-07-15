@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Models;
 using Zapper.Device.Network;

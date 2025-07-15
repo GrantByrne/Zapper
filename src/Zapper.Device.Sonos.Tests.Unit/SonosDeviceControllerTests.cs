@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using Zapper.Core.Models;
-using Device = Zapper.Core.Models.Device;
 
 namespace Zapper.Device.Sonos.Tests.Unit;
 
