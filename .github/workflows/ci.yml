@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 env:
   DOTNET_VERSION: '9.0.x'
@@ -12,13 +12,15 @@ env:
   SOLUTION_PATH: 'src/zapper-next-gen.sln'
 
 jobs:
-  test:
-    name: Build and Test
+  build-and-test:
+    name: Build, Test, and Lint
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for some PR checks
       
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -36,23 +38,18 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_PATH }}
       
+    - name: Check code formatting
+      run: dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
+      
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
       
     - name: Run tests
       run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
       
-    - name: Install dotnet format
-      run: dotnet tool install -g dotnet-format
-      
-    - name: Run linter (dotnet format)
-      run: dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
-      
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
-      if: success()
+      if: success() && github.event_name == 'push'
       with:
         file: '**/coverage.cobertura.xml'
         fail_ci_if_error: false
-
-
