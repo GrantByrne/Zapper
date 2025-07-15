@@ -20,7 +20,7 @@ public class XboxDiscoveryTests
         _networkClientFactoryMock = new Mock<INetworkClientFactory>();
         _udpClientMock = new Mock<IUdpClientWrapper>();
         _loggerMock = new Mock<ILogger<XboxDiscovery>>();
-        
+
         _networkClientFactoryMock.Setup(x => x.CreateUdpClient()).Returns(_udpClientMock.Object);
         _discovery = new XboxDiscovery(_networkClientFactoryMock.Object, _loggerMock.Object);
     }
