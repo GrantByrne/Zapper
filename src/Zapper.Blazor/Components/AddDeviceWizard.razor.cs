@@ -574,31 +574,21 @@ public partial class AddDeviceWizard : ComponentBase, IAsyncDisposable
         }
     }
 
-    private Core.Models.DeviceType MapToCoreDeviceType(Contracts.DeviceType deviceType)
+    private static DeviceType MapToCoreDeviceType(Contracts.DeviceType deviceType)
     {
         return deviceType switch
         {
-            Contracts.DeviceType.Television => Core.Models.DeviceType.Television,
-            Contracts.DeviceType.SmartTv => Core.Models.DeviceType.SmartTv,
-            Contracts.DeviceType.SoundBar => Core.Models.DeviceType.SoundBar,
-            Contracts.DeviceType.StreamingDevice => Core.Models.DeviceType.StreamingDevice,
-            Contracts.DeviceType.AppleTv => Core.Models.DeviceType.AppleTv,
-            Contracts.DeviceType.CableBox => Core.Models.DeviceType.CableBox,
-            Contracts.DeviceType.GameConsole => Core.Models.DeviceType.GameConsole,
-            Contracts.DeviceType.Receiver => Core.Models.DeviceType.Receiver,
-            Contracts.DeviceType.DvdPlayer => Core.Models.DeviceType.DvdPlayer,
-            Contracts.DeviceType.BluRayPlayer => Core.Models.DeviceType.BluRayPlayer,
-            _ => Core.Models.DeviceType.Television
+            Contracts.DeviceType.Television => DeviceType.Television,
+            Contracts.DeviceType.SmartTv => DeviceType.SmartTv,
+            Contracts.DeviceType.SoundBar => DeviceType.SoundBar,
+            Contracts.DeviceType.StreamingDevice => DeviceType.StreamingDevice,
+            Contracts.DeviceType.AppleTv => DeviceType.AppleTv,
+            Contracts.DeviceType.CableBox => DeviceType.CableBox,
+            Contracts.DeviceType.GameConsole => DeviceType.GameConsole,
+            Contracts.DeviceType.Receiver => DeviceType.Receiver,
+            Contracts.DeviceType.DvdPlayer => DeviceType.DvdPlayer,
+            Contracts.DeviceType.BluRayPlayer => DeviceType.BluRayPlayer,
+            _ => DeviceType.Television
         };
     }
-
-}
-
-public class WebOsDevice
-{
-    public string Name { get; set; } = "";
-    public string IpAddress { get; set; } = "";
-    public string? ModelName { get; set; }
-    public string? ModelNumber { get; set; }
-    public int Port { get; set; } = 3000;
 }

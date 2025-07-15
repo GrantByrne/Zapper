@@ -4,18 +4,6 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class TestIrCodeRequest
-{
-    public int CodeSetId { get; set; }
-    public string CommandName { get; set; } = "";
-}
-
-public class TestIrCodeResponse
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = "";
-}
-
 public class TestIrCodeEndpoint(IIrCodeService irCodeService, IDeviceController deviceController) : Endpoint<TestIrCodeRequest, TestIrCodeResponse>
 {
     public override void Configure()

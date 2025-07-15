@@ -3,21 +3,6 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class ImportExternalCodeSetRequest
-{
-    public required string Manufacturer { get; set; }
-    public required string DeviceType { get; set; }
-    public required string Device { get; set; }
-    public required string Subdevice { get; set; }
-}
-
-public class ImportExternalCodeSetResponse
-{
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-    public int? CodeSetId { get; set; }
-}
-
 public class ImportExternalCodeSetEndpoint(IExternalIrCodeService externalIrCodeService, IIrCodeService irCodeService) : Endpoint<ImportExternalCodeSetRequest, ImportExternalCodeSetResponse>
 {
     public override void Configure()

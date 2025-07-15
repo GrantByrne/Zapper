@@ -3,25 +3,6 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class SearchExternalDevicesRequest
-{
-    public string? Manufacturer { get; set; }
-    public string? DeviceType { get; set; }
-}
-
-public class SearchExternalDevicesResponse
-{
-    public IEnumerable<ExternalDeviceInfo> Devices { get; set; } = [];
-}
-
-public class ExternalDeviceInfo
-{
-    public required string Manufacturer { get; set; }
-    public required string DeviceType { get; set; }
-    public required string Device { get; set; }
-    public required string Subdevice { get; set; }
-}
-
 public class SearchExternalDevicesEndpoint(IExternalIrCodeService externalIrCodeService) : Endpoint<SearchExternalDevicesRequest, SearchExternalDevicesResponse>
 {
     public override void Configure()

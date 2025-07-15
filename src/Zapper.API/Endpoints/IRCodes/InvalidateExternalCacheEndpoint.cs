@@ -3,12 +3,6 @@ using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
-public class InvalidateExternalCacheResponse
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = string.Empty;
-}
-
 public class InvalidateExternalCacheEndpoint(IExternalIrCodeService externalIrCodeService) : EndpointWithoutRequest<InvalidateExternalCacheResponse>
 {
     public override void Configure()
