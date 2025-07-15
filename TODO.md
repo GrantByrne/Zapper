@@ -3,7 +3,7 @@
 This file tracks all planned features, improvements, and tasks for the Zapper project.
 
 ## Build & Release
-- [ ] Push this codebase to GitHub
+- [x] Push this codebase to GitHub
 - [ ] Update the build to have warnings treated as errors
 - [ ] Create first release
 - [ ] Add code coverage to the README
