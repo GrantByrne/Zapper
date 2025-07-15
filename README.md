@@ -1,4 +1,8 @@
-# Zapper
+<p align="center">
+  <img src="docs/logo.png" height="300">
+  <br>
+  <strong>A True Universal Remote Running on A Raspberry PI</strong>
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
