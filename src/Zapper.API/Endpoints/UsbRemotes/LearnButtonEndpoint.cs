@@ -1,23 +1,10 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Core.Models;
 using Zapper.Device.USB;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class LearnButtonRequest
-{
-    public int RemoteId { get; set; }
-    public int TimeoutSeconds { get; set; } = 10;
-}
-
-public class LearnButtonResponse
-{
-    public bool Success { get; set; }
-    public byte KeyCode { get; set; }
-    public string ButtonName { get; set; } = "";
-    public string Message { get; set; } = "";
-}
 
 public class LearnButtonEndpoint(
     IUsbRemoteService usbRemoteService,

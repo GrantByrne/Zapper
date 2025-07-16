@@ -1,13 +1,8 @@
 using FastEndpoints;
+using Zapper.Contracts.IRCodes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
-
-public class CheckIrReceiverStatusResponse
-{
-    public bool IsAvailable { get; set; }
-    public string Message { get; set; } = string.Empty;
-}
 
 public class CheckIrReceiverStatusEndpoint(IIrLearningService irLearningService) : EndpointWithoutRequest<CheckIrReceiverStatusResponse>
 {

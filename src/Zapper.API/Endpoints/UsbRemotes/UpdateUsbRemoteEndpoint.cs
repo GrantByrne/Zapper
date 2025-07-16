@@ -1,22 +1,8 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class UpdateUsbRemoteRequest
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = "";
-    public bool IsActive { get; set; }
-    public bool InterceptSystemButtons { get; set; }
-    public int LongPressTimeoutMs { get; set; }
-}
-
-public class UpdateUsbRemoteResponse
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = "";
-}
 
 public class UpdateUsbRemoteEndpoint(IUsbRemoteService usbRemoteService) : Endpoint<UpdateUsbRemoteRequest, UpdateUsbRemoteResponse>
 {

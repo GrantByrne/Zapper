@@ -1,6 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
-using Zapper.API.Endpoints.IRCodes;
+using Zapper.Contracts.IRCodes;
 
 namespace Zapper.API.Validators;
 

@@ -1,3 +1,5 @@
+using Zapper.Core.Models;
+
 namespace Zapper.Contracts.Devices;
 
 /// <summary>

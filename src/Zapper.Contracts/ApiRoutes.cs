@@ -12,7 +12,7 @@ public static class ApiRoutes
         public const string Create = Base;
         public const string Update = $"{Base}/{{id}}";
         public const string Delete = $"{Base}/{{id}}";
-        public const string SendCommand = $"{Base}/{{id}}/command";
+        public const string SendCommand = $"{Base}/{{id}}/commands";
         public const string DiscoverRoku = $"{Base}/discover/roku";
         public const string DiscoverWebOs = $"{Base}/discover/webos";
         public const string PairWebOs = $"{Base}/pair/webos";

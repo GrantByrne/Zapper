@@ -193,6 +193,116 @@ public class DeviceService(
         }
     }
 
+    public async Task<bool> SendCommand(int deviceId, Zapper.Contracts.Devices.SendCommandRequest request, CancellationToken cancellationToken = default)
+    {
+        var device = await context.Devices
+            .Include(d => d.Commands)
+            .FirstOrDefaultAsync(d => d.Id == deviceId, cancellationToken);
+
+        if (device == null)
+        {
+            logger.LogWarning("Device not found: {DeviceId}", deviceId);
+            return false;
+        }
+
+        DeviceCommand? command = null;
+
+        if (request.Command.StartsWith("mouse_") || request.Command == "keyboard_input")
+        {
+            command = CreateVirtualCommand(request);
+        }
+        else if (request.Command.StartsWith("number_"))
+        {
+            var number = request.Command.Replace("number_", "");
+            command = device.Commands.FirstOrDefault(c => c.Name.Equals($"Number{number}", StringComparison.OrdinalIgnoreCase))
+                ?? device.Commands.FirstOrDefault(c => c.Name.Equals(number, StringComparison.OrdinalIgnoreCase))
+                ?? CreateVirtualCommand(request);
+        }
+        else
+        {
+            command = device.Commands.FirstOrDefault(c => c.Name.Equals(request.Command, StringComparison.OrdinalIgnoreCase));
+            if (command == null)
+            {
+                var mappedCommand = MapCommandName(request.Command);
+                command = device.Commands.FirstOrDefault(c => c.Name.Equals(mappedCommand, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        if (command == null)
+        {
+            logger.LogWarning("Command not found: {CommandName} for device {DeviceName}", request.Command, device.Name);
+            return false;
+        }
+
+        if (request.MouseDeltaX.HasValue) command.MouseDeltaX = request.MouseDeltaX;
+        if (request.MouseDeltaY.HasValue) command.MouseDeltaY = request.MouseDeltaY;
+        if (!string.IsNullOrEmpty(request.KeyboardText)) command.NetworkPayload = request.KeyboardText;
+
+        try
+        {
+            var success = await ExecuteCommand(device, command, cancellationToken);
+
+            if (success)
+            {
+                device.LastSeen = DateTime.UtcNow;
+                device.IsOnline = true;
+                await context.SaveChangesAsync();
+
+                await notificationService.NotifyDeviceCommandExecuted(device.Id, device.Name, request.Command, true);
+            }
+            else
+            {
+                await notificationService.NotifyDeviceCommandExecuted(device.Id, device.Name, request.Command, false);
+            }
+
+            return success;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send command {CommandName} to device {DeviceName}", request.Command, device.Name);
+            device.IsOnline = false;
+            await context.SaveChangesAsync();
+            return false;
+        }
+    }
+
+    private DeviceCommand CreateVirtualCommand(Zapper.Contracts.Devices.SendCommandRequest request)
+    {
+        return new DeviceCommand
+        {
+            Name = request.Command,
+            Type = request.Command switch
+            {
+                "mouse_move" => CommandType.MouseMove,
+                "mouse_click" => CommandType.MouseClick,
+                "mouse_right_click" => CommandType.MouseClick,
+                "keyboard_input" => CommandType.KeyboardInput,
+                _ when request.Command.StartsWith("number_") => CommandType.Number,
+                _ => CommandType.Custom
+            },
+            MouseDeltaX = request.MouseDeltaX,
+            MouseDeltaY = request.MouseDeltaY,
+            NetworkPayload = request.KeyboardText
+        };
+    }
+
+    private string MapCommandName(string commandName)
+    {
+        return commandName.ToLowerInvariant() switch
+        {
+            "power" => "Power",
+            "up" => "DirectionalUp",
+            "down" => "DirectionalDown",
+            "left" => "DirectionalLeft",
+            "right" => "DirectionalRight",
+            "ok" => "Ok",
+            "volume_up" => "VolumeUp",
+            "volume_down" => "VolumeDown",
+            "mute" => "Mute",
+            _ => commandName
+        };
+    }
+
     public async Task<bool> TestDeviceConnection(int deviceId)
     {
         var device = await GetDevice(deviceId);

@@ -1,18 +1,8 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class DeleteButtonMappingRequest
-{
-    public int Id { get; set; }
-}
-
-public class DeleteButtonMappingResponse
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = "";
-}
 
 public class DeleteButtonMappingEndpoint(IUsbRemoteService usbRemoteService) : Endpoint<DeleteButtonMappingRequest, DeleteButtonMappingResponse>
 {

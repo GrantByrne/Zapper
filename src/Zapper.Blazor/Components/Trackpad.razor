@@ -1,0 +1,155 @@
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="trackpad-container">
+    <div class="trackpad"
+         @onmousedown="OnMouseDown"
+         @onmouseup="OnMouseUp"
+         @onmousemove="HandleMouseMove"
+         @onmouseleave="OnMouseLeave"
+         @ontouchstart="OnTouchStart"
+         @ontouchend="OnTouchEnd"
+         @ontouchmove="OnTouchMove"
+         @ontouchcancel="OnTouchCancel"
+         @onclick="OnClick">
+        <div class="trackpad-surface">
+            @if (_isTracking)
+            {
+                <div class="touch-indicator" style="left: @(_currentX)px; top: @(_currentY)px;"></div>
+            }
+        </div>
+    </div>
+    <div class="trackpad-buttons">
+        <button class="trackpad-button left-click" @onclick="OnLeftClick">
+            <i class="fas fa-mouse-pointer"></i>
+            <span>Click</span>
+        </button>
+        <button class="trackpad-button right-click" @onclick="OnRightClick">
+            <i class="fas fa-hand-pointer"></i>
+            <span>Right Click</span>
+        </button>
+    </div>
+</div>
+
+<style>
+    .trackpad-container {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        background: var(--mud-palette-surface);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .trackpad {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: var(--mud-palette-background);
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .trackpad-surface {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, 
+            var(--mud-palette-action-disabled-background) 25%, 
+            transparent 25%, 
+            transparent 75%, 
+            var(--mud-palette-action-disabled-background) 75%, 
+            var(--mud-palette-action-disabled-background)),
+            linear-gradient(45deg, 
+            var(--mud-palette-action-disabled-background) 25%, 
+            transparent 25%, 
+            transparent 75%, 
+            var(--mud-palette-action-disabled-background) 75%, 
+            var(--mud-palette-action-disabled-background));
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+        opacity: 0.1;
+    }
+
+    .touch-indicator {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: var(--mud-palette-primary);
+        border-radius: 50%;
+        opacity: 0.3;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .trackpad-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .trackpad-button {
+        flex: 1;
+        padding: 15px;
+        background: var(--mud-palette-action-default-hover);
+        border: none;
+        border-radius: 10px;
+        color: var(--mud-palette-text-primary);
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .trackpad-button i {
+        font-size: 20px;
+    }
+
+    .trackpad-button:hover {
+        background: var(--mud-palette-action-default);
+        transform: scale(1.05);
+    }
+
+    .trackpad-button:active {
+        transform: scale(0.95);
+        background: var(--mud-palette-primary);
+        color: var(--mud-palette-primary-text);
+    }
+
+    .trackpad-button.left-click {
+        background: var(--mud-palette-primary);
+        color: var(--mud-palette-primary-text);
+    }
+
+    .trackpad-button.left-click:hover {
+        background: var(--mud-palette-primary-darken);
+    }
+
+    @@media (max-width: 400px) {
+        .trackpad-container {
+            padding: 15px;
+        }
+
+        .trackpad {
+            aspect-ratio: 3/2;
+        }
+
+        .trackpad-button {
+            padding: 12px;
+            font-size: 12px;
+        }
+
+        .trackpad-button i {
+            font-size: 18px;
+        }
+    }
+</style>

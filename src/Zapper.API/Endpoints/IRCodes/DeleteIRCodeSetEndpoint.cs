@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
+using Zapper.Contracts.IRCodes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;

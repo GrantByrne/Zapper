@@ -1,9 +1,0 @@
-namespace Zapper.API.Endpoints.IRCodes;
-
-public class ImportExternalCodeSetRequest
-{
-    public required string Manufacturer { get; set; }
-    public required string DeviceType { get; set; }
-    public required string Device { get; set; }
-    public required string Subdevice { get; set; }
-}

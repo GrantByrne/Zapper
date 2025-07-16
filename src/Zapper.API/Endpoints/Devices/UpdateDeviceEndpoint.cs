@@ -1,5 +1,6 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
+using Zapper.Contracts.Devices;
+using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.Devices;
@@ -18,16 +19,13 @@ public class UpdateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Updat
             s.ExampleRequest = new UpdateDeviceRequest
             {
                 Id = 1,
-                Device = new Zapper.Core.Models.Device
-                {
-                    Name = "Living Room TV Updated",
-                    Brand = "Samsung",
-                    Model = "UN55MU8000",
-                    Type = Zapper.Core.Models.DeviceType.Television,
-                    ConnectionType = Zapper.Core.Models.ConnectionType.NetworkTcp,
-                    IpAddress = "192.168.1.101",
-                    Port = 8001
-                }
+                Name = "Living Room TV Updated",
+                Brand = "Samsung",
+                Model = "UN55MU8000",
+                Type = DeviceType.Television,
+                ConnectionType = ConnectionType.NetworkTcp,
+                IpAddress = "192.168.1.101",
+                Port = 8001
             };
             s.Responses[204] = "Device updated successfully";
             s.Responses[400] = "Invalid request - validation errors";
@@ -39,7 +37,21 @@ public class UpdateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Updat
 
     public override async Task HandleAsync(UpdateDeviceRequest req, CancellationToken ct)
     {
-        var updatedDevice = await deviceService.UpdateDevice(req.Id, req.Device);
+        var device = new Zapper.Core.Models.Device
+        {
+            Id = req.Id,
+            Name = req.Name,
+            Brand = req.Brand ?? "",
+            Model = req.Model ?? "",
+            Type = (Zapper.Core.Models.DeviceType)req.Type,
+            ConnectionType = (Zapper.Core.Models.ConnectionType)req.ConnectionType,
+            IpAddress = req.IpAddress,
+            Port = req.Port,
+            MacAddress = req.MacAddress,
+            AuthenticationToken = req.AuthenticationToken
+        };
+
+        var updatedDevice = await deviceService.UpdateDevice(req.Id, device);
         if (updatedDevice == null)
         {
             await SendNotFoundAsync(ct);

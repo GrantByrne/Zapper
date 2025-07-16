@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Zapper.Core.Models;
 
 namespace Zapper.Contracts.Devices;
 

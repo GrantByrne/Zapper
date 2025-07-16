@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
     <ProjectReference Include="..\Zapper.Services\Zapper.Services.csproj" />
     <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
+    <ProjectReference Include="..\Zapper.Client\Zapper.Client.csproj" />
     <ProjectReference Include="..\Zapper.Device.Bluetooth\Zapper.Device.Bluetooth.csproj" />
     <ProjectReference Include="..\Zapper.Device.WebOS\Zapper.Device.WebOS.csproj" />
     <ProjectReference Include="..\Zapper.Device.Roku\Zapper.Device.Roku.csproj" />

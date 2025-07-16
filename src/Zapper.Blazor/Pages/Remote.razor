@@ -1,101 +1,152 @@
 @page "/remote"
+@using Zapper.Blazor.Components
 
 <PageTitle>Remote Control - Zapper</PageTitle>
 
-@if (!string.IsNullOrEmpty(_errorMessage))
-{
-    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
-}
+<div class="remote-page">
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+    }
 
-@if (_isLoading)
-{
-    <div class="d-flex justify-center align-center" style="min-height: 200px;">
-        <div class="text-center">
-            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
-            <MudText>Loading devices...</MudText>
+    @if (_isLoading)
+    {
+        <div class="d-flex justify-center align-center" style="min-height: 200px;">
+            <div class="text-center">
+                <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                <MudText>Loading devices...</MudText>
+            </div>
         </div>
-    </div>
-}
-else if (!_devices.Any())
-{
-    <MudPaper Class="pa-8 text-center">
-        <MudIcon Icon="@Icons.Material.Filled.DevicesOther" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
-        <MudText Typo="Typo.h5" Class="mb-2">No devices configured</MudText>
-        <MudText Class="mb-4">Add devices first to use the remote control</MudText>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Href="/devices">
-            Go to Devices
-        </MudButton>
-    </MudPaper>
-}
-else
-{
-<MudGrid Justify="Justify.Center">
-    <MudItem xs="12" Class="text-center">
-        <MudText Typo="Typo.h6" Class="mb-4">Select Device</MudText>
-        <MudSelect T="int?" Label="Choose Device" @bind-Value="_selectedDeviceId" Class="mb-4">
-            @foreach (var device in _devices)
-            {
-                <MudSelectItem Value="@device.Id">@device.Name</MudSelectItem>
-            }
-        </MudSelect>
+    }
+    else if (!_devices.Any())
+    {
+        <MudPaper Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Filled.DevicesOther" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
+            <MudText Typo="Typo.h5" Class="mb-2">No devices configured</MudText>
+            <MudText Class="mb-4">Add devices first to use the remote control</MudText>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Href="/devices">
+                Go to Devices
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <div class="device-selector">
+            <MudSelect T="int?" Label="Choose Device" @bind-Value="_selectedDeviceId" Class="mb-4" FullWidth="true">
+                @foreach (var device in _devices)
+                {
+                    <MudSelectItem Value="@device.Id">
+                        <div class="device-option">
+                            <MudText>@device.Name</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.Type - @device.ConnectionType</MudText>
+                        </div>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+        </div>
+
         @if (GetSelectedDevice() != null)
         {
-            <MudText Typo="Typo.body2" Class="mb-4 mud-text-secondary">
-                @GetSelectedDevice()!.Type - @GetSelectedDevice()!.ConnectionType
-            </MudText>
+            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-4">
+                <MudTabPanel Text="Remote" Icon="@Icons.Material.Filled.SettingsRemote">
+                    <VirtualRemote Device="GetSelectedDevice()" 
+                                 OnCommandSend="HandleCommandSend" 
+                                 OnCustomCommandSend="HandleCustomCommandSend"
+                                 OnNumberCommandSend="HandleNumberCommandSend"
+                                 AdditionalCommands="_additionalCommands" />
+                </MudTabPanel>
+                
+                @if (GetSelectedDevice()?.SupportsMouseInput == true)
+                {
+                    <MudTabPanel Text="Trackpad" Icon="@Icons.Material.Filled.TouchApp">
+                        <Trackpad OnMouseMove="HandleMouseMove" 
+                                OnMouseClick="HandleMouseClick"
+                                OnMouseRightClick="HandleRightClick"
+                                Sensitivity="1.5" />
+                    </MudTabPanel>
+                }
+                
+                @if (GetSelectedDevice()?.SupportsKeyboardInput == true)
+                {
+                    <MudTabPanel Text="Keyboard" Icon="@Icons.Material.Filled.Keyboard">
+                        <div class="keyboard-section">
+                            <MudTextField @bind-Value="_keyboardInput" 
+                                        Label="Type text to send to device" 
+                                        Variant="Variant.Outlined"
+                                        FullWidth="true"
+                                        Class="mb-4"
+                                        OnKeyUp="HandleKeyboardInput" />
+                            <MudButton Color="Color.Primary" 
+                                     Variant="Variant.Filled" 
+                                     FullWidth="true"
+                                     OnClick="SendKeyboardText">
+                                Send Text
+                            </MudButton>
+                        </div>
+                    </MudTabPanel>
+                }
+                
+                <MudTabPanel Text="All Commands" Icon="@Icons.Material.Filled.Apps">
+                    <div class="all-commands-grid">
+                        @foreach (var commandType in Enum.GetValues<Zapper.Core.Models.CommandType>())
+                        {
+                            @if (IsCommandAvailableForDevice(commandType))
+                            {
+                                <MudButton Color="Color.Default" 
+                                         Variant="Variant.Outlined" 
+                                         Size="Size.Small"
+                                         OnClick="() => HandleCommandSend(commandType)">
+                                    @GetCommandDisplayName(commandType)
+                                </MudButton>
+                            }
+                        }
+                    </div>
+                </MudTabPanel>
+            </MudTabs>
         }
-    </MudItem>
+    }
+</div>
 
-    <MudItem xs="12" Class="text-center">
-        <MudText Typo="Typo.h6" Class="mb-4">Power Controls</MudText>
-        <MudButtonGroup Class="mb-4">
-            <MudButton Color="Color.Error" StartIcon="@Icons.Material.Filled.PowerSettingsNew" Size="Size.Large" OnClick="SendPowerCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                Power
-            </MudButton>
-        </MudButtonGroup>
-    </MudItem>
+<style>
+    .remote-page {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-    <MudItem xs="12" Class="text-center">
-        <MudText Typo="Typo.h6" Class="mb-4">Navigation</MudText>
-        <MudGrid Justify="Justify.Center">
-            <MudItem xs="12" Class="text-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowUp" Size="Size.Large" Class="nav-btn" OnClick="SendUpCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                    Up
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12" Class="d-flex justify-center align-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowLeft" Size="Size.Large" Class="nav-btn mr-4" OnClick="SendLeftCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                    Left
-                </MudButton>
-                <MudButton Color="Color.Success" Variant="Variant.Filled" Size="Size.Large" Class="nav-btn mx-4" OnClick="SendOkCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                    OK
-                </MudButton>
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowRight" Size="Size.Large" Class="nav-btn ml-4" OnClick="SendRightCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                    Right
-                </MudButton>
-            </MudItem>
-            <MudItem xs="12" Class="text-center">
-                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large" Class="nav-btn" OnClick="SendDownCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                    Down
-                </MudButton>
-            </MudItem>
-        </MudGrid>
-    </MudItem>
+    .device-selector {
+        margin-bottom: 20px;
+    }
 
-    <MudItem xs="12" Class="text-center">
-        <MudText Typo="Typo.h6" Class="mb-4">Volume</MudText>
-        <MudButtonGroup Class="mb-4">
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeDown" Size="Size.Large" OnClick="SendVolumeDownCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                Vol -
-            </MudButton>
-            <MudButton Color="Color.Warning" StartIcon="@Icons.Material.Filled.VolumeOff" Size="Size.Large" OnClick="SendMuteCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                Mute
-            </MudButton>
-            <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.VolumeUp" Size="Size.Large" OnClick="SendVolumeUpCommand" Disabled="@(!_selectedDeviceId.HasValue)">
-                Vol +
-            </MudButton>
-        </MudButtonGroup>
-    </MudItem>
-</MudGrid>
-}
+    .device-option {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .keyboard-section {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .all-commands-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        padding: 20px;
+    }
+
+    @@media (max-width: 600px) {
+        .remote-page {
+            padding: 10px;
+        }
+
+        .all-commands-grid {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 10px;
+        }
+    }
+</style>
 

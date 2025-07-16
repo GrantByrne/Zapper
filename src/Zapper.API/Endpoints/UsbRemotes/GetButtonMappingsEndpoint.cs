@@ -1,13 +1,9 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class GetButtonMappingsRequest
-{
-    public int RemoteId { get; set; }
-}
 
 public class GetButtonMappingsEndpoint(IUsbRemoteService usbRemoteService) : Endpoint<GetButtonMappingsRequest, IEnumerable<UsbRemoteButton>>
 {

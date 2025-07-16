@@ -1,6 +1,6 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
-using Zapper.API.Models.Responses;
+using Zapper.Contracts.Devices;
+using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.Devices;
@@ -21,8 +21,8 @@ public class CreateDeviceEndpoint(IDeviceService deviceService) : Endpoint<Creat
                 Name = "Living Room TV",
                 Brand = "Samsung",
                 Model = "UN55MU8000",
-                Type = Zapper.Core.Models.DeviceType.Television,
-                ConnectionType = Zapper.Core.Models.ConnectionType.InfraredIr,
+                Type = DeviceType.Television,
+                ConnectionType = ConnectionType.InfraredIr,
                 IpAddress = "192.168.1.100",
                 Port = 8001,
                 IrCodeSetId = 1

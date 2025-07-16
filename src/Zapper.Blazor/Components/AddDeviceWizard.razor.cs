@@ -30,7 +30,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     }
 
     private WizardStep _currentStep = WizardStep.DeviceType;
-    private Contracts.ConnectionType? _selectedConnectionType;
+    private ConnectionType? _selectedConnectionType;
     private string _selectedDeviceTypeName = "";
     private bool _isRokuDevice;
     private CreateDeviceRequest _newDevice = new();
@@ -90,7 +90,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
 
     private DialogOptions _dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-    private void SelectDeviceType(Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
+    private void SelectDeviceType(ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         _selectedConnectionType = connectionType;
         _selectedDeviceTypeName = typeName;
@@ -98,7 +98,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _newDevice.ConnectionType = connectionType;
     }
 
-    private async Task SelectDeviceTypeAndProceed(Contracts.ConnectionType connectionType, string typeName, bool isRoku = false)
+    private async Task SelectDeviceTypeAndProceed(ConnectionType connectionType, string typeName, bool isRoku = false)
     {
         SelectDeviceType(connectionType, typeName, isRoku);
         await NextStep();
@@ -107,9 +107,9 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private void SelectPlayStationType()
     {
         _selectedDeviceTypeName = "PlayStation";
-        _newDevice.Type = Contracts.DeviceType.PlayStation;
-        _selectedConnectionType = Contracts.ConnectionType.NetworkTcp;
-        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _newDevice.Type = DeviceType.PlayStation;
+        _selectedConnectionType = ConnectionType.NetworkTcp;
+        _newDevice.ConnectionType = ConnectionType.NetworkTcp;
         _currentStep = WizardStep.PlayStationScan;
         _ = StartPlayStationScan();
     }
@@ -117,9 +117,9 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private void SelectXboxType()
     {
         _selectedDeviceTypeName = "Xbox";
-        _newDevice.Type = Contracts.DeviceType.Xbox;
-        _selectedConnectionType = Contracts.ConnectionType.NetworkTcp;
-        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkTcp;
+        _newDevice.Type = DeviceType.Xbox;
+        _selectedConnectionType = ConnectionType.NetworkTcp;
+        _newDevice.ConnectionType = ConnectionType.NetworkTcp;
         _currentStep = WizardStep.XboxScan;
         _ = StartXboxScan();
     }
@@ -127,9 +127,9 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private void SelectYamahaType()
     {
         _selectedDeviceTypeName = "Yamaha";
-        _newDevice.Type = Contracts.DeviceType.Receiver;
-        _selectedConnectionType = Contracts.ConnectionType.NetworkHttp;
-        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _newDevice.Type = DeviceType.Receiver;
+        _selectedConnectionType = ConnectionType.NetworkHttp;
+        _newDevice.ConnectionType = ConnectionType.NetworkHttp;
         _currentStep = WizardStep.YamahaScan;
         _ = StartYamahaScan();
     }
@@ -137,9 +137,9 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private void SelectSonosType()
     {
         _selectedDeviceTypeName = "Sonos";
-        _newDevice.Type = Contracts.DeviceType.Sonos;
-        _selectedConnectionType = Contracts.ConnectionType.NetworkHttp;
-        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _newDevice.Type = DeviceType.Sonos;
+        _selectedConnectionType = ConnectionType.NetworkHttp;
+        _newDevice.ConnectionType = ConnectionType.NetworkHttp;
         _currentStep = WizardStep.SonosScan;
         _ = StartSonosScan();
     }
@@ -148,13 +148,13 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         // For now, we'll default to Bluetooth for modern consoles
         // In the future, we could show a dialog to let users choose
-        _selectedConnectionType = Contracts.ConnectionType.Bluetooth;
-        _newDevice.ConnectionType = Contracts.ConnectionType.Bluetooth;
+        _selectedConnectionType = ConnectionType.Bluetooth;
+        _newDevice.ConnectionType = ConnectionType.Bluetooth;
         _currentStep = WizardStep.BluetoothScan;
         _ = StartBluetoothScan();
     }
 
-    private string GetCardClass(Contracts.ConnectionType connectionType, bool isRoku = false)
+    private string GetCardClass(ConnectionType connectionType, bool isRoku = false)
     {
         bool isSelected = _selectedConnectionType == connectionType && (_isRokuDevice == isRoku || !isRoku);
         return $"device-type-card {(isSelected ? "selected" : "")}";
@@ -164,17 +164,17 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         if (_currentStep == WizardStep.DeviceType && _selectedConnectionType.HasValue)
         {
-            if (_selectedConnectionType == Contracts.ConnectionType.Bluetooth)
+            if (_selectedConnectionType == ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
                 await StartBluetoothScan();
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.WebOs)
+            else if (_selectedConnectionType == ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
                 await StartWebOsScan();
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
+            else if (_selectedConnectionType == ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
             }
@@ -283,14 +283,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 _newDevice.IpAddress = _selectedRokuDevice.IpAddress;
                 _newDevice.Brand = "Roku";
                 _newDevice.Model = _selectedRokuDevice.Model ?? "Roku Device";
-                _newDevice.Type = Contracts.DeviceType.StreamingDevice;
+                _newDevice.Type = DeviceType.StreamingDevice;
             }
             else if (!string.IsNullOrWhiteSpace(_manualRokuIpAddress))
             {
                 _newDevice.IpAddress = _manualRokuIpAddress.Trim();
                 _newDevice.Brand = "Roku";
                 _newDevice.Model = "Roku Device";
-                _newDevice.Type = Contracts.DeviceType.StreamingDevice;
+                _newDevice.Type = DeviceType.StreamingDevice;
                 if (string.IsNullOrEmpty(_newDevice.Name))
                 {
                     _newDevice.Name = $"Roku ({_manualRokuIpAddress.Trim()})";
@@ -310,14 +310,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 _newDevice.IpAddress = _selectedYamahaDevice.IpAddress;
                 _newDevice.Brand = "Yamaha";
                 _newDevice.Model = _selectedYamahaDevice.Model ?? "MusicCast Receiver";
-                _newDevice.Type = Contracts.DeviceType.Receiver;
+                _newDevice.Type = DeviceType.Receiver;
             }
             else if (!string.IsNullOrWhiteSpace(_manualYamahaIpAddress))
             {
                 _newDevice.IpAddress = _manualYamahaIpAddress.Trim();
                 _newDevice.Brand = "Yamaha";
                 _newDevice.Model = "MusicCast Receiver";
-                _newDevice.Type = Contracts.DeviceType.Receiver;
+                _newDevice.Type = DeviceType.Receiver;
                 if (string.IsNullOrEmpty(_newDevice.Name))
                 {
                     _newDevice.Name = $"Yamaha Receiver ({_manualYamahaIpAddress.Trim()})";
@@ -337,14 +337,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 _newDevice.IpAddress = _selectedSonosDevice.IpAddress;
                 _newDevice.Brand = "Sonos";
                 _newDevice.Model = _selectedSonosDevice.Model ?? "Sonos Speaker";
-                _newDevice.Type = Contracts.DeviceType.Sonos;
+                _newDevice.Type = DeviceType.Sonos;
             }
             else if (!string.IsNullOrWhiteSpace(_manualSonosIpAddress))
             {
                 _newDevice.IpAddress = _manualSonosIpAddress.Trim();
                 _newDevice.Brand = "Sonos";
                 _newDevice.Model = "Sonos Speaker";
-                _newDevice.Type = Contracts.DeviceType.Sonos;
+                _newDevice.Type = DeviceType.Sonos;
                 if (string.IsNullOrEmpty(_newDevice.Name))
                 {
                     _newDevice.Name = $"Sonos Speaker ({_manualSonosIpAddress.Trim()})";
@@ -372,19 +372,19 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     {
         if (_currentStep == WizardStep.Configuration)
         {
-            if (_selectedConnectionType == Contracts.ConnectionType.Bluetooth)
+            if (_selectedConnectionType == ConnectionType.Bluetooth)
             {
                 _currentStep = WizardStep.BluetoothScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.WebOs)
+            else if (_selectedConnectionType == ConnectionType.WebOs)
             {
                 _currentStep = WizardStep.WebOsScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkTcp && _newDevice.Type == Contracts.DeviceType.PlayStation)
+            else if (_selectedConnectionType == ConnectionType.NetworkTcp && _newDevice.Type == DeviceType.PlayStation)
             {
                 _currentStep = WizardStep.PlayStationScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkTcp && _newDevice.Type == Contracts.DeviceType.Xbox)
+            else if (_selectedConnectionType == ConnectionType.NetworkTcp && _newDevice.Type == DeviceType.Xbox)
             {
                 _currentStep = WizardStep.XboxScan;
             }
@@ -392,15 +392,15 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             {
                 _currentStep = WizardStep.RokuScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkHttp && _newDevice.Type == Contracts.DeviceType.Receiver)
+            else if (_selectedConnectionType == ConnectionType.NetworkHttp && _newDevice.Type == DeviceType.Receiver)
             {
                 _currentStep = WizardStep.YamahaScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkHttp && _newDevice.Type == Contracts.DeviceType.Sonos)
+            else if (_selectedConnectionType == ConnectionType.NetworkHttp && _newDevice.Type == DeviceType.Sonos)
             {
                 _currentStep = WizardStep.SonosScan;
             }
-            else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
+            else if (_selectedConnectionType == ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
             }
@@ -992,7 +992,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         if (!string.IsNullOrWhiteSpace(_newDevice.Name))
         {
             // Store the IR code set ID in device metadata or custom field
-            if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
+            if (_selectedConnectionType == ConnectionType.InfraredIr && _selectedIrCodeSetData != null)
             {
                 // Store IR code set ID - this will need to be handled in the API
                 _newDevice.IrCodeSetId = _selectedIrCodeSetData.Id;
@@ -1347,23 +1347,23 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         }
     }
 
-    private static DeviceType MapToCoreDeviceType(Contracts.DeviceType deviceType)
+    private static DeviceType MapToCoreDeviceType(DeviceType deviceType)
     {
         return deviceType switch
         {
-            Contracts.DeviceType.Television => DeviceType.Television,
-            Contracts.DeviceType.SmartTv => DeviceType.SmartTv,
-            Contracts.DeviceType.SoundBar => DeviceType.SoundBar,
-            Contracts.DeviceType.StreamingDevice => DeviceType.StreamingDevice,
-            Contracts.DeviceType.AppleTv => DeviceType.AppleTv,
-            Contracts.DeviceType.CableBox => DeviceType.CableBox,
-            Contracts.DeviceType.GameConsole => DeviceType.GameConsole,
-            Contracts.DeviceType.PlayStation => DeviceType.PlayStation,
-            Contracts.DeviceType.Xbox => DeviceType.Xbox,
-            Contracts.DeviceType.Receiver => DeviceType.Receiver,
-            Contracts.DeviceType.Sonos => DeviceType.Sonos,
-            Contracts.DeviceType.DvdPlayer => DeviceType.DvdPlayer,
-            Contracts.DeviceType.BluRayPlayer => DeviceType.BluRayPlayer,
+            DeviceType.Television => DeviceType.Television,
+            DeviceType.SmartTv => DeviceType.SmartTv,
+            DeviceType.SoundBar => DeviceType.SoundBar,
+            DeviceType.StreamingDevice => DeviceType.StreamingDevice,
+            DeviceType.AppleTv => DeviceType.AppleTv,
+            DeviceType.CableBox => DeviceType.CableBox,
+            DeviceType.GameConsole => DeviceType.GameConsole,
+            DeviceType.PlayStation => DeviceType.PlayStation,
+            DeviceType.Xbox => DeviceType.Xbox,
+            DeviceType.Receiver => DeviceType.Receiver,
+            DeviceType.Sonos => DeviceType.Sonos,
+            DeviceType.DvdPlayer => DeviceType.DvdPlayer,
+            DeviceType.BluRayPlayer => DeviceType.BluRayPlayer,
             _ => DeviceType.Television
         };
     }

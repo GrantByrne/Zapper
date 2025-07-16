@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Zapper.Client;
 using Zapper.Contracts.Devices;
-using Zapper.Contracts;
+using Zapper.Core.Models;
 using MudBlazor;
 
 namespace Zapper.Blazor.Pages;

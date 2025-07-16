@@ -1,3 +1,5 @@
+using Zapper.Core.Models;
+
 namespace Zapper.Contracts.Devices;
 
 /// <summary>
@@ -6,6 +8,10 @@ namespace Zapper.Contracts.Devices;
 /// </summary>
 public class UpdateDeviceRequest
 {
+    /// <summary>
+    /// Gets or sets the ID of the device to update.
+    /// </summary>
+    public int Id { get; set; }
     /// <summary>
     /// Gets or sets the display name for the device.
     /// This should be descriptive (e.g., "Living Room TV") and will be shown to users.

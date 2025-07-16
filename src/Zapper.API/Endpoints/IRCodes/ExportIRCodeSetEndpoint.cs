@@ -1,5 +1,9 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
+using Zapper.Contracts.Devices;
+using Zapper.Contracts.IRCodes;
+using Zapper.Contracts.Settings;
+using Zapper.Contracts.System;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;

@@ -1,16 +1,9 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class CreateButtonMappingRequest
-{
-    public int ButtonId { get; set; }
-    public int DeviceId { get; set; }
-    public int DeviceCommandId { get; set; }
-    public ButtonEventType EventType { get; set; }
-}
 
 public class CreateButtonMappingEndpoint(IUsbRemoteService usbRemoteService) : Endpoint<CreateButtonMappingRequest, UsbRemoteButtonMapping>
 {

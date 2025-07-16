@@ -1,7 +1,7 @@
 using FastEndpoints;
+using Zapper.Contracts.IRCodes;
 using Zapper.Core.Models;
 using Zapper.Services;
-using Zapper.API.Models.Requests;
 
 namespace Zapper.API.Endpoints.IRCodes;
 
@@ -15,7 +15,7 @@ public class SearchIrCodeSetsEndpoint(IIrCodeService irCodeService) : Endpoint<S
 
     public override async Task HandleAsync(SearchIrCodeSetsRequest req, CancellationToken ct)
     {
-        var codeSets = await irCodeService.SearchCodeSets(req.Brand, req.Model, req.DeviceType);
+        var codeSets = await irCodeService.SearchCodeSets(req.Brand, req.Model, (Zapper.Core.Models.DeviceType?)req.DeviceType);
         await SendOkAsync(codeSets, ct);
     }
 }

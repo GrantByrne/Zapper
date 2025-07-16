@@ -1,0 +1,387 @@
+@using Zapper.Contracts.Devices
+@using Zapper.Core.Models
+@using CommandType = Zapper.Core.Models.CommandType
+
+<div class="virtual-remote @(IsCompact ? "compact" : "")">
+    @if (Device != null)
+    {
+        <div class="remote-container">
+            @if (Device.Type == DeviceType.Television || Device.Type == DeviceType.SmartTv)
+            {
+                <div class="remote-section power-section">
+                    <button class="remote-btn power-btn" @onclick="() => SendCommand(CommandType.Power)">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </div>
+
+                <div class="remote-section number-pad">
+                    @for (int i = 1; i <= 9; i++)
+                    {
+                        var num = i;
+                        <button class="remote-btn number-btn" @onclick="() => SendNumberCommand(num)">@num</button>
+                    }
+                    <button class="remote-btn number-btn" @onclick="() => SendCommand(CommandType.Back)">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="remote-btn number-btn" @onclick="() => SendNumberCommand(0)">0</button>
+                    <button class="remote-btn number-btn" @onclick="() => SendCommand(CommandType.Menu)">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            }
+
+            <div class="remote-section navigation-section">
+                <div class="navigation-pad">
+                    <button class="remote-btn nav-btn up" @onclick="() => SendCommand(CommandType.DirectionalUp)">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    <button class="remote-btn nav-btn left" @onclick="() => SendCommand(CommandType.DirectionalLeft)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="remote-btn nav-btn center" @onclick="() => SendCommand(CommandType.Ok)">
+                        OK
+                    </button>
+                    <button class="remote-btn nav-btn right" @onclick="() => SendCommand(CommandType.DirectionalRight)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="remote-btn nav-btn down" @onclick="() => SendCommand(CommandType.DirectionalDown)">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="remote-section control-section">
+                <button class="remote-btn control-btn" @onclick="() => SendCommand(CommandType.Back)">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+                <button class="remote-btn control-btn" @onclick="() => SendCommand(CommandType.Home)">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="remote-btn control-btn" @onclick="() => SendCommand(CommandType.Menu)">
+                    <i class="fas fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+            </div>
+
+            @if (Device.Type == DeviceType.Television || Device.Type == DeviceType.SmartTv || 
+                 Device.Type == DeviceType.CableBox || Device.Type == DeviceType.Receiver)
+            {
+                <div class="remote-section volume-section">
+                    <div class="volume-controls">
+                        <button class="remote-btn volume-btn" @onclick="() => SendCommand(CommandType.VolumeUp)">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button class="remote-btn mute-btn" @onclick="() => SendCommand(CommandType.Mute)">
+                            <i class="fas fa-volume-mute"></i>
+                        </button>
+                        <button class="remote-btn volume-btn" @onclick="() => SendCommand(CommandType.VolumeDown)">
+                            <i class="fas fa-volume-down"></i>
+                        </button>
+                    </div>
+                    
+                    @if (Device.Type == DeviceType.Television || Device.Type == DeviceType.CableBox)
+                    {
+                        <div class="channel-controls">
+                            <button class="remote-btn channel-btn" @onclick="() => SendCommand(CommandType.ChannelUp)">
+                                <i class="fas fa-plus"></i>
+                                <span>CH</span>
+                            </button>
+                            <button class="remote-btn channel-btn" @onclick="() => SendCommand(CommandType.ChannelDown)">
+                                <i class="fas fa-minus"></i>
+                                <span>CH</span>
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (Device.Type == DeviceType.StreamingDevice || Device.Type == DeviceType.SmartTv || 
+                 Device.Type == DeviceType.AppleTv || Device.Type == DeviceType.BluRayPlayer || 
+                 Device.Type == DeviceType.DvdPlayer)
+            {
+                <div class="remote-section media-section">
+                    <button class="remote-btn media-btn" @onclick="() => SendCommand(CommandType.Rewind)">
+                        <i class="fas fa-backward"></i>
+                    </button>
+                    <button class="remote-btn media-btn play-pause" @onclick="() => SendCommand(CommandType.PlayPause)">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="remote-btn media-btn" @onclick="() => SendCommand(CommandType.FastForward)">
+                        <i class="fas fa-forward"></i>
+                    </button>
+                    <button class="remote-btn media-btn" @onclick="() => SendCommand(CommandType.Stop)">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            }
+
+            @if (AdditionalCommands?.Any() == true)
+            {
+                <div class="remote-section additional-section">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Label="More Commands">
+                        @foreach (var command in AdditionalCommands)
+                        {
+                            <MudMenuItem OnClick="() => SendCustomCommand(command)">@command</MudMenuItem>
+                        }
+                    </MudMenu>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .virtual-remote {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .remote-container {
+        background: var(--mud-palette-surface);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .remote-section {
+        margin-bottom: 20px;
+    }
+
+    .remote-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .remote-btn {
+        background: var(--mud-palette-action-default-hover);
+        border: none;
+        border-radius: 10px;
+        color: var(--mud-palette-text-primary);
+        cursor: pointer;
+        font-size: 16px;
+        padding: 15px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .remote-btn:hover {
+        background: var(--mud-palette-action-default);
+        transform: scale(1.05);
+    }
+
+    .remote-btn:active {
+        transform: scale(0.95);
+        background: var(--mud-palette-primary);
+        color: var(--mud-palette-primary-text);
+    }
+
+    .power-section {
+        text-align: center;
+    }
+
+    .power-btn {
+        background: var(--mud-palette-error);
+        color: white;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        font-size: 24px;
+        margin: 0 auto;
+    }
+
+    .power-btn:hover {
+        background: var(--mud-palette-error-darken);
+    }
+
+    .number-pad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .number-btn {
+        width: 100%;
+        height: 50px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .navigation-section {
+        margin-top: 30px;
+    }
+
+    .navigation-pad {
+        display: grid;
+        grid-template-areas:
+            ". up ."
+            "left center right"
+            ". down .";
+        gap: 10px;
+        max-width: 250px;
+        margin: 0 auto;
+    }
+
+    .nav-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 20px;
+    }
+
+    .nav-btn.up { grid-area: up; }
+    .nav-btn.down { grid-area: down; }
+    .nav-btn.left { grid-area: left; }
+    .nav-btn.right { grid-area: right; }
+    .nav-btn.center {
+        grid-area: center;
+        background: var(--mud-palette-success);
+        color: white;
+        font-weight: bold;
+    }
+
+    .nav-btn.center:hover {
+        background: var(--mud-palette-success-darken);
+    }
+
+    .control-section {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .control-btn {
+        flex-direction: column;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .control-btn i {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    .volume-section {
+        margin-top: 30px;
+    }
+
+    .volume-controls {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .volume-btn, .mute-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        font-size: 20px;
+    }
+
+    .mute-btn {
+        background: var(--mud-palette-warning);
+        color: white;
+    }
+
+    .mute-btn:hover {
+        background: var(--mud-palette-warning-darken);
+    }
+
+    .channel-controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .channel-btn {
+        flex-direction: column;
+        padding: 10px 25px;
+        font-size: 14px;
+    }
+
+    .media-section {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .media-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 16px;
+    }
+
+    .media-btn.play-pause {
+        background: var(--mud-palette-primary);
+        color: white;
+        width: 60px;
+        height: 60px;
+    }
+
+    .media-btn.play-pause:hover {
+        background: var(--mud-palette-primary-darken);
+    }
+
+    .additional-section {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    @@media (max-width: 400px) {
+        .virtual-remote {
+            padding: 10px;
+        }
+
+        .remote-container {
+            padding: 15px;
+        }
+
+        .remote-btn {
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .nav-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+        }
+
+        .power-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 20px;
+        }
+
+        .number-btn {
+            height: 45px;
+            font-size: 16px;
+        }
+    }
+
+    .virtual-remote.compact .remote-section {
+        margin-bottom: 15px;
+    }
+
+    .virtual-remote.compact .remote-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .virtual-remote.compact .nav-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+</style>

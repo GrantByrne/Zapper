@@ -1,13 +1,9 @@
 using FastEndpoints;
+using Zapper.Contracts.UsbRemotes;
 using Zapper.Core.Models;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;
-
-public class GetUsbRemoteRequest
-{
-    public int Id { get; set; }
-}
 
 public class GetUsbRemoteEndpoint(IUsbRemoteService usbRemoteService) : Endpoint<GetUsbRemoteRequest, UsbRemote>
 {

@@ -52,6 +52,9 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
                 CommandType.ChannelDown => await webOsClient.ChannelDownAsync(cancellationToken),
                 CommandType.AppLaunch => await HandleLaunchApp(command, cancellationToken),
                 CommandType.Input => await HandleSwitchInput(command, cancellationToken),
+                CommandType.MouseMove => await HandleMouseMove(command, cancellationToken),
+                CommandType.MouseClick => await HandleMouseClick(command, cancellationToken),
+                CommandType.KeyboardInput => await HandleKeyboardInput(command, cancellationToken),
                 CommandType.Custom => await HandleCustomCommand(command, cancellationToken),
                 _ => await HandleUnknownCommand(command, cancellationToken)
             };
@@ -91,6 +94,43 @@ public class WebOsHardwareController(IWebOsClient webOsClient, ILogger<WebOsHard
             return await webOsClient.SwitchInputAsync(command.NetworkPayload, cancellationToken);
         }
         logger.LogWarning("Input ID parameter is required for switch_input command");
+        return false;
+    }
+
+    private async Task<bool> HandleMouseMove(DeviceCommand command, CancellationToken cancellationToken)
+    {
+        if (command.MouseDeltaX.HasValue && command.MouseDeltaY.HasValue)
+        {
+            var payload = new
+            {
+                dx = command.MouseDeltaX.Value,
+                dy = command.MouseDeltaY.Value,
+                drag = 0
+            };
+            var response = await webOsClient.SendCommandAsync("ssap://com.webos.service.networkinput/move",
+                System.Text.Json.JsonSerializer.Serialize(payload), cancellationToken);
+            return response != null;
+        }
+        logger.LogWarning("Mouse move command requires MouseDeltaX and MouseDeltaY parameters");
+        return false;
+    }
+
+    private async Task<bool> HandleMouseClick(DeviceCommand command, CancellationToken cancellationToken)
+    {
+        var response = await webOsClient.SendCommandAsync("ssap://com.webos.service.networkinput/click", null, cancellationToken);
+        return response != null;
+    }
+
+    private async Task<bool> HandleKeyboardInput(DeviceCommand command, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrEmpty(command.NetworkPayload))
+        {
+            var payload = new { type = "text", text = command.NetworkPayload };
+            var response = await webOsClient.SendCommandAsync("ssap://com.webos.service.ime/insertText",
+                System.Text.Json.JsonSerializer.Serialize(payload), cancellationToken);
+            return response != null;
+        }
+        logger.LogWarning("Keyboard input command requires text parameter");
         return false;
     }
 
