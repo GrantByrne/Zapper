@@ -1,7 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Zapper.Device.Network;
 using Zapper.Device.Xbox.Network;
 
@@ -9,32 +10,32 @@ namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxDeviceControllerTests
 {
-    private readonly Mock<INetworkClientFactory> _networkClientFactoryMock;
-    private readonly Mock<ITcpClientWrapper> _tcpClientMock;
-    private readonly Mock<IUdpClientWrapper> _udpClientMock;
-    private readonly Mock<Stream> _streamMock;
-    private readonly Mock<ILogger<XboxDeviceController>> _loggerMock;
+    private readonly INetworkClientFactory _networkClientFactoryMock;
+    private readonly ITcpClientWrapper _tcpClientMock;
+    private readonly IUdpClientWrapper _udpClientMock;
+    private readonly Stream _streamMock;
+    private readonly ILogger<XboxDeviceController> _loggerMock;
     private readonly XboxDeviceController _controller;
 
     public XboxDeviceControllerTests()
     {
-        _networkClientFactoryMock = new Mock<INetworkClientFactory>();
-        _tcpClientMock = new Mock<ITcpClientWrapper>();
-        _udpClientMock = new Mock<IUdpClientWrapper>();
-        _streamMock = new Mock<Stream>();
-        _loggerMock = new Mock<ILogger<XboxDeviceController>>();
+        _networkClientFactoryMock = Substitute.For<INetworkClientFactory>();
+        _tcpClientMock = Substitute.For<ITcpClientWrapper>();
+        _udpClientMock = Substitute.For<IUdpClientWrapper>();
+        _streamMock = Substitute.For<Stream>();
+        _loggerMock = Substitute.For<ILogger<XboxDeviceController>>();
 
-        _networkClientFactoryMock.Setup(x => x.CreateTcpClient()).Returns(_tcpClientMock.Object);
-        _networkClientFactoryMock.Setup(x => x.CreateUdpClient()).Returns(_udpClientMock.Object);
-        _tcpClientMock.Setup(x => x.GetStream()).Returns(_streamMock.Object);
+        _networkClientFactoryMock.CreateTcpClient().Returns(_tcpClientMock);
+        _networkClientFactoryMock.CreateUdpClient().Returns(_udpClientMock);
+        _tcpClientMock.GetStream().Returns(_streamMock);
 
         // Setup mocks to simulate network failures by default
-        _tcpClientMock.Setup(x => x.Connect(It.IsAny<string>(), It.IsAny<int>()))
+        _tcpClientMock.Connect(Arg.Any<string>(), Arg.Any<int>())
             .ThrowsAsync(new SocketException());
-        _udpClientMock.Setup(x => x.SendAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<IPEndPoint>()))
+        _udpClientMock.SendAsync(Arg.Any<byte[]>(), Arg.Any<int>(), Arg.Any<IPEndPoint>())
             .ThrowsAsync(new SocketException());
 
-        _controller = new XboxDeviceController(_networkClientFactoryMock.Object, _loggerMock.Object);
+        _controller = new XboxDeviceController(_networkClientFactoryMock, _loggerMock);
     }
 
     [Fact(Timeout = 5000)]
@@ -55,13 +56,12 @@ public class XboxDeviceControllerTests
         var result = await _controller.Connect(device);
 
         Assert.False(result);
-        _loggerMock.Verify(x => x.Log(
+        _loggerMock.Received(1).Log(
             LogLevel.Warning,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("no IP address")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("no IP address")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact(Timeout = 5000)]
@@ -140,13 +140,12 @@ public class XboxDeviceControllerTests
         var result = await _controller.PowerOn(device);
 
         Assert.False(result);
-        _loggerMock.Verify(x => x.Log(
+        _loggerMock.Received(1).Log(
             LogLevel.Warning,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("missing IP or Live ID")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("missing IP or Live ID")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact(Timeout = 5000)]

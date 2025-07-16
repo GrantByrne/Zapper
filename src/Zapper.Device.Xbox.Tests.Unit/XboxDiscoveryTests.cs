@@ -1,24 +1,24 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxDiscoveryTests
 {
-    private readonly Mock<INetworkClientFactory> _networkClientFactoryMock;
-    private readonly Mock<IUdpClientWrapper> _udpClientMock;
-    private readonly Mock<ILogger<XboxDiscovery>> _loggerMock;
+    private readonly INetworkClientFactory _networkClientFactoryMock;
+    private readonly IUdpClientWrapper _udpClientMock;
+    private readonly ILogger<XboxDiscovery> _loggerMock;
     private readonly XboxDiscovery _discovery;
 
     public XboxDiscoveryTests()
     {
-        _networkClientFactoryMock = new Mock<INetworkClientFactory>();
-        _udpClientMock = new Mock<IUdpClientWrapper>();
-        _loggerMock = new Mock<ILogger<XboxDiscovery>>();
+        _networkClientFactoryMock = Substitute.For<INetworkClientFactory>();
+        _udpClientMock = Substitute.For<IUdpClientWrapper>();
+        _loggerMock = Substitute.For<ILogger<XboxDiscovery>>();
 
-        _networkClientFactoryMock.Setup(x => x.CreateUdpClient()).Returns(_udpClientMock.Object);
-        _discovery = new XboxDiscovery(_networkClientFactoryMock.Object, _loggerMock.Object);
+        _networkClientFactoryMock.CreateUdpClient().Returns(_udpClientMock);
+        _discovery = new XboxDiscovery(_networkClientFactoryMock, _loggerMock);
     }
 
     [Fact(Timeout = 5000)]
@@ -36,19 +36,18 @@ public class XboxDiscoveryTests
     [Fact(Timeout = 5000)]
     public async Task DiscoverDevices_WithShortTimeout_CompletesWithoutException()
     {
-        _udpClientMock.Setup(x => x.ReceiveAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new OperationCanceledException());
+        _udpClientMock.ReceiveAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<System.Net.Sockets.UdpReceiveResult>(new OperationCanceledException()));
 
         var result = await _discovery.DiscoverDevices(TimeSpan.FromMilliseconds(100), CancellationToken.None);
 
         Assert.NotNull(result);
-        _loggerMock.Verify(x => x.Log(
+        _loggerMock.Received(1).Log(
             LogLevel.Information,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Starting Xbox console discovery")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("Starting Xbox console discovery")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]

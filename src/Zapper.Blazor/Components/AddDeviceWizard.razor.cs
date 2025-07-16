@@ -23,6 +23,8 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         PlayStationScan,
         XboxScan,
         RokuScan,
+        YamahaScan,
+        SonosScan,
         IrCodeSelection,
         Configuration
     }
@@ -69,6 +71,20 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
     private RokuDevice? _selectedRokuDevice;
     private string _manualRokuIpAddress = "";
 
+    // Yamaha scanning variables
+    private bool _isYamahaScanning;
+    private string _yamahaScanError = "";
+    private List<YamahaDevice> _discoveredYamahaDevices = new();
+    private YamahaDevice? _selectedYamahaDevice;
+    private string _manualYamahaIpAddress = "";
+
+    // Sonos scanning variables
+    private bool _isSonosScanning;
+    private string _sonosScanError = "";
+    private List<SonosDevice> _discoveredSonosDevices = new();
+    private SonosDevice? _selectedSonosDevice;
+    private string _manualSonosIpAddress = "";
+
     // SignalR connection for real-time updates
     private HubConnection? _hubConnection;
 
@@ -106,6 +122,26 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _newDevice.ConnectionType = Contracts.ConnectionType.NetworkTcp;
         _currentStep = WizardStep.XboxScan;
         _ = StartXboxScan();
+    }
+
+    private void SelectYamahaType()
+    {
+        _selectedDeviceTypeName = "Yamaha";
+        _newDevice.Type = Contracts.DeviceType.Receiver;
+        _selectedConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _currentStep = WizardStep.YamahaScan;
+        _ = StartYamahaScan();
+    }
+
+    private void SelectSonosType()
+    {
+        _selectedDeviceTypeName = "Sonos";
+        _newDevice.Type = Contracts.DeviceType.Sonos;
+        _selectedConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _newDevice.ConnectionType = Contracts.ConnectionType.NetworkHttp;
+        _currentStep = WizardStep.SonosScan;
+        _ = StartSonosScan();
     }
 
     private void ShowConsoleConnectionOptions()
@@ -262,6 +298,60 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             }
             _currentStep = WizardStep.Configuration;
         }
+        else if (_currentStep == WizardStep.YamahaScan && (_selectedYamahaDevice != null || !string.IsNullOrWhiteSpace(_manualYamahaIpAddress)))
+        {
+            // Pre-populate device info with selected Yamaha
+            if (_selectedYamahaDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedYamahaDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedYamahaDevice.IpAddress;
+                _newDevice.Brand = "Yamaha";
+                _newDevice.Model = _selectedYamahaDevice.Model ?? "MusicCast Receiver";
+                _newDevice.Type = Contracts.DeviceType.Receiver;
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualYamahaIpAddress))
+            {
+                _newDevice.IpAddress = _manualYamahaIpAddress.Trim();
+                _newDevice.Brand = "Yamaha";
+                _newDevice.Model = "MusicCast Receiver";
+                _newDevice.Type = Contracts.DeviceType.Receiver;
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"Yamaha Receiver ({_manualYamahaIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
+        else if (_currentStep == WizardStep.SonosScan && (_selectedSonosDevice != null || !string.IsNullOrWhiteSpace(_manualSonosIpAddress)))
+        {
+            // Pre-populate device info with selected Sonos
+            if (_selectedSonosDevice != null)
+            {
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = _selectedSonosDevice.Name;
+                }
+                _newDevice.IpAddress = _selectedSonosDevice.IpAddress;
+                _newDevice.Brand = "Sonos";
+                _newDevice.Model = _selectedSonosDevice.Model ?? "Sonos Speaker";
+                _newDevice.Type = Contracts.DeviceType.Sonos;
+            }
+            else if (!string.IsNullOrWhiteSpace(_manualSonosIpAddress))
+            {
+                _newDevice.IpAddress = _manualSonosIpAddress.Trim();
+                _newDevice.Brand = "Sonos";
+                _newDevice.Model = "Sonos Speaker";
+                _newDevice.Type = Contracts.DeviceType.Sonos;
+                if (string.IsNullOrEmpty(_newDevice.Name))
+                {
+                    _newDevice.Name = $"Sonos Speaker ({_manualSonosIpAddress.Trim()})";
+                }
+            }
+            _currentStep = WizardStep.Configuration;
+        }
         else if (_currentStep == WizardStep.IrCodeSelection && _selectedIrCodeSetData != null)
         {
             // Store the selected IR code set ID
@@ -302,6 +392,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             {
                 _currentStep = WizardStep.RokuScan;
             }
+            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkHttp && _newDevice.Type == Contracts.DeviceType.Receiver)
+            {
+                _currentStep = WizardStep.YamahaScan;
+            }
+            else if (_selectedConnectionType == Contracts.ConnectionType.NetworkHttp && _newDevice.Type == Contracts.DeviceType.Sonos)
+            {
+                _currentStep = WizardStep.SonosScan;
+            }
             else if (_selectedConnectionType == Contracts.ConnectionType.InfraredIr)
             {
                 _currentStep = WizardStep.IrCodeSelection;
@@ -334,6 +432,16 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.RokuScan)
         {
             await StopRokuScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.YamahaScan)
+        {
+            await StopYamahaScan();
+            _currentStep = WizardStep.DeviceType;
+        }
+        else if (_currentStep == WizardStep.SonosScan)
+        {
+            await StopSonosScan();
             _currentStep = WizardStep.DeviceType;
         }
         else if (_currentStep == WizardStep.IrCodeSelection)
@@ -938,6 +1046,20 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         _discoveredRokuDevices.Clear();
         _selectedRokuDevice = null;
         _manualRokuIpAddress = "";
+
+        // Reset Yamaha scanning state
+        _isYamahaScanning = false;
+        _yamahaScanError = "";
+        _discoveredYamahaDevices.Clear();
+        _selectedYamahaDevice = null;
+        _manualYamahaIpAddress = "";
+
+        // Reset Sonos scanning state
+        _isSonosScanning = false;
+        _sonosScanError = "";
+        _discoveredSonosDevices.Clear();
+        _selectedSonosDevice = null;
+        _manualSonosIpAddress = "";
     }
 
     private void ResetWizard()
@@ -969,6 +1091,14 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         else if (_currentStep == WizardStep.RokuScan && _isRokuScanning)
         {
             await StopRokuScan();
+        }
+        else if (_currentStep == WizardStep.YamahaScan && _isYamahaScanning)
+        {
+            await StopYamahaScan();
+        }
+        else if (_currentStep == WizardStep.SonosScan && _isSonosScanning)
+        {
+            await StopSonosScan();
         }
 
         ResetWizard();
@@ -1046,6 +1176,161 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         }
     }
 
+    private async Task StartYamahaScan()
+    {
+        if (apiClient == null)
+        {
+            _yamahaScanError = "API client not available. Cannot scan for Yamaha devices.";
+            return;
+        }
+
+        try
+        {
+            _isYamahaScanning = true;
+            _yamahaScanError = "";
+            _discoveredYamahaDevices.Clear();
+            _selectedYamahaDevice = null;
+            _manualYamahaIpAddress = "";
+            StateHasChanged();
+
+            try
+            {
+                var request = new DiscoverYamahaDevicesRequest { TimeoutSeconds = 10 };
+                var response = await apiClient.Devices.DiscoverYamahaDevicesAsync(request);
+
+                if (response != null && response.Any())
+                {
+                    foreach (var device in response)
+                    {
+                        _discoveredYamahaDevices.Add(new YamahaDevice
+                        {
+                            Name = device.Name,
+                            IpAddress = device.IpAddress,
+                            Model = device.Model,
+                            Zone = device.Zone,
+                            Version = device.Version
+                        });
+                    }
+                }
+
+                _isYamahaScanning = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _yamahaScanError = $"Failed to scan for Yamaha devices: {ex.Message}";
+                _isYamahaScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _yamahaScanError = $"Failed to scan for Yamaha devices: {ex.Message}";
+            _isYamahaScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectYamahaDevice(YamahaDevice device)
+    {
+        _selectedYamahaDevice = device;
+        _manualYamahaIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualYamahaIp()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualYamahaIpAddress))
+        {
+            _selectedYamahaDevice = null; // Clear selected device when using manual IP
+        }
+    }
+
+    private async Task StopYamahaScan()
+    {
+        _isYamahaScanning = false;
+        _yamahaScanError = "";
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+
+    private async Task StartSonosScan()
+    {
+        if (apiClient == null)
+        {
+            _sonosScanError = "API client not available. Cannot scan for Sonos devices.";
+            return;
+        }
+
+        try
+        {
+            _isSonosScanning = true;
+            _sonosScanError = "";
+            _discoveredSonosDevices.Clear();
+            _selectedSonosDevice = null;
+            _manualSonosIpAddress = "";
+            StateHasChanged();
+
+            try
+            {
+                var request = new DiscoverSonosDevicesRequest { TimeoutSeconds = 10 };
+                var response = await apiClient.Devices.DiscoverSonosDevicesAsync(request);
+
+                if (response != null && response.Any())
+                {
+                    foreach (var device in response)
+                    {
+                        _discoveredSonosDevices.Add(new SonosDevice
+                        {
+                            Name = device.Name,
+                            IpAddress = device.IpAddress,
+                            Model = device.Model,
+                            Zone = device.Zone,
+                            RoomName = device.RoomName,
+                            SerialNumber = device.SerialNumber
+                        });
+                    }
+                }
+
+                _isSonosScanning = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                _sonosScanError = $"Failed to scan for Sonos devices: {ex.Message}";
+                _isSonosScanning = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            _sonosScanError = $"Failed to scan for Sonos devices: {ex.Message}";
+            _isSonosScanning = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SelectSonosDevice(SonosDevice device)
+    {
+        _selectedSonosDevice = device;
+        _manualSonosIpAddress = ""; // Clear manual IP when device is selected
+    }
+
+    private void UseManualSonosIp()
+    {
+        if (!string.IsNullOrWhiteSpace(_manualSonosIpAddress))
+        {
+            _selectedSonosDevice = null; // Clear selected device when using manual IP
+        }
+    }
+
+    private async Task StopSonosScan()
+    {
+        _isSonosScanning = false;
+        _sonosScanError = "";
+        await Task.CompletedTask;
+        StateHasChanged();
+    }
+
     protected override void OnParametersSet()
     {
         if (!IsVisible && _currentStep != WizardStep.DeviceType)
@@ -1076,6 +1361,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
             Contracts.DeviceType.PlayStation => DeviceType.PlayStation,
             Contracts.DeviceType.Xbox => DeviceType.Xbox,
             Contracts.DeviceType.Receiver => DeviceType.Receiver,
+            Contracts.DeviceType.Sonos => DeviceType.Sonos,
             Contracts.DeviceType.DvdPlayer => DeviceType.DvdPlayer,
             Contracts.DeviceType.BluRayPlayer => DeviceType.BluRayPlayer,
             _ => DeviceType.Television
@@ -1105,5 +1391,24 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
         public string? Model { get; set; }
         public string? SerialNumber { get; set; }
         public int Port { get; set; } = 8060;
+    }
+
+    private class YamahaDevice
+    {
+        public string Name { get; set; } = "";
+        public string IpAddress { get; set; } = "";
+        public string? Model { get; set; }
+        public string? Zone { get; set; }
+        public string? Version { get; set; }
+    }
+
+    private class SonosDevice
+    {
+        public string Name { get; set; } = "";
+        public string IpAddress { get; set; } = "";
+        public string? Model { get; set; }
+        public string? Zone { get; set; }
+        public string? RoomName { get; set; }
+        public string? SerialNumber { get; set; }
     }
 }

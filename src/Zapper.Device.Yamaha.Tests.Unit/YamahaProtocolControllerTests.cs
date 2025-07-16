@@ -1,20 +1,20 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.Yamaha.Tests.Unit;
 
 public class YamahaProtocolControllerTests
 {
-    private readonly Mock<IYamahaDeviceController> _yamahaControllerMock;
-    private readonly Mock<ILogger<YamahaProtocolController>> _loggerMock;
+    private readonly IYamahaDeviceController _yamahaControllerMock;
+    private readonly ILogger<YamahaProtocolController> _loggerMock;
     private readonly YamahaProtocolController _controller;
 
     public YamahaProtocolControllerTests()
     {
-        _yamahaControllerMock = new Mock<IYamahaDeviceController>();
-        _loggerMock = new Mock<ILogger<YamahaProtocolController>>();
-        _controller = new YamahaProtocolController(_yamahaControllerMock.Object, _loggerMock.Object);
+        _yamahaControllerMock = Substitute.For<IYamahaDeviceController>();
+        _loggerMock = Substitute.For<ILogger<YamahaProtocolController>>();
+        _controller = new YamahaProtocolController(_yamahaControllerMock, _loggerMock);
     }
 
     [Fact]
@@ -27,13 +27,13 @@ public class YamahaProtocolControllerTests
             Name = "Test Yamaha"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        _yamahaControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _yamahaControllerMock.SendCommand(device, command, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _yamahaControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        await _yamahaControllerMock.Received(1).SendCommand(device, command, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -50,13 +50,12 @@ public class YamahaProtocolControllerTests
         var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
-        _loggerMock.Verify(x => x.Log(
+        _loggerMock.Received(1).Log(
             LogLevel.Warning,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("not a Yamaha receiver")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("not a Yamaha receiver")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -68,13 +67,13 @@ public class YamahaProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Yamaha"
         };
-        _yamahaControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _yamahaControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _yamahaControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
+        await _yamahaControllerMock.Received(1).TestConnection(device, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -86,8 +85,8 @@ public class YamahaProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Yamaha"
         };
-        _yamahaControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _yamahaControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var status = await _controller.GetStatus(device);
 

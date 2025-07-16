@@ -76,4 +76,14 @@ public interface IDeviceClient
     /// Discover available Roku devices on the network
     /// </summary>
     Task<IEnumerable<RokuDeviceDto>> DiscoverRokuDevicesAsync(DiscoverRokuDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Yamaha devices on the network
+    /// </summary>
+    Task<IEnumerable<YamahaDeviceDto>> DiscoverYamahaDevicesAsync(DiscoverYamahaDevicesRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Discover available Sonos devices on the network
+    /// </summary>
+    Task<IEnumerable<SonosDeviceDto>> DiscoverSonosDevicesAsync(DiscoverSonosDevicesRequest request, CancellationToken cancellationToken = default);
 }

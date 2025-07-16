@@ -10,7 +10,7 @@ public partial class NetworkSettings(HttpClient httpClient, ISnackbar snackbar) 
     private int _discoveryPort = 1900;
     private int _apiTimeout = 5000;
     private bool _enableSsdp = true;
-    
+
     private ZapperSettings? _currentSettings;
     private bool _isLoading = true;
     private bool _isSaving;
@@ -52,12 +52,12 @@ public partial class NetworkSettings(HttpClient httpClient, ISnackbar snackbar) 
         try
         {
             _isSaving = true;
-            
+
             if (_currentSettings == null)
             {
                 _currentSettings = new ZapperSettings();
             }
-            
+
             _currentSettings.Network.DiscoveryPort = _discoveryPort;
             _currentSettings.Network.ApiTimeout = _apiTimeout;
             _currentSettings.Network.EnableSsdp = _enableSsdp;

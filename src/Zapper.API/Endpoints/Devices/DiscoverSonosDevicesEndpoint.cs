@@ -1,10 +1,10 @@
 using FastEndpoints;
-using Zapper.API.Models.Requests;
+using Zapper.Contracts.Devices;
 using Zapper.Device.Sonos;
 
 namespace Zapper.API.Endpoints.Devices;
 
-public class DiscoverSonosDevicesEndpoint(ISonosDiscovery sonosDiscovery) : Endpoint<DiscoverSonosDevicesRequest, IEnumerable<Zapper.Core.Models.Device>>
+public class DiscoverSonosDevicesEndpoint(ISonosDiscovery sonosDiscovery) : Endpoint<DiscoverSonosDevicesRequest, IEnumerable<SonosDeviceDto>>
 {
 
     public override void Configure()
@@ -22,6 +22,17 @@ public class DiscoverSonosDevicesEndpoint(ISonosDiscovery sonosDiscovery) : Endp
     {
         var timeout = TimeSpan.FromSeconds(Math.Max(1, Math.Min(req.TimeoutSeconds, 60)));
         var devices = await sonosDiscovery.DiscoverDevices(timeout, ct);
-        await SendOkAsync(devices, ct);
+
+        var dtos = devices.Select(d => new SonosDeviceDto
+        {
+            Name = d.Name,
+            IpAddress = d.IpAddress ?? "",
+            Model = d.Model,
+            Zone = null, // Will be populated from Sonos-specific data if available
+            RoomName = null, // Will be populated from Sonos-specific data if available
+            SerialNumber = null // Will be populated from Sonos-specific data if available
+        });
+
+        await SendOkAsync(dtos, ct);
     }
 }

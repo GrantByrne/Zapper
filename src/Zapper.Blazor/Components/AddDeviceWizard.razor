@@ -28,6 +28,14 @@
             {
                 <span>Add New Device - Scan for Roku Devices</span>
             }
+            else if (_currentStep == WizardStep.YamahaScan)
+            {
+                <span>Add New Device - Scan for Yamaha Receivers</span>
+            }
+            else if (_currentStep == WizardStep.SonosScan)
+            {
+                <span>Add New Device - Scan for Sonos Speakers</span>
+            }
             else if (_currentStep == WizardStep.IrCodeSelection)
             {
                 <span>Add New Device - Select IR Codes</span>
@@ -111,6 +119,30 @@
                             <MudText Typo="Typo.h6">Xbox</MudText>
                             <MudText Typo="Typo.body2" Class="mud-text-secondary">
                                 Xbox One, Series X/S
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="device-type-card" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectYamahaType())">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Speaker" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Yamaha</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                MusicCast Receivers
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="6" sm="4">
+                    <MudCard Class="device-type-card" 
+                             Style="cursor: pointer;" @onclick="@(() => SelectSonosType())">
+                        <MudCardContent Class="text-center pa-4">
+                            <MudIcon Icon="@Icons.Material.Filled.SpeakerGroup" Size="Size.Large" Class="mb-2" />
+                            <MudText Typo="Typo.h6">Sonos</MudText>
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Wireless Speakers
                             </MudText>
                         </MudCardContent>
                     </MudCard>
@@ -471,6 +503,158 @@
                 Use This IP Address
             </MudButton>
         }
+        else if (_currentStep == WizardStep.YamahaScan)
+        {
+            <MudText Class="mb-4">Scanning for available Yamaha receivers on your network...</MudText>
+            
+            @if (_isYamahaScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for Yamaha receivers...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your receiver is powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_yamahaScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_yamahaScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartYamahaScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredYamahaDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredYamahaDevices.Count() receiver(s). Select the receiver you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredYamahaDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedYamahaDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedYamahaDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectYamahaDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.Speaker" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    @if (!string.IsNullOrEmpty(device.Model))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.Model</MudText>
+                                    }
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartYamahaScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No Yamaha receivers found on your network. Make sure your receiver is powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartYamahaScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualYamahaIpAddress" Label="Receiver IP Address" 
+                         HelperText="Enter the IP address of your Yamaha receiver (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualYamahaIp" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualYamahaIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.SonosScan)
+        {
+            <MudText Class="mb-4">Scanning for available Sonos speakers on your network...</MudText>
+            
+            @if (_isSonosScanning)
+            {
+                <div class="d-flex justify-center align-center" style="min-height: 200px;">
+                    <div class="text-center">
+                        <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                        <MudText Typo="Typo.h6" Class="mb-2">Scanning for Sonos speakers...</MudText>
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                            Please make sure your speakers are powered on and connected to the network
+                        </MudText>
+                    </div>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(_sonosScanError))
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">
+                    @_sonosScanError
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartSonosScan" Class="mb-4">
+                    Retry Scan
+                </MudButton>
+            }
+            else if (_discoveredSonosDevices.Any())
+            {
+                <MudText Class="mb-3">Found @_discoveredSonosDevices.Count() speaker(s). Select the speaker you want to add:</MudText>
+                <div class="mb-4">
+                    @foreach (var device in _discoveredSonosDevices)
+                    {
+                        <MudButton FullWidth="true" 
+                                  Color="@(_selectedSonosDevice?.Name == device.Name ? Color.Primary : Color.Default)"
+                                  Variant="@(_selectedSonosDevice?.Name == device.Name ? Variant.Filled : Variant.Outlined)"
+                                  OnClick="@(() => SelectSonosDevice(device))"
+                                  Class="mb-2">
+                            <div class="d-flex align-center">
+                                <MudIcon Icon="@Icons.Material.Filled.SpeakerGroup" Class="mr-3" />
+                                <div class="text-left">
+                                    <MudText Typo="Typo.subtitle1">@device.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mud-text-secondary">@device.IpAddress</MudText>
+                                    @if (!string.IsNullOrEmpty(device.Model))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">@device.Model</MudText>
+                                    }
+                                    @if (!string.IsNullOrEmpty(device.RoomName))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">Room: @device.RoomName</MudText>
+                                    }
+                                </div>
+                            </div>
+                        </MudButton>
+                    }
+                </div>
+                <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="StartSonosScan" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+                    Rescan
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    No Sonos speakers found on your network. Make sure your speakers are powered on and connected to the same network.
+                </MudAlert>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="StartSonosScan" Class="mb-4">
+                    Start Scan
+                </MudButton>
+            }
+            
+            <MudDivider Class="my-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">Or enter IP address manually:</MudText>
+            <MudTextField @bind-Value="_manualSonosIpAddress" Label="Speaker IP Address" 
+                         HelperText="Enter the IP address of your Sonos speaker (e.g., 192.168.1.100)" 
+                         Class="mb-2" />
+            <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="UseManualSonosIp" 
+                      Disabled="@(string.IsNullOrWhiteSpace(_manualSonosIpAddress))" Class="mb-4">
+                Use This IP Address
+            </MudButton>
+        }
         else if (_currentStep == WizardStep.IrCodeSelection)
         {
             <MudText Class="mb-4">Select or search for IR codes for your device:</MudText>
@@ -493,6 +677,7 @@
                 <MudSelectItem Value="DeviceType.PlayStation">PlayStation</MudSelectItem>
                 <MudSelectItem Value="DeviceType.Xbox">Xbox</MudSelectItem>
                 <MudSelectItem Value="DeviceType.Receiver">Receiver</MudSelectItem>
+                <MudSelectItem Value="DeviceType.Sonos">Sonos Speaker</MudSelectItem>
                 <MudSelectItem Value="DeviceType.DvdPlayer">DVD Player</MudSelectItem>
                 <MudSelectItem Value="DeviceType.BluRayPlayer">Blu-ray Player</MudSelectItem>
             </MudSelect>
@@ -560,6 +745,22 @@
             <MudButton OnClick="PreviousStep">Back</MudButton>
             <MudButton OnClick="CancelWizard">Cancel</MudButton>
             <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedRokuDevice == null && string.IsNullOrWhiteSpace(_manualRokuIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.YamahaScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedYamahaDevice == null && string.IsNullOrWhiteSpace(_manualYamahaIpAddress))">
+                Next
+            </MudButton>
+        }
+        else if (_currentStep == WizardStep.SonosScan)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+            <MudButton OnClick="CancelWizard">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="NextStep" Disabled="@(_selectedSonosDevice == null && string.IsNullOrWhiteSpace(_manualSonosIpAddress))">
                 Next
             </MudButton>
         }

@@ -12,7 +12,7 @@ public partial class HardwareSettings(HttpClient httpClient, ISnackbar snackbar)
     private int _irReceiverPin = 19;
     private int _carrierFrequency = 38000;
     private double _dutyCycle = 0.33;
-    
+
     private ZapperSettings? _currentSettings;
     private bool _isLoading = true;
     private bool _isSaving;
@@ -56,12 +56,12 @@ public partial class HardwareSettings(HttpClient httpClient, ISnackbar snackbar)
         try
         {
             _isSaving = true;
-            
+
             if (_currentSettings == null)
             {
                 _currentSettings = new ZapperSettings();
             }
-            
+
             _currentSettings.Hardware.EnableGpio = _enableGpio;
             _currentSettings.Hardware.Infrared.TransmitterGpioPin = _irTransmitterPin;
             _currentSettings.Hardware.Infrared.ReceiverGpioPin = _irReceiverPin;

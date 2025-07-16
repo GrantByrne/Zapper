@@ -10,7 +10,7 @@ public partial class DeviceSettings(HttpClient httpClient, ISnackbar snackbar) :
     private int _deviceTimeout = 30;
     private int _retryAttempts = 3;
     private int _irPowerLevel = 5;
-    
+
     private ZapperSettings? _currentSettings;
     private bool _isLoading = true;
     private bool _isSaving;
@@ -52,12 +52,12 @@ public partial class DeviceSettings(HttpClient httpClient, ISnackbar snackbar) :
         try
         {
             _isSaving = true;
-            
+
             if (_currentSettings == null)
             {
                 _currentSettings = new ZapperSettings();
             }
-            
+
             _currentSettings.Device.DeviceTimeout = _deviceTimeout;
             _currentSettings.Device.RetryAttempts = _retryAttempts;
             _currentSettings.Device.IrPowerLevel = _irPowerLevel;

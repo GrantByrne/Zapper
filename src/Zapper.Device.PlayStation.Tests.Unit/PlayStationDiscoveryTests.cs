@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 
 namespace Zapper.Device.PlayStation.Tests.Unit;
 
 public class PlayStationDiscoveryTests
 {
-    private readonly Mock<ILogger<PlayStationDiscovery>> _loggerMock;
+    private readonly ILogger<PlayStationDiscovery> _logger;
     private readonly PlayStationDiscovery _discovery;
 
     public PlayStationDiscoveryTests()
     {
-        _loggerMock = new Mock<ILogger<PlayStationDiscovery>>();
-        _discovery = new PlayStationDiscovery(_loggerMock.Object);
+        _logger = Substitute.For<ILogger<PlayStationDiscovery>>();
+        _discovery = new PlayStationDiscovery(_logger);
     }
 
     [Fact(Timeout = 10000)]

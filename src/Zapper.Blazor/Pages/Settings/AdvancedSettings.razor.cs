@@ -9,7 +9,7 @@ public partial class AdvancedSettings(HttpClient httpClient, ISnackbar snackbar)
 {
     private bool _enableDebugLogging;
     private bool _enableTelemetry = true;
-    
+
     private ZapperSettings? _currentSettings;
     private bool _isLoading = true;
     private bool _isSaving;
@@ -50,12 +50,12 @@ public partial class AdvancedSettings(HttpClient httpClient, ISnackbar snackbar)
         try
         {
             _isSaving = true;
-            
+
             if (_currentSettings == null)
             {
                 _currentSettings = new ZapperSettings();
             }
-            
+
             _currentSettings.Advanced.EnableDebugLogging = _enableDebugLogging;
             _currentSettings.Advanced.EnableTelemetry = _enableTelemetry;
 

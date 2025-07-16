@@ -1,18 +1,18 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.PlayStation.Tests.Unit;
 
 public class PlayStationDeviceControllerTests
 {
-    private readonly Mock<ILogger<PlayStationDeviceController>> _loggerMock;
+    private readonly ILogger<PlayStationDeviceController> _logger;
     private readonly PlayStationDeviceController _controller;
 
     public PlayStationDeviceControllerTests()
     {
-        _loggerMock = new Mock<ILogger<PlayStationDeviceController>>();
-        _controller = new PlayStationDeviceController(_loggerMock.Object);
+        _logger = Substitute.For<ILogger<PlayStationDeviceController>>();
+        _controller = new PlayStationDeviceController(_logger);
     }
 
     [Fact(Timeout = 5000)]
@@ -33,13 +33,12 @@ public class PlayStationDeviceControllerTests
         var result = await _controller.Connect(device);
 
         Assert.False(result);
-        _loggerMock.Verify(x => x.Log(
+        _logger.Received(1).Log(
             LogLevel.Warning,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("no IP address")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("no IP address")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact(Timeout = 5000)]

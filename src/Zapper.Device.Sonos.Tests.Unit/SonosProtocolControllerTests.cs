@@ -1,20 +1,20 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.Sonos.Tests.Unit;
 
 public class SonosProtocolControllerTests
 {
-    private readonly Mock<ISonosDeviceController> _sonosControllerMock;
-    private readonly Mock<ILogger<SonosProtocolController>> _loggerMock;
+    private readonly ISonosDeviceController _sonosControllerMock;
+    private readonly ILogger<SonosProtocolController> _loggerMock;
     private readonly SonosProtocolController _controller;
 
     public SonosProtocolControllerTests()
     {
-        _sonosControllerMock = new Mock<ISonosDeviceController>();
-        _loggerMock = new Mock<ILogger<SonosProtocolController>>();
-        _controller = new SonosProtocolController(_sonosControllerMock.Object, _loggerMock.Object);
+        _sonosControllerMock = Substitute.For<ISonosDeviceController>();
+        _loggerMock = Substitute.For<ILogger<SonosProtocolController>>();
+        _controller = new SonosProtocolController(_sonosControllerMock, _loggerMock);
     }
 
     [Fact]
@@ -27,13 +27,13 @@ public class SonosProtocolControllerTests
             Name = "Test Sonos"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        _sonosControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _sonosControllerMock.SendCommand(device, command, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _sonosControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        await _sonosControllerMock.Received(1).SendCommand(device, command, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -50,13 +50,12 @@ public class SonosProtocolControllerTests
         var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
-        _loggerMock.Verify(x => x.Log(
+        _loggerMock.Received(1).Log(
             LogLevel.Warning,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("not a Sonos device")),
-            It.IsAny<Exception>(),
-            It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+            Arg.Any<EventId>(),
+            Arg.Is<object>(v => v.ToString()!.Contains("not a Sonos device")),
+            Arg.Any<Exception>(),
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
@@ -68,13 +67,13 @@ public class SonosProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Sonos"
         };
-        _sonosControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _sonosControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _sonosControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
+        await _sonosControllerMock.Received(1).TestConnection(device, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -86,8 +85,8 @@ public class SonosProtocolControllerTests
             ConnectionType = ConnectionType.Network,
             Name = "Test Sonos"
         };
-        _sonosControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _sonosControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var status = await _controller.GetStatus(device);
 

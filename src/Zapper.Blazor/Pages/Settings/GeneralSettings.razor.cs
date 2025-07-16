@@ -11,7 +11,7 @@ public partial class GeneralSettings(HttpClient httpClient, ISnackbar snackbar) 
     private bool _enableHapticFeedback = true;
     private bool _enableAutoDiscovery = true;
     private string _defaultActivity = "watch-tv";
-    
+
     private ZapperSettings? _currentSettings;
     private bool _isLoading = true;
     private bool _isSaving;
@@ -54,12 +54,12 @@ public partial class GeneralSettings(HttpClient httpClient, ISnackbar snackbar) 
         try
         {
             _isSaving = true;
-            
+
             if (_currentSettings == null)
             {
                 _currentSettings = new ZapperSettings();
             }
-            
+
             _currentSettings.General.EnableNotifications = _enableNotifications;
             _currentSettings.General.EnableHapticFeedback = _enableHapticFeedback;
             _currentSettings.General.EnableAutoDiscovery = _enableAutoDiscovery;

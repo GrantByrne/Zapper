@@ -84,4 +84,14 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
     {
         return await deviceApi.DiscoverRokuDevicesAsync(request, cancellationToken);
     }
+
+    public async Task<IEnumerable<YamahaDeviceDto>> DiscoverYamahaDevicesAsync(DiscoverYamahaDevicesRequest request, CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.DiscoverYamahaDevicesAsync(request, cancellationToken);
+    }
+
+    public async Task<IEnumerable<SonosDeviceDto>> DiscoverSonosDevicesAsync(DiscoverSonosDevicesRequest request, CancellationToken cancellationToken = default)
+    {
+        return await deviceApi.DiscoverSonosDevicesAsync(request, cancellationToken);
+    }
 }

@@ -64,5 +64,10 @@ public enum DeviceType
     /// <summary>
     /// An Xbox gaming console that supports gaming, media playback, and online services.
     /// </summary>
-    Xbox
+    Xbox,
+
+    /// <summary>
+    /// A Sonos wireless speaker system that supports multi-room audio streaming and playback control.
+    /// </summary>
+    Sonos
 }

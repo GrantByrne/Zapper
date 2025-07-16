@@ -1,19 +1,19 @@
 using Microsoft.Extensions.Logging;
-using Moq;
+using NSubstitute;
 
 namespace Zapper.Device.Xbox.Tests.Unit;
 
 public class XboxProtocolControllerTests
 {
-    private readonly Mock<IXboxDeviceController> _xboxControllerMock;
-    private readonly Mock<ILogger<XboxProtocolController>> _loggerMock;
+    private readonly IXboxDeviceController _xboxControllerMock;
+    private readonly ILogger<XboxProtocolController> _loggerMock;
     private readonly XboxProtocolController _controller;
 
     public XboxProtocolControllerTests()
     {
-        _xboxControllerMock = new Mock<IXboxDeviceController>();
-        _loggerMock = new Mock<ILogger<XboxProtocolController>>();
-        _controller = new XboxProtocolController(_xboxControllerMock.Object, _loggerMock.Object);
+        _xboxControllerMock = Substitute.For<IXboxDeviceController>();
+        _loggerMock = Substitute.For<ILogger<XboxProtocolController>>();
+        _controller = new XboxProtocolController(_xboxControllerMock, _loggerMock);
     }
 
     [Fact]
@@ -51,13 +51,13 @@ public class XboxProtocolControllerTests
         };
         var command = new Zapper.Core.Models.DeviceCommand { Type = Core.Models.CommandType.Ok };
 
-        _xboxControllerMock.Setup(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _xboxControllerMock.SendCommand(device, command, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.SendCommand(device, command);
 
         Assert.True(result);
-        _xboxControllerMock.Verify(x => x.SendCommand(device, command, It.IsAny<CancellationToken>()), Times.Once);
+        await _xboxControllerMock.Received(1).SendCommand(device, command, Arg.Any<CancellationToken>());
     }
 
     [Fact(Timeout = 5000)]
@@ -73,7 +73,7 @@ public class XboxProtocolControllerTests
         var result = await _controller.SendCommand(device, command);
 
         Assert.False(result);
-        _xboxControllerMock.Verify(x => x.SendCommand(It.IsAny<Zapper.Core.Models.Device>(), It.IsAny<Zapper.Core.Models.DeviceCommand>(), It.IsAny<CancellationToken>()), Times.Never);
+        await _xboxControllerMock.DidNotReceive().SendCommand(Arg.Any<Zapper.Core.Models.Device>(), Arg.Any<Zapper.Core.Models.DeviceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact(Timeout = 5000)]
@@ -86,13 +86,13 @@ public class XboxProtocolControllerTests
             IpAddress = "192.168.1.100"
         };
 
-        _xboxControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _xboxControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.TestConnection(device);
 
         Assert.True(result);
-        _xboxControllerMock.Verify(x => x.TestConnection(device, It.IsAny<CancellationToken>()), Times.Once);
+        await _xboxControllerMock.Received(1).TestConnection(device, Arg.Any<CancellationToken>());
     }
 
     [Fact(Timeout = 5000)]
@@ -105,8 +105,8 @@ public class XboxProtocolControllerTests
             IpAddress = "192.168.1.100"
         };
 
-        _xboxControllerMock.Setup(x => x.TestConnection(device, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        _xboxControllerMock.TestConnection(device, Arg.Any<CancellationToken>())
+            .Returns(true);
 
         var result = await _controller.GetStatus(device);
 
