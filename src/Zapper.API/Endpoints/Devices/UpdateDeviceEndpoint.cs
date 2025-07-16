@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 using Zapper.Core.Models;
 using Zapper.Services;
 

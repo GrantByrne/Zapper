@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.Contracts.UsbRemotes;
+using Zapper.Client.UsbRemotes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.UsbRemotes;

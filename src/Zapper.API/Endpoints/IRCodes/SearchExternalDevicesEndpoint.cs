@@ -1,5 +1,5 @@
 using FastEndpoints;
-using Zapper.Contracts.IRCodes;
+using Zapper.Client.IRCodes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.IRCodes;
@@ -39,7 +39,7 @@ public class SearchExternalDevicesEndpoint(IExternalIrCodeService externalIrCode
 
         var response = new SearchExternalDevicesResponse
         {
-            Devices = devices.Select(d => new Zapper.Contracts.IRCodes.ExternalDeviceInfo
+            Devices = devices.Select(d => new Zapper.Client.IRCodes.ExternalDeviceInfo
             {
                 Manufacturer = d.Manufacturer,
                 DeviceType = d.DeviceType,

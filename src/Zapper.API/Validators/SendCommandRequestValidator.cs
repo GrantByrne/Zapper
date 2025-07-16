@@ -1,6 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 
 namespace Zapper.API.Validators;
 

@@ -1,6 +1,6 @@
 // using Zapper.Client; // No need to reference own namespace
-using Zapper.Contracts;
-using Zapper.Contracts.Activities;
+using Zapper.Client;
+using Zapper.Client.Activities;
 
 namespace Zapper.Client;
 

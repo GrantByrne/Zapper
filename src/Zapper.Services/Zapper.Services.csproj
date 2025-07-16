@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
-    <ProjectReference Include="..\Zapper.Contracts\Zapper.Contracts.csproj" />
+    <ProjectReference Include="..\Zapper.Client\Zapper.Client.csproj" />
     <ProjectReference Include="..\Zapper.Data\Zapper.Data.csproj" />
     <ProjectReference Include="..\Zapper.Device.Infrared\Zapper.Device.Infrared.csproj" />
     <ProjectReference Include="..\Zapper.Device.Network\Zapper.Device.Network.csproj" />

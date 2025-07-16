@@ -1,5 +1,5 @@
 // using Zapper.Client; // No need to reference own namespace
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 
 namespace Zapper.Client;
 
@@ -19,7 +19,7 @@ public class DeviceClient(IDeviceApi deviceApi) : IDeviceClient
         {
             return await deviceApi.GetDeviceAsync(id, cancellationToken);
         }
-        catch (Refit.ApiException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        catch (Refit.ApiException ex) when (ex.StatusCode == global::System.Net.HttpStatusCode.NotFound)
         {
             return null;
         }

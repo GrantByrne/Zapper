@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zapper.Contracts\Zapper.Contracts.csproj" />
     <ProjectReference Include="..\Zapper.Core\Zapper.Core.csproj" />
   </ItemGroup>
 

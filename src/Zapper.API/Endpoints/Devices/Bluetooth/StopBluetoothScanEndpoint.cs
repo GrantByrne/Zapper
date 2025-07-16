@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.SignalR;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 using Zapper.Device.Bluetooth;
 using Zapper.Services;
 

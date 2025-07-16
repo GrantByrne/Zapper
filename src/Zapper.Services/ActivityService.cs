@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Zapper.Data;
 using Zapper.Core.Models;
-using Zapper.Contracts;
-using Zapper.Contracts.Activities;
+using Zapper.Client;
+using Zapper.Client.Activities;
 
 namespace Zapper.Services;
 

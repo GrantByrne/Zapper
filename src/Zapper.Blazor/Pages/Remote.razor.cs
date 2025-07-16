@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Zapper.Client;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 using Zapper.Core.Models;
 using CommandType = Zapper.Core.Models.CommandType;
 

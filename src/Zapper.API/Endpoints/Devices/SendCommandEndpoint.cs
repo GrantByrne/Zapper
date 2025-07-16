@@ -1,6 +1,6 @@
 using FastEndpoints;
 using Zapper.Services;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 
 namespace Zapper.API.Endpoints.Devices;
 
@@ -32,7 +32,7 @@ public class SendCommandEndpoint(IDeviceService deviceService) : Endpoint<SendCo
 
     public override async Task HandleAsync(SendCommandApiRequest req, CancellationToken ct)
     {
-        var sendCommandRequest = new Zapper.Contracts.Devices.SendCommandRequest
+        var sendCommandRequest = new SendCommandRequest
         {
             Command = req.Command,
             MouseDeltaX = req.MouseDeltaX,

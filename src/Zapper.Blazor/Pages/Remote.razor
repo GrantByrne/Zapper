@@ -88,7 +88,7 @@
                 
                 <MudTabPanel Text="All Commands" Icon="@Icons.Material.Filled.Apps">
                     <div class="all-commands-grid">
-                        @foreach (var commandType in Enum.GetValues<Zapper.Core.Models.CommandType>())
+                        @foreach (var commandType in Enum.GetValues<Core.Models.CommandType>())
                         {
                             @if (IsCommandAvailableForDevice(commandType))
                             {

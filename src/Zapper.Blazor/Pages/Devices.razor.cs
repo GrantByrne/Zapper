@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Zapper.Client;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 using Zapper.Core.Models;
 using MudBlazor;
 

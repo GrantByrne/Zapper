@@ -1,4 +1,4 @@
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 
 namespace Zapper.Services;
 

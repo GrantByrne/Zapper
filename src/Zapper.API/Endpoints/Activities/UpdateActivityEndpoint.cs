@@ -1,6 +1,6 @@
 using FastEndpoints;
-using Zapper.Contracts;
-using Zapper.Contracts.Activities;
+using Zapper.Client;
+using Zapper.Client.Activities;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.Activities;

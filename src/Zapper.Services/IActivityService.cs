@@ -1,6 +1,6 @@
 using Zapper.Core.Models;
-using Zapper.Contracts;
-using Zapper.Contracts.Activities;
+using Zapper.Client;
+using Zapper.Client.Activities;
 
 namespace Zapper.Services;
 

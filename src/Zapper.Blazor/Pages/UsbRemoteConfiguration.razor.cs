@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using System.Timers;
 using Zapper.Client;
 using Zapper.Core.Models;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 
 namespace Zapper.Blazor.Pages;
 

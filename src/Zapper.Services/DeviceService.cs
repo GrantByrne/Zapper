@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Zapper.Client.Devices;
 using Zapper.Data;
 using Zapper.Device.Infrared;
 using Zapper.Device.Network;
@@ -188,12 +189,12 @@ public class DeviceService(
         {
             logger.LogError(ex, "Failed to send command {CommandName} to device {DeviceName}", commandName, device.Name);
             device.IsOnline = false;
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
             return false;
         }
     }
 
-    public async Task<bool> SendCommand(int deviceId, Zapper.Contracts.Devices.SendCommandRequest request, CancellationToken cancellationToken = default)
+    public async Task<bool> SendCommand(int deviceId, SendCommandRequest request, CancellationToken cancellationToken = default)
     {
         var device = await context.Devices
             .Include(d => d.Commands)
@@ -266,7 +267,7 @@ public class DeviceService(
         }
     }
 
-    private DeviceCommand CreateVirtualCommand(Zapper.Contracts.Devices.SendCommandRequest request)
+    private DeviceCommand CreateVirtualCommand(SendCommandRequest request)
     {
         return new DeviceCommand
         {

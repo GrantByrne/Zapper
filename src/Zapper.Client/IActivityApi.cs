@@ -1,6 +1,6 @@
 using Refit;
-using Zapper.Contracts;
-using Zapper.Contracts.Activities;
+using Zapper.Client;
+using Zapper.Client.Activities;
 
 namespace Zapper.Client;
 

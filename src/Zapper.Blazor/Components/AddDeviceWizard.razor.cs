@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using MudBlazor;
 using Refit;
 using Zapper.Client;
-using Zapper.Contracts.Devices;
+using Zapper.Client.Devices;
 using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Components;
@@ -704,7 +704,7 @@ public partial class AddDeviceWizard(IZapperApiClient? apiClient, IJSRuntime jsR
                 _isPlayStationScanning = false;
                 StateHasChanged();
             }
-            catch (Refit.ApiException apiEx)
+            catch (ApiException apiEx)
             {
                 _playStationScanError = $"API Error: {apiEx.StatusCode} - {apiEx.Message}. Content: {apiEx.Content}";
                 _isPlayStationScanning = false;
