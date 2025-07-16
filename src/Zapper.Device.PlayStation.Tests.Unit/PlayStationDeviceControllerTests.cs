@@ -18,7 +18,7 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task Connect_WithValidDevice_ReturnsTrue()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
 
         var result = await _controller.Connect(device);
 
@@ -44,7 +44,7 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task Disconnect_WithValidDevice_ReturnsTrue()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
         await _controller.Connect(device);
 
         var result = await _controller.Disconnect(device);
@@ -57,14 +57,13 @@ public class PlayStationDeviceControllerTests
     {
         var device = new DeviceModel
         {
-            IpAddress = "192.168.1.100",
+            IpAddress = "127.0.0.1", // Use localhost to fail fast
             Name = "Test PlayStation"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
         
-        // Use a cancellation token that immediately cancels to avoid network calls
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        // Use a cancellation token with very short timeout
+        var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
         var result = await _controller.SendCommand(device, command, cts.Token);
 
@@ -74,7 +73,7 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task SendCommand_DirectionalCommand_HandlesAllDirections()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
         var directions = new[]
         {
             CommandType.DirectionalUp,
@@ -83,9 +82,8 @@ public class PlayStationDeviceControllerTests
             CommandType.DirectionalRight
         };
         
-        // Use a cancellation token that immediately cancels to avoid network calls
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        // Use a cancellation token with very short timeout
+        var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
         foreach (var direction in directions)
         {
@@ -109,7 +107,7 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task TestConnection_WithValidIpAddress_ReturnsResult()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
 
         var result = await _controller.TestConnection(device);
 
@@ -119,7 +117,7 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task PowerOn_WithValidDevice_SendsCommand()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
 
         var result = await _controller.PowerOn(device);
 
@@ -129,11 +127,10 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task Navigate_WithValidDirection_SendsCommand()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
         
-        // Use a cancellation token that immediately cancels to avoid network calls
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        // Use a cancellation token with very short timeout
+        var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
         var result = await _controller.Navigate(device, "up", cts.Token);
 
@@ -143,16 +140,15 @@ public class PlayStationDeviceControllerTests
     [Fact(Timeout = 5000)]
     public async Task SendCommand_CustomCommand_HandlesCustomPayload()
     {
-        var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
+        var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
         var command = new DeviceCommand
         {
             Type = CommandType.Custom,
             NetworkPayload = "cross"
         };
         
-        // Use a cancellation token that immediately cancels to avoid network calls
-        var cts = new CancellationTokenSource();
-        cts.Cancel();
+        // Use a cancellation token with very short timeout
+        var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
         var result = await _controller.SendCommand(device, command, cts.Token);
 
