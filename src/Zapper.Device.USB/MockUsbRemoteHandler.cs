@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Zapper.Core.Models;
 
 namespace Zapper.Device.USB;
 
@@ -8,6 +9,13 @@ public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRe
     private readonly Random _random = new();
 
     public event EventHandler<RemoteButtonEventArgs>? ButtonPressed;
+#pragma warning disable CS0067 // The event is never used
+    public event EventHandler<RemoteButtonEventArgs>? ButtonDown;
+    public event EventHandler<RemoteButtonEventArgs>? ButtonUp;
+    public event EventHandler<RemoteButtonEventArgs>? ButtonLongPress;
+    public event EventHandler<string>? RemoteConnected;
+    public event EventHandler<string>? RemoteDisconnected;
+#pragma warning restore CS0067
 
     public bool IsListening => _isListening;
 
@@ -45,9 +53,19 @@ public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRe
         if (!_isListening)
             return;
 
-        var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
+        var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode, ButtonEventType.KeyPress);
         logger.LogDebug("Simulating button press: {DeviceId} - {ButtonName}", deviceId, buttonName);
         ButtonPressed?.Invoke(this, eventArgs);
+    }
+
+    public void ConfigureLongPressTimeout(string deviceId, int timeoutMs)
+    {
+        logger.LogInformation("Mock: Configured long press timeout for {DeviceId} to {Timeout}ms", deviceId, timeoutMs);
+    }
+
+    public void ConfigureButtonInterception(string deviceId, bool enableInterception)
+    {
+        logger.LogInformation("Mock: Configured button interception for {DeviceId} to {Enabled}", deviceId, enableInterception);
     }
 
     private async Task SimulateButtonPressesAsync(CancellationToken cancellationToken)

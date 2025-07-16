@@ -1,0 +1,132 @@
+@page "/usb-remotes"
+
+<PageTitle>USB Remotes - Zapper</PageTitle>
+
+<div style="margin-top: 24px;">
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+}
+
+@if (_remotes.Any())
+{
+    <div class="d-flex justify-space-between mb-4">
+        <MudText Typo="Typo.h5">USB Remotes</MudText>
+        <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="LoadRemotes">
+            Refresh
+        </MudButton>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-center align-center" style="min-height: 400px;">
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+            <MudText>Loading USB remotes...</MudText>
+        </div>
+    </div>
+}
+else if (!_remotes.Any())
+{
+    <MudPaper Class="pa-8 text-center">
+        <MudIcon Icon="@Icons.Material.Filled.SettingsRemote" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
+        <MudText Typo="Typo.h5" Class="mb-2">No USB remotes detected</MudText>
+        <MudText Class="mb-4">Connect a USB remote to get started</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            USB remotes will be automatically detected when plugged in
+        </MudText>
+    </MudPaper>
+}
+else
+{
+    <MudGrid>
+        @foreach (var remote in _remotes)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard>
+                    <MudCardContent>
+                        <div class="d-flex align-center mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.SettingsRemote" Class="mr-2" Color="@(remote.IsActive ? Color.Success : Color.Default)" />
+                            <MudText Typo="Typo.h6">@remote.Name</MudText>
+                        </div>
+                        
+                        <MudText Typo="Typo.body2" Class="mud-text-secondary mb-2">
+                            Vendor: @remote.VendorId.ToString("X4") | Product: @remote.ProductId.ToString("X4")
+                        </MudText>
+                        
+                        @if (!string.IsNullOrEmpty(remote.SerialNumber))
+                        {
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary mb-2">
+                                Serial: @remote.SerialNumber
+                            </MudText>
+                        }
+                        
+                        <MudChip T="string" Color="@(remote.IsActive ? Color.Success : Color.Default)" Size="Size.Small">
+                            @(remote.IsActive ? "Active" : "Inactive")
+                        </MudChip>
+                        
+                        @if (remote.InterceptSystemButtons)
+                        {
+                            <MudChip T="string" Color="Color.Warning" Size="Size.Small" Class="ml-1">
+                                System Intercept
+                            </MudChip>
+                        }
+                        
+                        <MudText Typo="Typo.caption" Class="mt-2 mud-text-secondary">
+                            Last seen: @remote.LastSeenAt.ToLocalTime().ToString("g")
+                        </MudText>
+                    </MudCardContent>
+                    
+                    <MudCardActions>
+                        <MudButton StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" OnClick="@(() => ConfigureRemote(remote))">
+                            Configure
+                        </MudButton>
+                        <MudButton StartIcon="@Icons.Material.Filled.Settings" OnClick="@(() => EditRemoteSettings(remote))">
+                            Settings
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+</div>
+
+<MudDialog @bind-Visible="_showSettingsDialog" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Settings" Class="mr-2" />
+            Remote Settings
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_selectedRemote != null)
+        {
+            <MudForm @ref="_settingsForm">
+                <MudTextField @bind-Value="_selectedRemote.Name" Label="Remote Name" Required="true" Class="mb-4" />
+                
+                <MudSwitch @bind-Value="_selectedRemote.IsActive" Label="Active" Color="Color.Success" Class="mb-4" />
+                
+                <MudSwitch @bind-Value="_selectedRemote.InterceptSystemButtons" Label="Intercept System Buttons" Color="Color.Warning" Class="mb-4" />
+                <MudText Typo="Typo.caption" Class="mb-4">
+                    When enabled, system buttons like Power will be intercepted and won't affect the Pi
+                </MudText>
+                
+                <MudNumericField @bind-Value="_selectedRemote.LongPressTimeoutMs" 
+                    Label="Long Press Timeout (ms)" 
+                    Min="100" 
+                    Max="2000" 
+                    Step="100" 
+                    Class="mb-4" />
+                <MudText Typo="Typo.caption">
+                    Time to hold a button before it's considered a long press
+                </MudText>
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showSettingsDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveRemoteSettings">Save</MudButton>
+    </DialogActions>
+</MudDialog>

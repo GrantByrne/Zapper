@@ -1,0 +1,217 @@
+@page "/usb-remotes/{RemoteId:int}/configure"
+@using Zapper.Core.Models
+
+<PageTitle>Configure USB Remote - Zapper</PageTitle>
+
+<div style="margin-top: 24px;">
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+}
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-center align-center" style="min-height: 400px;">
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+            <MudText>Loading remote configuration...</MudText>
+        </div>
+    </div>
+}
+else if (_remote != null)
+{
+    <div class="mb-4">
+        <MudBreadcrumbs Items="_breadcrumbs" />
+    </div>
+    
+    <MudText Typo="Typo.h5" Class="mb-4">Configure @_remote.Name</MudText>
+    
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="Button Mappings" Icon="@Icons.Material.Filled.TouchApp">
+            <div class="d-flex justify-space-between mb-4">
+                <MudText Typo="Typo.h6">Button Mappings</MudText>
+                <div>
+                    <MudButton StartIcon="@Icons.Material.Filled.School" Color="Color.Primary" OnClick="StartLearning" Class="mr-2">
+                        Learn Button
+                    </MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="@(() => _showAddMappingDialog = true)">
+                        Add Mapping
+                    </MudButton>
+                </div>
+            </div>
+            
+            @if (!_buttons.Any())
+            {
+                <MudPaper Class="pa-6 text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.TouchApp" Style="font-size: 3rem;" Class="mb-4 mud-text-secondary" />
+                    <MudText Typo="Typo.h6" Class="mb-2">No buttons configured</MudText>
+                    <MudText Class="mb-4">Use the Learn Button feature to discover buttons on your remote</MudText>
+                </MudPaper>
+            }
+            else
+            {
+                <MudTable Items="_buttons" Dense="true" Hover="true" Bordered="true">
+                    <HeaderContent>
+                        <MudTh>Button</MudTh>
+                        <MudTh>Key Code</MudTh>
+                        <MudTh>Mappings</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Button">@context.ButtonName</MudTd>
+                        <MudTd DataLabel="Key Code">0x@context.KeyCode.ToString("X2")</MudTd>
+                        <MudTd DataLabel="Mappings">
+                            @if (context.Mappings.Any())
+                            {
+                                <MudChipSet T="string">
+                                    @foreach (var mapping in context.Mappings)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">
+                                            @GetMappingDisplay(mapping)
+                                        </MudChip>
+                                    }
+                                </MudChipSet>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">No mappings</MudText>
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Actions">
+                            <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" 
+                                OnClick="@(() => AddMappingForButton(context))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" 
+                                OnClick="@(() => EditButton(context))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" 
+                                OnClick="@(() => DeleteButton(context))" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Test Remote" Icon="@Icons.Material.Filled.PlayArrow">
+            <MudText Typo="Typo.h6" Class="mb-4">Test Remote Buttons</MudText>
+            <MudText Class="mb-4">Press buttons on your remote to see them in action</MudText>
+            
+            <MudPaper Class="pa-4 mb-4" Elevation="2" Style="min-height: 200px; max-height: 400px; overflow-y: auto;">
+                @if (!_buttonEvents.Any())
+                {
+                    <MudText Align="Align.Center" Color="Color.Secondary">
+                        Press a button on your remote...
+                    </MudText>
+                }
+                else
+                {
+                    @foreach (var evt in _buttonEvents.OrderByDescending(e => e.Timestamp))
+                    {
+                        <MudCard Class="mb-2">
+                            <MudCardContent Class="pa-3">
+                                <div class="d-flex justify-space-between align-center">
+                                    <div>
+                                        <MudText Typo="Typo.subtitle1">@evt.ButtonName</MudText>
+                                        <MudText Typo="Typo.caption">@evt.EventType - @evt.Timestamp.ToLocalTime().ToString("HH:mm:ss.fff")</MudText>
+                                    </div>
+                                    <MudChip T="string" Size="Size.Small" Color="@GetEventColor(evt.EventType)">
+                                        @evt.EventType
+                                    </MudChip>
+                                </div>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+                }
+            </MudPaper>
+            
+            <MudButton StartIcon="@Icons.Material.Filled.Clear" OnClick="ClearTestEvents">
+                Clear Events
+            </MudButton>
+        </MudTabPanel>
+    </MudTabs>
+}
+</div>
+
+<MudDialog @bind-Visible="_showLearningDialog" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.School" Class="mr-2" />
+            Learn Button
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div class="text-center">
+            @if (_isLearning)
+            {
+                <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+                <MudText Typo="Typo.h6" Class="mb-2">Press a button on your remote...</MudText>
+                <MudText>Waiting for button press (@_learningTimeLeft seconds remaining)</MudText>
+            }
+            else if (_learnedButton != null)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Style="font-size: 3rem;" Class="mb-4" />
+                <MudText Typo="Typo.h6" Class="mb-2">Button Learned!</MudText>
+                <MudText>Button: @_learnedButton.ButtonName</MudText>
+                <MudText>Key Code: 0x@_learnedButton.KeyCode.ToString("X2")</MudText>
+            }
+            else
+            {
+                <MudText>Ready to learn a new button</MudText>
+            }
+        </div>
+    </DialogContent>
+    <DialogActions>
+        @if (_isLearning)
+        {
+            <MudButton OnClick="CancelLearning">Cancel</MudButton>
+        }
+        else
+        {
+            <MudButton OnClick="@(() => _showLearningDialog = false)">Close</MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+<MudDialog @bind-Visible="_showAddMappingDialog" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" />
+            Add Button Mapping
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="_mappingForm">
+            <MudSelect @bind-Value="_newMapping.ButtonId" Label="Button" Required="true" Class="mb-4">
+                @foreach (var button in _buttons)
+                {
+                    <MudSelectItem Value="button.Id">@button.ButtonName (0x@button.KeyCode.ToString("X2"))</MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudSelect T="int" Value="_newMapping.DeviceId" Label="Device" Required="true" Class="mb-4" 
+                ValueChanged="@(async (int id) => { _newMapping.DeviceId = id; await LoadDeviceCommands(id); })">
+                @foreach (var device in _devices)
+                {
+                    <MudSelectItem Value="device.Id">@device.Name</MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudSelect @bind-Value="_newMapping.DeviceCommandId" Label="Command" Required="true" Class="mb-4" 
+                Disabled="@(_deviceCommands.Count == 0)">
+                @foreach (var command in _deviceCommands)
+                {
+                    <MudSelectItem Value="command.Id">@command.Name</MudSelectItem>
+                }
+            </MudSelect>
+            
+            <MudSelect @bind-Value="_newMapping.EventType" Label="Event Type" Required="true">
+                <MudSelectItem Value="ButtonEventType.KeyPress">Key Press</MudSelectItem>
+                <MudSelectItem Value="ButtonEventType.KeyDown">Key Down</MudSelectItem>
+                <MudSelectItem Value="ButtonEventType.KeyUp">Key Up</MudSelectItem>
+                <MudSelectItem Value="ButtonEventType.LongPress">Long Press</MudSelectItem>
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showAddMappingDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="SaveMapping">Save</MudButton>
+    </DialogActions>
+</MudDialog>

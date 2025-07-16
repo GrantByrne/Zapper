@@ -11,6 +11,9 @@ public interface INotificationService
     Task NotifyBluetoothDeviceConnected(string deviceId, string deviceName);
     Task NotifyBluetoothDeviceDisconnected(string deviceId, string deviceName);
     Task NotifyWebOsDevicePaired(string deviceId, string deviceName, bool success);
+    Task NotifyUsbRemoteConnected(string deviceId, string remoteName, int vendorId, int productId);
+    Task NotifyUsbRemoteDisconnected(string deviceId, string remoteName);
+    Task NotifyUsbRemoteButtonPressed(string deviceId, string remoteName, string buttonName, string eventType);
     Task SendSystemMessage(string message, string level = "info");
     Task SendToAllClients(string method, object data);
     Task SendToDeviceGroup(int deviceId, string method, object data);

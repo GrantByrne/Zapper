@@ -155,6 +155,56 @@ public class NotificationService(IHubContext<ZapperSignalR> hubContext, ILogger<
             deviceName, success ? "success" : "failed");
     }
 
+    public async Task NotifyUsbRemoteConnected(string deviceId, string remoteName, int vendorId, int productId)
+    {
+        var data = new
+        {
+            DeviceId = deviceId,
+            RemoteName = remoteName,
+            VendorId = vendorId,
+            ProductId = productId,
+            Status = "connected",
+            Timestamp = DateTime.UtcNow
+        };
+
+        await SendToAllClients("UsbRemoteStatusChanged", data);
+
+        logger.LogInformation("USB remote connected: {RemoteName} ({VendorId:X4}:{ProductId:X4})",
+            remoteName, vendorId, productId);
+    }
+
+    public async Task NotifyUsbRemoteDisconnected(string deviceId, string remoteName)
+    {
+        var data = new
+        {
+            DeviceId = deviceId,
+            RemoteName = remoteName,
+            Status = "disconnected",
+            Timestamp = DateTime.UtcNow
+        };
+
+        await SendToAllClients("UsbRemoteStatusChanged", data);
+
+        logger.LogInformation("USB remote disconnected: {RemoteName}", remoteName);
+    }
+
+    public async Task NotifyUsbRemoteButtonPressed(string deviceId, string remoteName, string buttonName, string eventType)
+    {
+        var data = new
+        {
+            DeviceId = deviceId,
+            RemoteName = remoteName,
+            ButtonName = buttonName,
+            EventType = eventType,
+            Timestamp = DateTime.UtcNow
+        };
+
+        await SendToAllClients("UsbRemoteButtonPressed", data);
+
+        logger.LogDebug("USB remote button pressed: {RemoteName} - {ButtonName} ({EventType})",
+            remoteName, buttonName, eventType);
+    }
+
     public async Task SendSystemMessage(string message, string level = "info")
     {
         var data = new

@@ -67,6 +67,9 @@ builder.Services.AddSingleton<IUsbRemoteHandler>(provider =>
     return new UsbRemoteHandler(logger);
 });
 
+// Register USB remote hosted service
+builder.Services.AddHostedService<UsbRemoteHostedService>();
+
 builder.Services.AddTransient<IWebOsClient>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<WebOsClient>>();
@@ -130,6 +133,7 @@ builder.Services.AddScoped<IExternalIrCodeService, IrdbService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IIrLearningService, IrLearningService>();
 builder.Services.AddSingleton<IIrTroubleshootingService, IrTroubleshootingService>();
+builder.Services.AddScoped<IUsbRemoteService, UsbRemoteService>();
 
 // Add SignalR
 builder.Services.AddSignalR();

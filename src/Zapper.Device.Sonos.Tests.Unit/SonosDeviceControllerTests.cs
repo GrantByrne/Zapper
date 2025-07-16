@@ -42,7 +42,7 @@ public class SonosDeviceControllerTests : IDisposable
             {
                 throw new TaskCanceledException();
             }
-            
+
             // Immediately return a failure response to avoid actual network calls
             var response = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
             {

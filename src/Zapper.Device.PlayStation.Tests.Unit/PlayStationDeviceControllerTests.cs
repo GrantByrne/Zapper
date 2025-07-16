@@ -61,7 +61,7 @@ public class PlayStationDeviceControllerTests
             Name = "Test PlayStation"
         };
         var command = new DeviceCommand { Type = CommandType.Power };
-        
+
         // Use a cancellation token with very short timeout
         var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
@@ -81,7 +81,7 @@ public class PlayStationDeviceControllerTests
             CommandType.DirectionalLeft,
             CommandType.DirectionalRight
         };
-        
+
         // Use a cancellation token with very short timeout
         var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
@@ -128,7 +128,7 @@ public class PlayStationDeviceControllerTests
     public async Task Navigate_WithValidDirection_SendsCommand()
     {
         var device = new DeviceModel { IpAddress = "127.0.0.1", Name = "Test PlayStation" };
-        
+
         // Use a cancellation token with very short timeout
         var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
@@ -146,7 +146,7 @@ public class PlayStationDeviceControllerTests
             Type = CommandType.Custom,
             NetworkPayload = "cross"
         };
-        
+
         // Use a cancellation token with very short timeout
         var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 

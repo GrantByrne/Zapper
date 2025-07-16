@@ -14,6 +14,9 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
     public DbSet<IrCode> IrCodes { get; set; }
     public DbSet<IrCodeSet> IrCodeSets { get; set; }
     public DbSet<ExternalIrCodeCache> ExternalIrCodeCache { get; set; }
+    public DbSet<UsbRemote> UsbRemotes { get; set; }
+    public DbSet<UsbRemoteButton> UsbRemoteButtons { get; set; }
+    public DbSet<UsbRemoteButtonMapping> UsbRemoteButtonMappings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -95,6 +98,42 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.CacheKey).IsUnique();
             entity.HasIndex(e => e.ExpiresAt);
+        });
+
+        modelBuilder.Entity<UsbRemote>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DeviceId).IsUnique();
+            entity.HasIndex(e => new { e.VendorId, e.ProductId, e.SerialNumber }).IsUnique();
+        });
+
+        modelBuilder.Entity<UsbRemoteButton>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.RemoteId, e.KeyCode }).IsUnique();
+            entity.HasOne(e => e.Remote)
+                .WithMany(e => e.Buttons)
+                .HasForeignKey(e => e.RemoteId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<UsbRemoteButtonMapping>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.ButtonId, e.DeviceId, e.EventType }).IsUnique();
+            entity.Property(e => e.EventType).HasConversion<string>();
+            entity.HasOne(e => e.Button)
+                .WithMany(e => e.Mappings)
+                .HasForeignKey(e => e.ButtonId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Device)
+                .WithMany()
+                .HasForeignKey(e => e.DeviceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.DeviceCommand)
+                .WithMany()
+                .HasForeignKey(e => e.DeviceCommandId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
