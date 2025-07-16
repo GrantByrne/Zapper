@@ -87,6 +87,7 @@ Open your web browser and navigate to:
 - [Installation Guide](docs/INSTALLATION.md) - Detailed setup instructions
 - [Hardware Setup](docs/HARDWARE.md) - IR circuit and GPIO configuration
 - [Configuration](docs/CONFIGURATION.md) - Device and activity setup
+- [Integrations](docs/INTEGRATIONS.md) - Supported device integrations and protocols
 - [API Reference](docs/API.md) - REST API documentation
 - [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 - [Contributing](docs/CONTRIBUTING.md) - Development guidelines
