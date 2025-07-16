@@ -9,7 +9,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi-red.svg)](https://www.raspberrypi.org/)
 [![CI/CD](https://github.com/GrantByrne/Zapper-Next-Gen/actions/workflows/ci.yml/badge.svg)](https://github.com/GrantByrne/Zapper-Next-Gen/actions)
 [![Release](https://img.shields.io/github/v/release/GrantByrne/Zapper-Next-Gen)](https://github.com/GrantByrne/Zapper-Next-Gen/releases)
-[![Coverage](https://img.shields.io/badge/Coverage-Generated%20by%20CI-blue.svg)](https://github.com/GrantByrne/Zapper-Next-Gen/actions/workflows/coverage-badge.yml)
+![Coverage](https://github.com/GrantByrne/Zapper-Next-Gen/raw/coverage-badge/badge_linecoverage.svg)
 
 **Zapper** is an open-source universal remote control system designed to replace Logitech Harmony hubs. Built with ASP.NET Core and designed to run on Raspberry Pi, Zapper provides a modern web interface for controlling your home theater devices through infrared, network, and Bluetooth connections.
 

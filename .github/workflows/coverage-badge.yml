@@ -30,9 +30,19 @@ jobs:
         targetdir: 'coverage-report'
         reporttypes: 'Badges'
         
-    - name: Upload coverage badge
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-badge
-        path: coverage-report/badge_linecoverage.svg
-        retention-days: 1
+    - name: Commit badge to coverage-badge branch
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        # Create or checkout the coverage-badge branch
+        git fetch origin coverage-badge:coverage-badge || true
+        git checkout coverage-badge || git checkout -b coverage-badge
+        
+        # Copy the badge
+        cp coverage-report/badge_linecoverage.svg badge_linecoverage.svg
+        
+        # Commit and push
+        git add badge_linecoverage.svg
+        git commit -m "Update coverage badge" || echo "No changes to commit"
+        git push origin coverage-badge --force
