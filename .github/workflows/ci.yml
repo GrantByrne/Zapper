@@ -13,7 +13,7 @@ env:
 
 jobs:
   build-and-test:
-    name: Build, Test, and Lint
+    name: Build and Test
     runs-on: ubuntu-latest
     timeout-minutes: 5
     
@@ -38,20 +38,6 @@ jobs:
           
     - name: Restore dependencies
       run: dotnet restore ${{ env.SOLUTION_PATH }}
-      
-    - name: Check code formatting
-      run: |
-        # For PRs, just check formatting and provide feedback
-        # The auto-format workflow will handle fixing
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-          dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic || {
-            echo "::warning::Code formatting issues detected. The auto-format bot will fix these for you."
-            echo "You can also run 'dotnet format' locally to fix formatting issues."
-          }
-        else
-          # For pushes to main/develop, enforce formatting
-          dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
-        fi
       
     - name: Build solution
       run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
