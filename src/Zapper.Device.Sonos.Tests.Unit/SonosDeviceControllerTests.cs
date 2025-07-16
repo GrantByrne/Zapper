@@ -3,20 +3,53 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Zapper.Core.Models;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Zapper.Device.Sonos.Tests.Unit;
 
-public class SonosDeviceControllerTests
+public class SonosDeviceControllerTests : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<SonosDeviceController> _loggerMock;
     private readonly SonosDeviceController _controller;
+    private readonly TestHttpMessageHandler _messageHandler;
 
     public SonosDeviceControllerTests()
     {
-        _httpClient = new HttpClient();
+        _messageHandler = new TestHttpMessageHandler();
+        _httpClient = new HttpClient(_messageHandler)
+        {
+            Timeout = TimeSpan.FromMilliseconds(100) // Very short timeout to prevent hanging
+        };
         _loggerMock = Substitute.For<ILogger<SonosDeviceController>>();
         _controller = new SonosDeviceController(_httpClient, _loggerMock);
+    }
+
+    public void Dispose()
+    {
+        _httpClient?.Dispose();
+        _messageHandler?.Dispose();
+    }
+
+    private class TestHttpMessageHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            // Check if cancellation was requested to prevent timeouts
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
+            
+            // Immediately return a failure response to avoid actual network calls
+            var response = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+            {
+                Content = new StringContent("No Sonos device available")
+            };
+            return Task.FromResult(response);
+        }
     }
 
     [Fact(Timeout = 5000)]
