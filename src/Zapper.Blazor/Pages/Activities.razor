@@ -18,7 +18,10 @@
 }
 else
 {
-    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Create Activity" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
+    @if (_activities.Any())
+    {
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Label="Create Activity" Class="mb-4" OnClick="@(() => _showAddDialog = true)" />
+    }
 
     <MudGrid>
         @foreach (var activity in _activities)

@@ -3,12 +3,12 @@
 @implements IDisposable
 
 <MudLayout>
-    <MudAppBar Elevation="1" Class="top-navbar">
+    <MudAppBar Elevation="1" Class="top-navbar" Fixed="true">
         <MudSpacer />
         <MudText Typo="Typo.h5" Class="navbar-title">@GetPageTitle()</MudText>
         <MudSpacer />
     </MudAppBar>
-    <MudMainContent Class="pb-16 pt-16">
+    <MudMainContent Class="pb-16" Style="padding-top: 80px;">
         <MudContainer MaxWidth="MaxWidth.Large" Class="my-4">
             @Body
         </MudContainer>
@@ -40,6 +40,9 @@
             "remote" => "Remote",
             "activities" => "Activities",
             "settings" => "Settings",
+            "settings/hardware" => "Hardware & Troubleshooting",
+            "settings/advanced" => "Advanced Settings",
+            "settings/about" => "About",
             _ => "Zapper"
         };
     }

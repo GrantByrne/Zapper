@@ -3,6 +3,7 @@
 
 <PageTitle>Devices - Zapper</PageTitle>
 
+<div style="margin-top: 24px;">
 @if (!string.IsNullOrEmpty(_errorMessage))
 {
     <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
@@ -88,5 +89,6 @@ else
         </MudPaper>
     }
 }
+</div>
 
 <AddDeviceWizard @bind-IsVisible="_showAddDialog" OnDeviceAdded="AddDevice" />
