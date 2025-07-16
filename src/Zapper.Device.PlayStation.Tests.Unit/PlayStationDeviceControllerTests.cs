@@ -15,7 +15,7 @@ public class PlayStationDeviceControllerTests
         _controller = new PlayStationDeviceController(_logger);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task Connect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -25,7 +25,7 @@ public class PlayStationDeviceControllerTests
         Assert.True(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task Connect_WithoutIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { Name = "Test PlayStation" };
@@ -41,7 +41,7 @@ public class PlayStationDeviceControllerTests
             Arg.Any<Func<object, Exception?, string>>());
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task Disconnect_WithValidDevice_ReturnsTrue()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -52,7 +52,7 @@ public class PlayStationDeviceControllerTests
         Assert.True(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommand_PowerCommand_ReturnsResult()
     {
         var device = new DeviceModel
@@ -71,7 +71,7 @@ public class PlayStationDeviceControllerTests
         Assert.False(result); // Will fail without actual PlayStation
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommand_DirectionalCommand_HandlesAllDirections()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -95,7 +95,7 @@ public class PlayStationDeviceControllerTests
         }
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommand_WithoutIpAddress_ReturnsFalse()
     {
         var device = new DeviceModel { Name = "Test PlayStation" };
@@ -106,7 +106,7 @@ public class PlayStationDeviceControllerTests
         Assert.False(result);
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task TestConnection_WithValidIpAddress_ReturnsResult()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -116,7 +116,7 @@ public class PlayStationDeviceControllerTests
         Assert.True(result); // UDP send succeeds even without actual PlayStation
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task PowerOn_WithValidDevice_SendsCommand()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -126,7 +126,7 @@ public class PlayStationDeviceControllerTests
         Assert.True(result); // UDP send succeeds even without actual PlayStation
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task Navigate_WithValidDirection_SendsCommand()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
@@ -140,7 +140,7 @@ public class PlayStationDeviceControllerTests
         Assert.False(result); // Will fail without actual PlayStation
     }
 
-    [Fact]
+    [Fact(Timeout = 5000)]
     public async Task SendCommand_CustomCommand_HandlesCustomPayload()
     {
         var device = new DeviceModel { IpAddress = "192.168.1.100", Name = "Test PlayStation" };
