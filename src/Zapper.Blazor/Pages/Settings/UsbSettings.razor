@@ -1,0 +1,196 @@
+@page "/settings/usb"
+
+<PageTitle>USB Settings - Zapper</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">USB Remote Settings</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.Usb" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudSwitch @bind-Value="_enableUsbRemotes" Color="Color.Primary" Label="Enable USB Remote Support" Class="mb-3" />
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+            When enabled, Zapper will detect and use USB remote controls connected to the system.
+        </MudText>
+        
+        @if (_connectedRemotes.Any())
+        {
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Connected USB Remotes:</MudText>
+            <MudList T="string" Dense="true">
+                @foreach (var remote in _connectedRemotes)
+                {
+                    <MudListItem T="string" Icon="@Icons.Material.Filled.SettingsRemote">
+                        @remote.Name (VID: @remote.VendorId.ToString("X4") | PID: @remote.ProductId.ToString("X4"))
+                    </MudListItem>
+                }
+            </MudList>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info">
+                No USB remotes currently connected.
+            </MudAlert>
+        }
+    </MudCardContent>
+</MudCard>
+
+<MudCard Class="mt-4">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">USB Device Troubleshooting</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.BugReport" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (_usbPermissionStatus != null)
+        {
+            @if (_usbPermissionStatus.HasPermissionIssues)
+            {
+                <MudAlert Severity="Severity.Error" Icon="@Icons.Material.Filled.Error" Class="mb-3">
+                    <strong>USB permission issues detected!</strong><br/>
+                    Some USB devices cannot be accessed due to insufficient permissions.
+                </MudAlert>
+                
+                @foreach (var issue in _usbPermissionStatus.Issues)
+                {
+                    <MudAlert Severity="Severity.Warning" Icon="@Icons.Material.Filled.SettingsRemote" Class="mb-2">
+                        <strong>@issue.ProductName</strong><br/>
+                        Vendor: @issue.VendorId | Product: @issue.ProductId<br/>
+                        <small>@issue.ErrorMessage</small>
+                    </MudAlert>
+                }
+                
+                <MudButton Color="Color.Primary" 
+                         Variant="Variant.Filled" 
+                         OnClick="ShowFixPermissionsDialog"
+                         StartIcon="@Icons.Material.Filled.Build"
+                         Class="mt-3">
+                    Fix USB Permissions
+                </MudButton>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Success" Icon="@Icons.Material.Filled.CheckCircle" Class="mb-3">
+                    <strong>USB permissions are properly configured</strong><br/>
+                    @if (_usbPermissionStatus.UdevRulesExist)
+                    {
+                        <span>✓ Udev rules installed<br/></span>
+                    }
+                    @if (_usbPermissionStatus.UserInPlugdevGroup)
+                    {
+                        <span>✓ User is in plugdev group<br/></span>
+                    }
+                    Platform: @_usbPermissionStatus.Platform
+                </MudAlert>
+            }
+        }
+        else
+        {
+            <div class="d-flex align-center">
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <MudText>Checking USB permissions...</MudText>
+            </div>
+        }
+        
+        <MudButton Color="Color.Primary" 
+                 Variant="Variant.Outlined" 
+                 OnClick="CheckUsbPermissions"
+                 StartIcon="@Icons.Material.Filled.Refresh"
+                 Class="mt-3"
+                 Disabled="@_isCheckingUsbPermissions">
+            @if (_isCheckingUsbPermissions)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            Check USB Permissions
+        </MudButton>
+    </MudCardContent>
+</MudCard>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-4" />
+}
+else
+{
+    <MudFab Color="Color.Primary" 
+           StartIcon="@(_isSaving ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Save)" 
+           Label="@(_isSaving ? "Saving..." : "Save Settings")" 
+           Class="mt-4" 
+           OnClick="SaveSettings"
+           Disabled="@_isSaving" />
+}
+
+<MudDialog @bind-Visible="_showFixPermissionsDialog" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Build" Class="mr-2" />
+            Fix USB Permissions
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Class="mb-3">
+            This will perform the following actions to fix USB device permissions:
+        </MudText>
+        <MudList T="string">
+            <MudListItem T="string" Icon="@Icons.Material.Filled.Description">
+                Create udev rules file at /etc/udev/rules.d/99-zapper-usb.rules
+            </MudListItem>
+            <MudListItem T="string" Icon="@Icons.Material.Filled.Group">
+                Add your user to the 'plugdev' group
+            </MudListItem>
+            <MudListItem T="string" Icon="@Icons.Material.Filled.Refresh">
+                Reload udev rules and trigger device updates
+            </MudListItem>
+        </MudList>
+        <MudAlert Severity="Severity.Info" Icon="@Icons.Material.Filled.Info" Class="mt-3">
+            You may need to reconnect your USB devices or restart the application after applying the fix.
+        </MudAlert>
+        
+        <MudTextField @bind-Value="_sudoPassword" 
+                     Label="Sudo Password" 
+                     Variant="Variant.Outlined" 
+                     InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                     Adornment="Adornment.End"
+                     AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                     OnAdornmentClick="TogglePasswordVisibility"
+                     Class="mt-4"
+                     HelperText="Enter your system password to authorize the permission changes" />
+        
+        @if (_fixResult != null)
+        {
+            <MudAlert Severity="@(_fixResult.Success ? Severity.Success : Severity.Error)" 
+                     Icon="@(_fixResult.Success ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)" 
+                     Class="mt-3">
+                @_fixResult.Message
+            </MudAlert>
+            @if (_fixResult.Steps.Any())
+            {
+                <MudText Typo="Typo.caption" Class="mt-2">
+                    @foreach (var step in _fixResult.Steps)
+                    {
+                        <span>✓ @step<br/></span>
+                    }
+                </MudText>
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showFixPermissionsDialog = false)">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                 OnClick="FixUsbPermissions" 
+                 Disabled="@(_isFixingPermissions || (_fixResult?.Success ?? false) || string.IsNullOrWhiteSpace(_sudoPassword))">
+            @if (_isFixingPermissions)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @(_fixResult?.Success ?? false ? "Fixed" : "Apply Fix")
+        </MudButton>
+    </DialogActions>
+</MudDialog>

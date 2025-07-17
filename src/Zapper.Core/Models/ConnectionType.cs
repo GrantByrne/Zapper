@@ -10,5 +10,9 @@ public enum ConnectionType
     Bluetooth,
     Usb,
     WebOs,
-    Network
+    Network,
+    MediaRemoteProtocol,
+    CompanionProtocol,
+    Dacp,
+    AirPlay
 }

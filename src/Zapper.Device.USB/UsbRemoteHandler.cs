@@ -106,16 +106,31 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
                 continue;
 
             var deviceId = GetDeviceId(device);
-            _connectedDevices.TryAdd(deviceId, device);
+
+            // Check if device is already connected
+            if (_connectedDevices.ContainsKey(deviceId))
+                continue;
+
+            if (!_connectedDevices.TryAdd(deviceId, device))
+                continue;
 
             try
             {
                 var stream = device.Open();
 
                 if (stream == null)
+                {
+                    _connectedDevices.TryRemove(deviceId, out _);
                     continue;
+                }
 
-                _activeStreams.TryAdd(deviceId, stream);
+                if (!_activeStreams.TryAdd(deviceId, stream))
+                {
+                    stream.Dispose();
+                    _connectedDevices.TryRemove(deviceId, out _);
+                    continue;
+                }
+
                 _ = Task.Run(() => ListenToDeviceAsync(deviceId, stream, _cancellationTokenSource.Token));
 
                 _logger.LogInformation("Connected to USB remote: {DeviceId} ({ProductName})",
@@ -130,6 +145,9 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to open device {DeviceId}", deviceId);
+                _connectedDevices.TryRemove(deviceId, out _);
+                _activeStreams.TryRemove(deviceId, out var stream);
+                stream?.Dispose();
             }
         }
     }
@@ -141,6 +159,28 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
             try
             {
                 await Task.Delay(5000, cancellationToken); // Check every 5 seconds
+
+                // Check for disconnected devices
+                var currentDeviceIds = new HashSet<string>();
+                var deviceList = DeviceList.Local;
+                var hidDevices = deviceList.GetHidDevices();
+
+                foreach (var device in hidDevices)
+                {
+                    if (IsRemoteDevice(device))
+                    {
+                        currentDeviceIds.Add(GetDeviceId(device));
+                    }
+                }
+
+                // Remove devices that are no longer present
+                var disconnectedDevices = _connectedDevices.Keys.Where(id => !currentDeviceIds.Contains(id)).ToList();
+                foreach (var deviceId in disconnectedDevices)
+                {
+                    HandleDeviceDisconnection(deviceId);
+                }
+
+                // Discover new devices
                 DiscoverRemoteDevices();
             }
             catch (OperationCanceledException)
@@ -177,16 +217,37 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Error reading from device {DeviceId}", deviceId);
-
-            // Remove device from active list
-            _activeStreams.TryRemove(deviceId, out _);
-            _connectedDevices.TryRemove(deviceId, out _);
-            _buttonStates.TryRemove(deviceId + "_*", out _);
-            _remoteConfigurations.TryRemove(deviceId, out _);
-
-            // Raise disconnected event
-            RemoteDisconnected?.Invoke(this, deviceId);
+            HandleDeviceDisconnection(deviceId);
         }
+    }
+
+    private void HandleDeviceDisconnection(string deviceId)
+    {
+        // Remove device from active list
+        if (_activeStreams.TryRemove(deviceId, out var stream))
+        {
+            try
+            {
+                stream?.Dispose();
+            }
+            catch { }
+        }
+
+        _connectedDevices.TryRemove(deviceId, out _);
+
+        // Remove all button states for this device
+        var keysToRemove = _buttonStates.Keys.Where(k => k.StartsWith(deviceId + "_")).ToList();
+        foreach (var key in keysToRemove)
+        {
+            _buttonStates.TryRemove(key, out _);
+        }
+
+        _remoteConfigurations.TryRemove(deviceId, out _);
+
+        _logger.LogInformation("USB remote disconnected: {DeviceId}", deviceId);
+
+        // Raise disconnected event
+        RemoteDisconnected?.Invoke(this, deviceId);
     }
 
     private void ProcessInputReport(string deviceId, byte[] buffer, int length)

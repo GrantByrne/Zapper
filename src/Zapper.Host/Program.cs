@@ -15,6 +15,7 @@ using Zapper.Device.Xbox;
 using Zapper.Device.PlayStation;
 using Zapper.Device.Sonos;
 using Zapper.Device.Yamaha;
+using Zapper.Device.AppleTV.Extensions;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,8 +69,9 @@ builder.Services.AddSingleton<IUsbRemoteHandler>(provider =>
     return new UsbRemoteHandler(logger);
 });
 
-// Register USB remote hosted service
+// Register USB remote hosted services
 builder.Services.AddHostedService<UsbRemoteHostedService>();
+builder.Services.AddHostedService<UsbRemoteEventHandler>();
 
 builder.Services.AddTransient<IWebOsClient>(provider =>
 {
@@ -115,6 +117,9 @@ builder.Services.AddSonosDevice();
 // Register Yamaha services
 builder.Services.AddYamahaDevice();
 
+// Register Apple TV services
+builder.Services.AddAppleTvSupport();
+
 // Register protocol implementations
 builder.Services.AddTransient<InfraredDeviceController>();
 builder.Services.AddTransient<WebOsProtocolController>();
@@ -135,6 +140,8 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IIrLearningService, IrLearningService>();
 builder.Services.AddSingleton<IIrTroubleshootingService, IrTroubleshootingService>();
 builder.Services.AddScoped<IUsbRemoteService, UsbRemoteService>();
+builder.Services.AddSingleton<IBluetoothRemoteService, BluetoothRemoteService>();
+builder.Services.AddScoped<ISystemDiagnosticsService, SystemDiagnosticsService>();
 
 // Add SignalR
 builder.Services.AddSignalR();

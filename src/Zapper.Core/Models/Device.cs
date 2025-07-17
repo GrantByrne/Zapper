@@ -50,6 +50,22 @@ public class Device
 
     public bool IsOnline { get; set; }
 
+    public string? DeviceIdentifier { get; set; }
+
+    public string? ProtocolVersion { get; set; }
+
+    public bool RequiresPairing { get; set; }
+
+    public bool IsPaired { get; set; }
+
+    public string? PairingId { get; set; }
+
+    public byte[]? PairingKey { get; set; }
+
+    public string? SessionId { get; set; }
+
+    public Dictionary<string, string>? ServiceProperties { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime LastSeen { get; set; } = DateTime.UtcNow;

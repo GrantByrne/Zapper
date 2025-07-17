@@ -6,6 +6,7 @@ using Zapper.Device.Infrared;
 using Zapper.Device.Network;
 using Zapper.Device.WebOS;
 using Zapper.Device.Roku;
+using Zapper.Device.AppleTV.Services;
 using Zapper.Core.Models;
 
 namespace Zapper.Services;
@@ -16,6 +17,7 @@ public class DeviceService(
     INetworkDeviceController networkController,
     IWebOsDeviceController webOsController,
     IRokuDeviceController rokuController,
+    AppleTvService appleTvService,
     INotificationService notificationService,
     IIrCodeService irCodeService,
     ILogger<DeviceService> logger) : IDeviceService
@@ -206,7 +208,7 @@ public class DeviceService(
             return false;
         }
 
-        DeviceCommand? command = null;
+        DeviceCommand? command;
 
         if (request.Command.StartsWith("mouse_") || request.Command == "keyboard_input")
         {
@@ -322,6 +324,8 @@ public class DeviceService(
                     irTransmitter.IsAvailable,
                 ConnectionType.WebOs =>
                     await webOsController.TestConnection(device),
+                ConnectionType.CompanionProtocol or ConnectionType.MediaRemoteProtocol or ConnectionType.Dacp or ConnectionType.AirPlay =>
+                    await TestAppleTvDevice(device),
                 _ => false
             };
 
@@ -372,6 +376,8 @@ public class DeviceService(
             ConnectionType.NetworkWebSocket => await ExecuteWebSocketCommand(device, command, cancellationToken),
             ConnectionType.NetworkHttp => await rokuController.SendCommand(device, command, cancellationToken),
             ConnectionType.WebOs => await webOsController.SendCommand(device, command, cancellationToken),
+            ConnectionType.CompanionProtocol or ConnectionType.MediaRemoteProtocol or ConnectionType.Dacp or ConnectionType.AirPlay =>
+                await appleTvService.SendCommandAsync(device.Id, command),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")
         };
     }
@@ -432,6 +438,23 @@ public class DeviceService(
             using var ping = new System.Net.NetworkInformation.Ping();
             var reply = await ping.SendPingAsync(device.IpAddress, 5000);
             return reply.Status == System.Net.NetworkInformation.IPStatus.Success;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task<bool> TestAppleTvDevice(Zapper.Core.Models.Device device)
+    {
+        try
+        {
+            var connected = await appleTvService.ConnectToDeviceAsync(device);
+            if (connected)
+            {
+                await appleTvService.DisconnectFromDeviceAsync(device.Id);
+            }
+            return connected;
         }
         catch
         {

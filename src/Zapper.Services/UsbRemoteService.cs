@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Zapper.Core.Models;
 using Zapper.Data;
@@ -26,27 +27,8 @@ public class UsbRemoteService : IUsbRemoteService
         _deviceService = deviceService;
         _notificationService = notificationService;
         _logger = logger;
-
-        // Wire up event handlers
-        _remoteHandler.ButtonPressed += OnButtonPressed;
-        _remoteHandler.RemoteConnected += OnRemoteConnected;
-        _remoteHandler.RemoteDisconnected += OnRemoteDisconnected;
     }
 
-    private async void OnButtonPressed(object? sender, RemoteButtonEventArgs e)
-    {
-        await ExecuteButtonMappingAsync(e.DeviceId, (byte)e.KeyCode, e.EventType);
-    }
-
-    private async void OnRemoteConnected(object? sender, string deviceId)
-    {
-        await HandleRemoteConnectedAsync(deviceId);
-    }
-
-    private async void OnRemoteDisconnected(object? sender, string deviceId)
-    {
-        await HandleRemoteDisconnectedAsync(deviceId);
-    }
     public async Task<IEnumerable<UsbRemote>> GetAllRemotesAsync()
     {
         return await _context.UsbRemotes

@@ -13,6 +13,10 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IBluetoothHidController, BluetoothHidController>();
 
+        services.AddSingleton<IBluetoothHidServer, BluetoothHidServer>();
+        services.AddSingleton<IHostedService>(provider =>
+            (BluetoothHidServer)provider.GetRequiredService<IBluetoothHidServer>());
+
         services.AddSingleton<IBluetoothDeviceController, AndroidTvBluetoothController>();
         services.AddSingleton<AndroidTvBluetoothController>();
         services.AddSingleton<IBluetoothDeviceController, AppleTvBluetoothController>();

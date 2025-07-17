@@ -94,12 +94,38 @@ sudo chmod +x "$INSTALL_DIR/Zapper"
 
 # Set up permissions for Raspberry Pi
 if [ "$IS_RASPBERRY_PI" = true ]; then
+    # Create plugdev group if it doesn't exist
+    if ! getent group plugdev > /dev/null 2>&1; then
+        echo "Creating plugdev group..."
+        sudo groupadd plugdev
+    fi
+    
     # Add pi user to necessary groups
-    sudo usermod -a -G gpio,input,bluetooth pi 2>/dev/null || true
+    sudo usermod -a -G gpio,input,bluetooth,plugdev pi 2>/dev/null || true
     
     # Create data directory with proper permissions
     sudo mkdir -p "$INSTALL_DIR/data"
     sudo chown -R pi:pi "$INSTALL_DIR/data"
+    
+    # Set up USB device permissions for remotes
+    echo "🔌 Setting up USB device permissions..."
+    sudo tee /etc/udev/rules.d/99-zapper-usb.rules > /dev/null << 'EOF'
+# Zapper USB Remote Control Access Rules
+# Grant access to all USB HID devices for the plugdev group
+SUBSYSTEM=="hidraw", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", MODE="0666", GROUP="plugdev"
+
+# Specific rules for known USB remote vendors
+# Alienware Hub Controller
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="187c", MODE="0666", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="187c", MODE="0666", GROUP="plugdev"
+EOF
+    
+    # Reload udev rules
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger
+    
+    echo "✅ USB permissions configured"
 fi
 
 # Create systemd service
