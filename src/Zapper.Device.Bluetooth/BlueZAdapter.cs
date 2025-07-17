@@ -8,6 +8,8 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
 {
     private IAdapter1? _adapter;
     private readonly Dictionary<string, IDevice1> _devices = new();
+    private readonly HashSet<string> _discoveredDevices = new();
+    private CancellationTokenSource? _discoveryCts;
     private bool _disposed;
 
     public event EventHandler<BluetoothDeviceEventArgs>? DeviceFound;
@@ -35,11 +37,10 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
             logger.LogInformation("Found Bluetooth adapter: {Address}", await _adapter.GetAddressAsync());
 
             if (!await _adapter.GetAsync<bool>("Powered"))
-                if (!await _adapter.GetAsync<bool>("Powered"))
-                {
-                    logger.LogInformation("Powering on Bluetooth adapter...");
-                    await _adapter.SetAsync("Powered", true);
-                }
+            {
+                logger.LogInformation("Powering on Bluetooth adapter...");
+                await _adapter.SetAsync("Powered", true);
+            }
 
             logger.LogInformation("BlueZ adapter initialized successfully");
         }
@@ -84,6 +85,22 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
             await _adapter.StartDiscoveryAsync();
             IsDiscovering = true;
             logger.LogInformation("Started Bluetooth device discovery");
+
+            // Log current discovery filters
+            try
+            {
+                var discoveryFilter = await _adapter.GetDiscoveryFiltersAsync();
+                logger.LogInformation("Discovery filters: {Filters}", string.Join(", ", discoveryFilter));
+            }
+            catch
+            {
+                logger.LogInformation("No discovery filters set");
+            }
+
+            // Start polling for new devices
+            _discoveryCts = new CancellationTokenSource();
+            _ = Task.Run(async () => await PollForDevicesAsync(_discoveryCts.Token));
+
             return true;
         }
         catch (Exception ex)
@@ -106,8 +123,14 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
                 return true;
             }
 
+            // Cancel polling
+            _discoveryCts?.Cancel();
+            _discoveryCts?.Dispose();
+            _discoveryCts = null;
+
             await _adapter.StopDiscoveryAsync();
             IsDiscovering = false;
+            _discoveredDevices.Clear();
             logger.LogInformation("Stopped Bluetooth device discovery");
             return true;
         }
@@ -288,18 +311,58 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         }
     }
 
-    private async void OnDeviceFound(object? sender, DeviceFoundEventArgs e)
+    private async Task PollForDevicesAsync(CancellationToken cancellationToken)
     {
-        try
+        logger.LogInformation("Started polling for Bluetooth devices");
+
+        while (!cancellationToken.IsCancellationRequested && IsDiscovering && _adapter != null)
         {
-            var deviceInfo = await CreateDeviceInfoAsync(e.Device);
-            logger.LogDebug("Device found: {Name} ({Address})", deviceInfo.Name, deviceInfo.Address);
-            DeviceFound?.Invoke(this, new BluetoothDeviceEventArgs(deviceInfo));
+            try
+            {
+                var devices = await _adapter.GetDevicesAsync();
+                foreach (var device in devices)
+                {
+                    var address = await device.GetAsync<string>("Address");
+
+                    // Check if this is a newly discovered device
+                    if (!_discoveredDevices.Contains(address))
+                    {
+                        _discoveredDevices.Add(address);
+
+                        try
+                        {
+                            var deviceInfo = await CreateDeviceInfoAsync(device);
+                            logger.LogInformation("Device found: {Name} ({Address}) - Connected: {Connected}, Paired: {Paired}, UUIDs: {UUIDs}",
+                                deviceInfo.Name,
+                                deviceInfo.Address,
+                                deviceInfo.IsConnected,
+                                deviceInfo.IsPaired,
+                                string.Join(", ", deviceInfo.UuiDs.Take(3)));
+                            DeviceFound?.Invoke(this, new BluetoothDeviceEventArgs(deviceInfo));
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Error processing device {Address}", address);
+                        }
+                    }
+                }
+
+                // Poll every 2 seconds
+                await Task.Delay(2000, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("Device polling cancelled");
+                break;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error during device polling");
+                await Task.Delay(5000, cancellationToken); // Wait longer on error
+            }
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error processing found device");
-        }
+
+        logger.LogInformation("Stopped polling for Bluetooth devices");
     }
 
     private async Task<BluetoothDeviceInfo> CreateDeviceInfoAsync(IDevice1 device)
@@ -330,7 +393,6 @@ public class BlueZAdapter(ILogger<BlueZAdapter> logger) : IDisposable
         {
             if (_adapter != null)
             {
-                // DeviceFound event cleanup not needed in this version
                 if (IsDiscovering)
                 {
                     _ = Task.Run(async () => await StopDiscoveryAsync());
