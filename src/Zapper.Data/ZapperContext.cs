@@ -27,6 +27,7 @@ public class ZapperContext(DbContextOptions<ZapperContext> options) : DbContext(
             entity.HasIndex(e => new { e.IpAddress, e.Port });
             entity.Property(e => e.Type).HasConversion<string>();
             entity.Property(e => e.ConnectionType).HasConversion<string>();
+            entity.Ignore(e => e.ServiceProperties);
         });
 
         modelBuilder.Entity<DeviceCommand>(entity =>
