@@ -2,7 +2,7 @@ using FastEndpoints;
 using FluentValidation;
 using Zapper.Client;
 
-namespace Zapper.API.Validators;
+namespace Zapper.API.Validators.Activities;
 
 public class UpdateActivityRequestValidator : Validator<UpdateActivityRequest>
 {

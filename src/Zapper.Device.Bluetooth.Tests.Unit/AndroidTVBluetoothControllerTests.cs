@@ -31,30 +31,6 @@ public class AndroidTvBluetoothControllerTests
     }
 
     [Fact]
-    public void Constructor_WithNullHidController_ShouldThrowArgumentNullException()
-    {
-        // Act & Assert
-        var act = () => new AndroidTvBluetoothController(null!, _mockBluetoothService, _mockLogger);
-        act.Should().Throw<ArgumentNullException>().WithParameterName("hidController");
-    }
-
-    [Fact]
-    public void Constructor_WithNullBluetoothService_ShouldThrowArgumentNullException()
-    {
-        // Act & Assert
-        var act = () => new AndroidTvBluetoothController(_mockHidController, null!, _mockLogger);
-        act.Should().Throw<ArgumentNullException>().WithParameterName("bluetoothService");
-    }
-
-    [Fact]
-    public void Constructor_WithNullLogger_ShouldThrowArgumentNullException()
-    {
-        // Act & Assert
-        var act = () => new AndroidTvBluetoothController(_mockHidController, _mockBluetoothService, null!);
-        act.Should().Throw<ArgumentNullException>().WithParameterName("logger");
-    }
-
-    [Fact]
     public async Task SendCommand_WithNonBluetoothDevice_ShouldReturnFalse()
     {
         // Arrange

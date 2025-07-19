@@ -1,8 +1,10 @@
 using FastEndpoints;
 using FluentValidation;
 using Zapper.Client.Devices;
+using System.Net;
+using System.Text.RegularExpressions;
 
-namespace Zapper.API.Validators;
+namespace Zapper.API.Validators.Devices;
 
 public class CreateDeviceRequestValidator : Validator<CreateDeviceRequest>
 {
@@ -45,7 +47,7 @@ public class CreateDeviceRequestValidator : Validator<CreateDeviceRequest>
         if (string.IsNullOrEmpty(ipAddress))
             return true;
 
-        return System.Net.IPAddress.TryParse(ipAddress, out _);
+        return IPAddress.TryParse(ipAddress, out _);
     }
 
     private bool BeAValidMacAddress(string? macAddress)
@@ -53,7 +55,7 @@ public class CreateDeviceRequestValidator : Validator<CreateDeviceRequest>
         if (string.IsNullOrEmpty(macAddress))
             return true;
 
-        var regex = new System.Text.RegularExpressions.Regex(@"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+        var regex = new Regex(@"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
         return regex.IsMatch(macAddress);
     }
 }

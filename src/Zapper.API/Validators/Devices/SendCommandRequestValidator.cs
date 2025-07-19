@@ -2,7 +2,7 @@ using FastEndpoints;
 using FluentValidation;
 using Zapper.Client.Devices;
 
-namespace Zapper.API.Validators;
+namespace Zapper.API.Validators.Devices;
 
 public class SendCommandRequestValidator : Validator<SendCommandApiRequest>
 {

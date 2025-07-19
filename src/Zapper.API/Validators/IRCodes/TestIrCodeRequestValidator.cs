@@ -2,7 +2,7 @@ using FastEndpoints;
 using FluentValidation;
 using Zapper.Client.IRCodes;
 
-namespace Zapper.API.Validators;
+namespace Zapper.API.Validators.IRCodes;
 
 public class TestIrCodeRequestValidator : Validator<TestIrCodeRequest>
 {

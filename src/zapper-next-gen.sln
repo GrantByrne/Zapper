@@ -91,6 +91,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.AndroidTV.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.AppleTV.Tests.Unit", "Zapper.Device.AppleTV.Tests.Unit\Zapper.Device.AppleTV.Tests.Unit.csproj", "{741EE42D-F85D-4372-92AE-94BB0559603F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.API.Tests.Unit", "Zapper.API.Tests.Unit\Zapper.API.Tests.Unit.csproj", "{59843973-7279-43E6-B200-65BCF3716C98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -473,6 +475,18 @@ Global
 		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x64.Build.0 = Release|Any CPU
 		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x86.ActiveCfg = Release|Any CPU
 		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x86.Build.0 = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|x64.Build.0 = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Debug|x86.Build.0 = Debug|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|x64.ActiveCfg = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|x64.Build.0 = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|x86.ActiveCfg = Release|Any CPU
+		{59843973-7279-43E6-B200-65BCF3716C98}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
