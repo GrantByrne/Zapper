@@ -51,7 +51,7 @@
             <MudText Class="mb-4">Choose the type of device you want to add:</MudText>
             <MudGrid>
                 <MudItem xs="6" sm="4">
-                    <MudCard Class="@GetCardClass(ConnectionType.Bluetooth, false)" 
+                    <MudCard Class="@GetCardClass(ConnectionType.Bluetooth)" 
                              Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.Bluetooth, "Bluetooth"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Bluetooth" Size="Size.Large" Class="mb-2" />
@@ -63,7 +63,7 @@
                     </MudCard>
                 </MudItem>
                 <MudItem xs="6" sm="4">
-                    <MudCard Class="@GetCardClass(ConnectionType.InfraredIr, false)" 
+                    <MudCard Class="@GetCardClass(ConnectionType.InfraredIr)" 
                              Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.InfraredIr, "Infrared"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Sensors" Size="Size.Large" Class="mb-2" />
@@ -87,7 +87,7 @@
                     </MudCard>
                 </MudItem>
                 <MudItem xs="6" sm="4">
-                    <MudCard Class="@GetCardClass(ConnectionType.WebOs, false)" 
+                    <MudCard Class="@GetCardClass(ConnectionType.WebOs)" 
                              Style="cursor: pointer;" @onclick="@(() => SelectDeviceTypeAndProceed(ConnectionType.WebOs, "WebOS"))">
                         <MudCardContent Class="text-center pa-4">
                             <MudIcon Icon="@Icons.Material.Filled.Tv" Size="Size.Large" Class="mb-2" />

@@ -222,12 +222,12 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
 
     private static (bool success, byte[]? pairingKey) ParsePairingResponse(byte[] response)
     {
-        if (response.Length <= 0 || response[0] != 0x00 || response.Length <= 32) 
+        if (response.Length <= 0 || response[0] != 0x00 || response.Length <= 32)
             return (false, null);
 
         var key = new byte[32];
         Array.Copy(response, 1, key, 0, 32);
-            
+
         return (true, key);
 
     }

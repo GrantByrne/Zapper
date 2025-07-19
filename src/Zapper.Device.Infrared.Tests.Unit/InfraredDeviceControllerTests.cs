@@ -9,14 +9,13 @@ namespace Zapper.Device.Infrared.Tests.Unit;
 public class InfraredDeviceControllerTests
 {
     private readonly IInfraredTransmitter _mockTransmitter;
-    private readonly ILogger<InfraredDeviceController> _logger;
     private readonly InfraredDeviceController _controller;
 
     public InfraredDeviceControllerTests()
     {
         _mockTransmitter = Substitute.For<IInfraredTransmitter>();
-        _logger = NullLogger<InfraredDeviceController>.Instance;
-        _controller = new InfraredDeviceController(_mockTransmitter, _logger);
+        var logger = NullLogger<InfraredDeviceController>.Instance;
+        _controller = new InfraredDeviceController(_mockTransmitter, logger);
     }
 
     [Fact]
@@ -33,7 +32,6 @@ public class InfraredDeviceControllerTests
         var result = await _controller.SendCommand(device, command);
 
         result.Should().BeFalse();
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
@@ -50,7 +48,6 @@ public class InfraredDeviceControllerTests
         var result = await _controller.SendCommand(device, command);
 
         result.Should().BeFalse();
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
@@ -67,7 +64,6 @@ public class InfraredDeviceControllerTests
         var result = await _controller.SendCommand(device, command);
 
         result.Should().BeFalse();
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
@@ -94,7 +90,6 @@ public class InfraredDeviceControllerTests
 
         result.Should().BeTrue();
         await _mockTransmitter.Received(1).Transmit(command.IrCode, 1, Arg.Any<CancellationToken>());
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
@@ -172,7 +167,6 @@ public class InfraredDeviceControllerTests
         var result = await _controller.SendCommand(device, command);
 
         result.Should().BeFalse();
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]

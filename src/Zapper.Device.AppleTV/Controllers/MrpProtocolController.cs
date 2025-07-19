@@ -124,14 +124,14 @@ public class MrpProtocolController(ILogger<MrpProtocolController> logger)
             var buffer = new byte[1024];
             var bytesRead = await _networkStream.ReadAsync(buffer);
 
-            if (bytesRead <= 0) 
+            if (bytesRead <= 0)
                 return false;
-            
+
             var success = ParsePairingResponse(buffer[..bytesRead]);
-            
-            if (!success || ConnectedDevice == null) 
+
+            if (!success || ConnectedDevice == null)
                 return false;
-            
+
             ConnectedDevice.IsPaired = true;
             return true;
 

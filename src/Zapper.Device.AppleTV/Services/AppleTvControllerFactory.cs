@@ -8,7 +8,7 @@ namespace Zapper.Device.AppleTV.Services;
 
 public class AppleTvControllerFactory(IServiceProvider serviceProvider, ILogger<AppleTvControllerFactory> logger)
 {
-    public IAppleTvController CreateController(ConnectionType connectionType)
+    public virtual IAppleTvController CreateController(ConnectionType connectionType)
     {
         logger.LogInformation("Creating Apple TV controller for protocol: {Protocol}", connectionType);
 
@@ -22,7 +22,7 @@ public class AppleTvControllerFactory(IServiceProvider serviceProvider, ILogger<
         };
     }
 
-    public IAppleTvController CreateControllerForDevice(Zapper.Core.Models.Device device)
+    public virtual IAppleTvController CreateControllerForDevice(Zapper.Core.Models.Device device)
     {
         var preferredProtocol = DetermineProtocolForDevice(device);
         return CreateController(preferredProtocol);

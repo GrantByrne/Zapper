@@ -27,7 +27,7 @@ public class IrTroubleshootingService(
             }
 
             var testPulses = new int[] { 9000, 4500, 560, 1690, 560, 560, 560 };
-            await infraredTransmitter.TransmitRaw(testPulses, 38000);
+            await infraredTransmitter.TransmitRaw(testPulses);
 
             return new IrHardwareTestResult
             {

@@ -1,5 +1,4 @@
 using AwesomeAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Zapper.Core.Models;
 
@@ -7,13 +6,12 @@ namespace Zapper.Device.Infrared.Tests.Unit;
 
 public class MockInfraredTransmitterTests
 {
-    private readonly ILogger<MockInfraredTransmitter> _logger;
     private readonly MockInfraredTransmitter _transmitter;
 
     public MockInfraredTransmitterTests()
     {
-        _logger = NullLogger<MockInfraredTransmitter>.Instance;
-        _transmitter = new MockInfraredTransmitter(_logger);
+        var logger = NullLogger<MockInfraredTransmitter>.Instance;
+        _transmitter = new MockInfraredTransmitter(logger);
     }
 
     [Fact]
@@ -42,7 +40,7 @@ public class MockInfraredTransmitterTests
     [Fact]
     public async Task Transmit_WithString_WhenNotInitialized_ShouldThrowInvalidOperationException()
     {
-        var act = async () => await _transmitter.Transmit("test code", 1);
+        var act = async () => await _transmitter.Transmit("test code");
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
@@ -58,8 +56,6 @@ public class MockInfraredTransmitterTests
 
         var elapsed = DateTime.UtcNow - startTime;
         elapsed.Should().BeGreaterThan(TimeSpan.FromMilliseconds(150)); // 2 * 100ms - some tolerance
-
-        // Logger assertions removed - using NullLogger for simplicity
     }
 
     [Fact]
@@ -73,7 +69,7 @@ public class MockInfraredTransmitterTests
             HexCode = "0x123456"
         };
 
-        var act = async () => await _transmitter.Transmit(irCode, 1);
+        var act = async () => await _transmitter.Transmit(irCode);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
@@ -91,9 +87,7 @@ public class MockInfraredTransmitterTests
             HexCode = "0xE0E040BF"
         };
 
-        await _transmitter.Transmit(irCode, 1);
-
-        // Logger assertions removed - using NullLogger for simplicity
+        await _transmitter.Transmit(irCode);
     }
 
     [Fact]
@@ -101,7 +95,7 @@ public class MockInfraredTransmitterTests
     {
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        var act = async () => await _transmitter.TransmitRaw(pulses, 38000);
+        var act = async () => await _transmitter.TransmitRaw(pulses);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Mock IR transmitter not initialized");
@@ -113,16 +107,12 @@ public class MockInfraredTransmitterTests
         _transmitter.Initialize();
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        await _transmitter.TransmitRaw(pulses, 38000);
-
-        // Logger assertions removed - using NullLogger for simplicity
+        await _transmitter.TransmitRaw(pulses);
     }
 
     [Fact]
     public void Dispose_ShouldLogDisposalMessage()
     {
         _transmitter.Dispose();
-
-        // Logger assertions removed - using NullLogger for simplicity
     }
 }

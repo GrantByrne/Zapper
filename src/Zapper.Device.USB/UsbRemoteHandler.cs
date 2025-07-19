@@ -316,7 +316,6 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
                 {
                     var pressEventArgs = new RemoteButtonEventArgs(
                         deviceId, buttonName, currentState.KeyCode,
-                        ButtonEventType.KeyPress,
                         holdDuration: holdDuration,
                         rawData: buffer.Take(length).ToArray());
 

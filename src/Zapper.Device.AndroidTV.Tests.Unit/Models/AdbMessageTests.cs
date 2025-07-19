@@ -24,7 +24,7 @@ public class AdbMessageTests
 
         // Assert
         bytes.Length.Should().Be((int)AdbMessage.AdbHeaderLength);
-        
+
         BitConverter.ToUInt32(bytes, 0).Should().Be(message.Command);
         BitConverter.ToUInt32(bytes, 4).Should().Be(message.Arg0);
         BitConverter.ToUInt32(bytes, 8).Should().Be(message.Arg1);
@@ -54,10 +54,10 @@ public class AdbMessageTests
 
         // Assert
         bytes.Length.Should().Be((int)(AdbMessage.AdbHeaderLength + testData.Length));
-        
+
         // Check header
         BitConverter.ToUInt32(bytes, 12).Should().Be((uint)testData.Length);
-        
+
         // Check data
         for (int i = 0; i < testData.Length; i++)
         {

@@ -53,7 +53,7 @@ public class MockUsbRemoteHandler(ILogger<MockUsbRemoteHandler> logger) : IUsbRe
         if (!_isListening)
             return;
 
-        var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode, ButtonEventType.KeyPress);
+        var eventArgs = new RemoteButtonEventArgs(deviceId, buttonName, keyCode);
         logger.LogDebug("Simulating button press: {DeviceId} - {ButtonName}", deviceId, buttonName);
         ButtonPressed?.Invoke(this, eventArgs);
     }

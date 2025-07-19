@@ -7,17 +7,16 @@ public class BluetoothService : BackgroundService, IBluetoothService
 {
     private readonly ILogger<BluetoothService> _logger;
     private readonly BlueZAdapter _adapter;
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public BluetoothService(ILogger<BluetoothService> logger, ILoggerFactory loggerFactory)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        var loggerFactoryNotNull = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
-        _adapter = new BlueZAdapter(loggerFactoryNotNull.CreateLogger<BlueZAdapter>());
+        _logger = logger;
+        _adapter = new BlueZAdapter(loggerFactory.CreateLogger<BlueZAdapter>());
 
-        _adapter.DeviceFound += (s, e) => DeviceFound?.Invoke(this, e);
-        _adapter.DeviceConnected += (s, e) => DeviceConnected?.Invoke(this, e);
-        _adapter.DeviceDisconnected += (s, e) => DeviceDisconnected?.Invoke(this, e);
+        _adapter.DeviceFound += (_, e) => DeviceFound?.Invoke(this, e);
+        _adapter.DeviceConnected += (_, e) => DeviceConnected?.Invoke(this, e);
+        _adapter.DeviceDisconnected += (_, e) => DeviceDisconnected?.Invoke(this, e);
     }
 
     public event EventHandler<BluetoothDeviceEventArgs>? DeviceFound;
@@ -184,7 +183,7 @@ public class BluetoothService : BackgroundService, IBluetoothService
         {
             if (IsDiscovering)
             {
-                await StopDiscovery();
+                await StopDiscovery(stoppingToken);
             }
         }
     }

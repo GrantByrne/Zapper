@@ -27,7 +27,7 @@ public class GpioInfraredTransmitterTests
     {
         var transmitter = new GpioInfraredTransmitter(18, _logger);
 
-        var act = async () => await transmitter.Transmit("test code", 1);
+        var act = async () => await transmitter.Transmit("test code");
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");
@@ -46,7 +46,7 @@ public class GpioInfraredTransmitterTests
             Protocol = "NEC"
         };
 
-        var act = async () => await transmitter.Transmit(irCode, 1);
+        var act = async () => await transmitter.Transmit(irCode);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");
@@ -58,7 +58,7 @@ public class GpioInfraredTransmitterTests
         var transmitter = new GpioInfraredTransmitter(18, _logger);
         var pulses = new[] { 9000, 4500, 560, 560 };
 
-        var act = async () => await transmitter.TransmitRaw(pulses, 38000);
+        var act = async () => await transmitter.TransmitRaw(pulses);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("IR transmitter not initialized");

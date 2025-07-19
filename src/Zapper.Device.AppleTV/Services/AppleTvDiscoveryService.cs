@@ -15,7 +15,7 @@ public class AppleTvDiscoveryService(ILogger<AppleTvDiscoveryService> logger)
         "_dacp._tcp.local."
     ];
 
-    public async Task<List<AppleTvDevice>> DiscoverDevicesAsync(int timeoutSeconds = 5)
+    public virtual async Task<List<AppleTvDevice>> DiscoverDevicesAsync(int timeoutSeconds = 5)
     {
         var devices = new List<AppleTvDevice>();
 

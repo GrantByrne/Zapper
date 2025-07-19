@@ -89,6 +89,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppleTv", "AppleTv", "{D197
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.AndroidTV.Tests.Unit", "Zapper.Device.AndroidTV.Tests.Unit\Zapper.Device.AndroidTV.Tests.Unit.csproj", "{602F0415-95C7-4108-BA92-6D5DF17ECE49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zapper.Device.AppleTV.Tests.Unit", "Zapper.Device.AppleTV.Tests.Unit\Zapper.Device.AppleTV.Tests.Unit.csproj", "{741EE42D-F85D-4372-92AE-94BB0559603F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -459,6 +461,18 @@ Global
 		{602F0415-95C7-4108-BA92-6D5DF17ECE49}.Release|x64.Build.0 = Release|Any CPU
 		{602F0415-95C7-4108-BA92-6D5DF17ECE49}.Release|x86.ActiveCfg = Release|Any CPU
 		{602F0415-95C7-4108-BA92-6D5DF17ECE49}.Release|x86.Build.0 = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|x64.Build.0 = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Debug|x86.Build.0 = Debug|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x64.ActiveCfg = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x64.Build.0 = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x86.ActiveCfg = Release|Any CPU
+		{741EE42D-F85D-4372-92AE-94BB0559603F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -499,6 +513,7 @@ Global
 		{54103CFF-6085-4490-BF12-2D21A9B7BBAA} = {7F030AAB-9352-4BF4-AA1F-432476425C2E}
 		{D197D1F9-A86C-48BD-86EA-5758F879AAF2} = {7F030AAB-9352-4BF4-AA1F-432476425C2E}
 		{602F0415-95C7-4108-BA92-6D5DF17ECE49} = {54103CFF-6085-4490-BF12-2D21A9B7BBAA}
+		{741EE42D-F85D-4372-92AE-94BB0559603F} = {D197D1F9-A86C-48BD-86EA-5758F879AAF2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6C0BAFE-1FF7-4FD1-B86F-7A62E4F69FB0}

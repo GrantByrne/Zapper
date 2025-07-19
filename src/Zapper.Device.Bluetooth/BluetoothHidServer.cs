@@ -6,7 +6,6 @@ namespace Zapper.Device.Bluetooth;
 
 public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : BackgroundService, IBluetoothHidServer
 {
-    private readonly ILogger<BluetoothHidServer> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly object _lock = new();
     private IAdapter1? _adapter;
 #pragma warning disable CS0414
@@ -32,14 +31,14 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
         {
             if (_isAdvertising)
             {
-                _logger.LogWarning("Already advertising as HID device");
+                logger.LogWarning("Already advertising as HID device");
                 return false;
             }
         }
 
         try
         {
-            _logger.LogInformation("Starting HID server advertising as '{Name}' ({Type})", deviceName, deviceType);
+            logger.LogInformation("Starting HID server advertising as '{Name}' ({Type})", deviceName, deviceType);
 
             if (_adapter == null)
             {
@@ -68,12 +67,12 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
                 _isAdvertising = true;
             }
 
-            _logger.LogInformation("HID server advertising started successfully");
+            logger.LogInformation("HID server advertising started successfully");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to start HID server advertising");
+            logger.LogError(ex, "Failed to start HID server advertising");
             return false;
         }
     }
@@ -90,7 +89,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
         try
         {
-            _logger.LogInformation("Stopping HID server advertising");
+            logger.LogInformation("Stopping HID server advertising");
 
             // Stop advertising
             if (_adapter != null)
@@ -108,12 +107,12 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
                 _connectedClientAddress = null;
             }
 
-            _logger.LogInformation("HID server advertising stopped");
+            logger.LogInformation("HID server advertising stopped");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to stop HID server advertising");
+            logger.LogError(ex, "Failed to stop HID server advertising");
             return false;
         }
     }
@@ -122,7 +121,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
     {
         if (_reportCharacteristic == null || string.IsNullOrEmpty(_connectedClientAddress))
         {
-            _logger.LogWarning("Cannot send HID report: no client connected");
+            logger.LogWarning("Cannot send HID report: no client connected");
             return false;
         }
 
@@ -134,18 +133,18 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
             var notifying = await _reportCharacteristic.GetAsync<bool>("Notifying");
             if (notifying)
             {
-                _logger.LogDebug("Sent HID report: {Report}", BitConverter.ToString(report));
+                logger.LogDebug("Sent HID report: {Report}", BitConverter.ToString(report));
                 return true;
             }
             else
             {
-                _logger.LogWarning("HID report characteristic is not notifying");
+                logger.LogWarning("HID report characteristic is not notifying");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send HID report");
+            logger.LogError(ex, "Failed to send HID report");
             return false;
         }
     }
@@ -161,7 +160,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
         if (report == null)
         {
-            _logger.LogWarning("Cannot create key press report for device type {Type}", _currentDeviceType);
+            logger.LogWarning("Cannot create key press report for device type {Type}", _currentDeviceType);
             return false;
         }
 
@@ -179,7 +178,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
         if (report == null)
         {
-            _logger.LogWarning("Cannot create key release report for device type {Type}", _currentDeviceType);
+            logger.LogWarning("Cannot create key release report for device type {Type}", _currentDeviceType);
             return false;
         }
 
@@ -204,11 +203,11 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Bluetooth HID server stopped");
+            logger.LogInformation("Bluetooth HID server stopped");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Bluetooth HID server encountered an error");
+            logger.LogError(ex, "Bluetooth HID server encountered an error");
         }
         finally
         {
@@ -221,7 +220,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
     private async Task InitializeAdapter(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Initializing Bluetooth adapter for HID server");
+        logger.LogInformation("Initializing Bluetooth adapter for HID server");
 
         var adapters = await BlueZManager.GetAdaptersAsync();
         _adapter = adapters.FirstOrDefault();
@@ -232,7 +231,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
         }
 
         var address = await _adapter.GetAddressAsync();
-        _logger.LogInformation("Using Bluetooth adapter: {Address}", address);
+        logger.LogInformation("Using Bluetooth adapter: {Address}", address);
 
         // Ensure adapter is powered
         if (!await _adapter.GetAsync<bool>("Powered"))
@@ -243,21 +242,21 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
     private Task CreateGattServices(HidDeviceType deviceType, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating GATT services for HID device type: {Type}", deviceType);
+        logger.LogInformation("Creating GATT services for HID device type: {Type}", deviceType);
 
         // Note: The actual GATT service creation would require BlueZ GATT API
         // This is a placeholder for the actual implementation
         // In reality, you would need to use DBus to register GATT services
 
         // For now, we'll log what would be created
-        _logger.LogWarning("GATT service creation not fully implemented. This requires BlueZ GATT Manager API");
+        logger.LogWarning("GATT service creation not fully implemented. This requires BlueZ GATT Manager API");
 
         return Task.CompletedTask;
     }
 
     private Task RemoveGattServices(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Removing GATT services");
+        logger.LogInformation("Removing GATT services");
 
         // Placeholder for GATT service removal
         _hidService = null;
@@ -271,7 +270,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
 
     private Task StartGattAdvertising(string deviceName, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting GATT advertising for device: {Name}", deviceName);
+        logger.LogInformation("Starting GATT advertising for device: {Name}", deviceName);
 
         // Note: This would use BlueZ's LEAdvertisingManager1 interface
         // For now, basic discoverable mode is enabled above
@@ -286,7 +285,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
             _connectedClientAddress = clientAddress;
         }
 
-        _logger.LogInformation("HID client connected: {Name} ({Address})", clientName ?? "Unknown", clientAddress);
+        logger.LogInformation("HID client connected: {Name} ({Address})", clientName ?? "Unknown", clientAddress);
         ClientConnected?.Invoke(this, new BluetoothHidConnectionEventArgs(clientAddress, clientName));
     }
 
@@ -297,7 +296,7 @@ public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : Background
             _connectedClientAddress = null;
         }
 
-        _logger.LogInformation("HID client disconnected: {Address}", clientAddress);
+        logger.LogInformation("HID client disconnected: {Address}", clientAddress);
         ClientDisconnected?.Invoke(this, new BluetoothHidConnectionEventArgs(clientAddress));
     }
 

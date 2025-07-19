@@ -318,8 +318,7 @@ public class UsbRemoteService : IUsbRemoteService
 
             // Send notification
             await _notificationService.SendSystemMessage(
-                $"USB remote connected: {remote.Name}",
-                "info");
+                $"USB remote connected: {remote.Name}");
 
             _logger.LogInformation("USB remote connected and registered: {Name} ({DeviceId})", remote.Name, deviceId);
         }

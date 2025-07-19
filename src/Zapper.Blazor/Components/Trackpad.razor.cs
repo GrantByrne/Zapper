@@ -77,9 +77,9 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private void OnTouchStart(TouchEventArgs e)
     {
-        if (e.Touches.Length <= 0) 
+        if (e.Touches.Length <= 0)
             return;
-        
+
         var touch = e.Touches[0];
         _isTracking = true;
         _lastX = touch.ClientX;
@@ -101,9 +101,9 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private void OnTouchMove(TouchEventArgs e)
     {
-        if (!_isTracking || e.Touches.Length <= 0) 
+        if (!_isTracking || e.Touches.Length <= 0)
             return;
-        
+
         var touch = e.Touches[0];
         var deltaX = (touch.ClientX - _lastX) * Sensitivity;
         var deltaY = (touch.ClientY - _lastY) * Sensitivity;
@@ -129,9 +129,9 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private async void OnMovementTimer(object? sender, ElapsedEventArgs e)
     {
-        if (!_isTracking || (_accumulatedX == 0 && _accumulatedY == 0)) 
+        if (!_isTracking || (_accumulatedX == 0 && _accumulatedY == 0))
             return;
-        
+
         if (OnMouseMove.HasDelegate)
         {
             await InvokeAsync(async () =>

@@ -112,7 +112,7 @@ public class AndroidTvAdbController(IAdbClient adbClient, ILogger<AndroidTvAdbCo
             }
 
             var response = await _adbClient.ExecuteShellCommandWithResponseAsync("getprop ro.build.version.release");
-            return !string.IsNullOrEmpty(response) 
+            return !string.IsNullOrEmpty(response)
                 ? new DeviceStatus { IsOnline = true, StatusMessage = $"Android {response}" }
                 : new DeviceStatus { IsOnline = false, StatusMessage = "No response from device" };
         }

@@ -34,11 +34,11 @@ public class AdbClientTests : IDisposable
         {
             using var client = await _tcpListener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Read connect message
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             // Send connect response
             var response = new AdbMessage
             {
@@ -48,7 +48,7 @@ public class AdbClientTests : IDisposable
                 DataLength = 0,
                 Magic = AdbCommands.Connect ^ 0xffffffff
             };
-            
+
             await stream.WriteAsync(response.ToBytes());
         });
 
@@ -74,11 +74,11 @@ public class AdbClientTests : IDisposable
         {
             using var client = await _tcpListener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Read connect message
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             // Send auth response
             var response = new AdbMessage
             {
@@ -88,7 +88,7 @@ public class AdbClientTests : IDisposable
                 DataLength = 0,
                 Magic = AdbCommands.Auth ^ 0xffffffff
             };
-            
+
             await stream.WriteAsync(response.ToBytes());
         });
 
@@ -135,11 +135,11 @@ public class AdbClientTests : IDisposable
         {
             using var client = await _tcpListener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Handle connect
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             var connectResponse = new AdbMessage
             {
                 Command = AdbCommands.Connect,
@@ -149,10 +149,10 @@ public class AdbClientTests : IDisposable
                 Magic = AdbCommands.Connect ^ 0xffffffff
             };
             await stream.WriteAsync(connectResponse.ToBytes());
-            
+
             // Handle shell command
             _ = await stream.ReadAsync(buffer);
-            
+
             var okayResponse = new AdbMessage
             {
                 Command = AdbCommands.Okay,
@@ -162,7 +162,7 @@ public class AdbClientTests : IDisposable
                 Magic = AdbCommands.Okay ^ 0xffffffff
             };
             await stream.WriteAsync(okayResponse.ToBytes());
-            
+
             // Handle close
             _ = await stream.ReadAsync(buffer);
         });
@@ -197,16 +197,16 @@ public class AdbClientTests : IDisposable
         _tcpListener.Start();
 
         var expectedOutput = "test output";
-        
+
         var serverTask = Task.Run(async () =>
         {
             using var client = await _tcpListener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Handle connect
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             var connectResponse = new AdbMessage
             {
                 Command = AdbCommands.Connect,
@@ -216,10 +216,10 @@ public class AdbClientTests : IDisposable
                 Magic = AdbCommands.Connect ^ 0xffffffff
             };
             await stream.WriteAsync(connectResponse.ToBytes());
-            
+
             // Handle shell command
             _ = await stream.ReadAsync(buffer);
-            
+
             var okayResponse = new AdbMessage
             {
                 Command = AdbCommands.Okay,
@@ -229,7 +229,7 @@ public class AdbClientTests : IDisposable
                 Magic = AdbCommands.Okay ^ 0xffffffff
             };
             await stream.WriteAsync(okayResponse.ToBytes());
-            
+
             // Send data response
             var dataResponse = new AdbMessage
             {
@@ -241,7 +241,7 @@ public class AdbClientTests : IDisposable
                 Magic = AdbCommands.Write ^ 0xffffffff
             };
             await stream.WriteAsync(dataResponse.ToBytes());
-            
+
             // Handle close
             _ = await stream.ReadAsync(buffer);
         });
@@ -269,11 +269,11 @@ public class AdbClientTests : IDisposable
         {
             using var client = await _tcpListener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Handle connect
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             var connectResponse = new AdbMessage
             {
                 Command = AdbCommands.Connect,

@@ -9,24 +9,21 @@ namespace Zapper.Device.AndroidTV.Tests.Unit;
 
 public class AdbDiscoveryServiceTests : IDisposable
 {
-    private readonly ILogger<AdbDiscoveryService> _mockLogger;
-    private readonly ILoggerFactory _mockLoggerFactory;
-    private readonly ILogger<AdbClient> _mockAdbClientLogger;
     private readonly AdbDiscoveryService _discoveryService;
     private readonly List<TcpListener> _tcpListeners = new();
 
     public AdbDiscoveryServiceTests()
     {
-        _mockLogger = Substitute.For<ILogger<AdbDiscoveryService>>();
-        _mockLoggerFactory = Substitute.For<ILoggerFactory>();
-        _mockAdbClientLogger = Substitute.For<ILogger<AdbClient>>();
-        
-        _mockLoggerFactory.CreateLogger<AdbClient>().Returns(_mockAdbClientLogger);
-        
-        _discoveryService = new AdbDiscoveryService(_mockLogger, _mockLoggerFactory);
+        var mockLogger = Substitute.For<ILogger<AdbDiscoveryService>>();
+        var mockLoggerFactory = Substitute.For<ILoggerFactory>();
+        var mockAdbClientLogger = Substitute.For<ILogger<AdbClient>>();
+
+        mockLoggerFactory.CreateLogger<AdbClient>().Returns(mockAdbClientLogger);
+
+        _discoveryService = new AdbDiscoveryService(mockLogger, mockLoggerFactory);
     }
 
-    [Fact]
+    [Fact(Timeout = 3000)]
     public async Task TestDeviceAsync_ValidDevice_ReturnsTrue()
     {
         // Arrange
@@ -38,12 +35,12 @@ public class AdbDiscoveryServiceTests : IDisposable
         var serverTask = Task.Run(async () =>
         {
             using var client = await listener.AcceptTcpClientAsync();
-            using var stream = client.GetStream();
-            
+            await using var stream = client.GetStream();
+
             // Read connect message
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             // Send connect response
             var response = new AdbMessage
             {
@@ -53,7 +50,7 @@ public class AdbDiscoveryServiceTests : IDisposable
                 DataLength = 0,
                 Magic = AdbCommands.Connect ^ 0xffffffff
             };
-            
+
             await stream.WriteAsync(response.ToBytes());
         });
 
@@ -70,7 +67,7 @@ public class AdbDiscoveryServiceTests : IDisposable
     public async Task TestDeviceAsync_InvalidDevice_ReturnsFalse()
     {
         // Act
-        var result = await _discoveryService.TestDeviceAsync("invalid.host.name", 5555);
+        var result = await _discoveryService.TestDeviceAsync("invalid.host.name");
 
         // Assert
         result.Should().BeFalse();
@@ -89,11 +86,11 @@ public class AdbDiscoveryServiceTests : IDisposable
         {
             using var client = await listener.AcceptTcpClientAsync();
             using var stream = client.GetStream();
-            
+
             // Read connect message
             var buffer = new byte[1024];
             _ = await stream.ReadAsync(buffer);
-            
+
             // Send auth response
             var response = new AdbMessage
             {
@@ -103,7 +100,7 @@ public class AdbDiscoveryServiceTests : IDisposable
                 DataLength = 0,
                 Magic = AdbCommands.Auth ^ 0xffffffff
             };
-            
+
             await stream.WriteAsync(response.ToBytes());
         });
 
@@ -136,7 +133,7 @@ public class AdbDiscoveryServiceTests : IDisposable
         // This test is skipped because AdbDiscoveryService.DiscoverDevicesAsync() 
         // performs actual network operations that cannot be mocked without refactoring
         // the service to use dependency injection for network operations.
-        
+
         // Act
         var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(1));
         var result = await _discoveryService.DiscoverDevicesAsync(cancellationTokenSource.Token);

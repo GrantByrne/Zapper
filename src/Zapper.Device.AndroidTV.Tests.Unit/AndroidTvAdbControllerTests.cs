@@ -193,8 +193,8 @@ public class AndroidTvAdbControllerTests
             ConnectionType = ConnectionType.Adb,
             IpAddress = "192.168.1.100"
         };
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.Number,
             NetworkPayload = numberPayload
         };
@@ -220,8 +220,8 @@ public class AndroidTvAdbControllerTests
             ConnectionType = ConnectionType.Adb,
             IpAddress = "192.168.1.100"
         };
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.KeyboardInput,
             KeyboardText = "Hello World"
         };
@@ -247,8 +247,8 @@ public class AndroidTvAdbControllerTests
             ConnectionType = ConnectionType.Adb,
             IpAddress = "192.168.1.100"
         };
-        var command = new DeviceCommand 
-        { 
+        var command = new DeviceCommand
+        {
             Type = CommandType.AppLaunch,
             NetworkPayload = "com.netflix.ninja"
         };
