@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Zapper.Core.Models;
 using Zapper.Device.Bluetooth;
 
 namespace Zapper.Services;

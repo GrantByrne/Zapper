@@ -1,4 +1,3 @@
-using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using System.Net.Sockets;
 using Zapper.Core.Models;
@@ -125,17 +124,17 @@ public class MrpProtocolController(ILogger<MrpProtocolController> logger)
             var buffer = new byte[1024];
             var bytesRead = await _networkStream.ReadAsync(buffer);
 
-            if (bytesRead > 0)
-            {
-                var success = ParsePairingResponse(buffer[..bytesRead]);
-                if (success && ConnectedDevice != null)
-                {
-                    ConnectedDevice.IsPaired = true;
-                    return true;
-                }
-            }
+            if (bytesRead <= 0) 
+                return false;
+            
+            var success = ParsePairingResponse(buffer[..bytesRead]);
+            
+            if (!success || ConnectedDevice == null) 
+                return false;
+            
+            ConnectedDevice.IsPaired = true;
+            return true;
 
-            return false;
         }
         catch (Exception ex)
         {
@@ -154,10 +153,10 @@ public class MrpProtocolController(ILogger<MrpProtocolController> logger)
 
     private byte[] CreateHandshakeMessage()
     {
-        return new byte[] { 0x08, 0x01, 0x10, 0x01 };
+        return [0x08, 0x01, 0x10, 0x01];
     }
 
-    private byte[] CreateCommandMessage(CommandCode command)
+    private static byte[] CreateCommandMessage(CommandCode command)
     {
         var messageType = command switch
         {
@@ -180,12 +179,12 @@ public class MrpProtocolController(ILogger<MrpProtocolController> logger)
             _ => 0x00
         };
 
-        return new byte[] { 0x08, (byte)messageType, 0x10, 0x01 };
+        return [0x08, (byte)messageType, 0x10, 0x01];
     }
 
     private byte[] CreateStatusRequestMessage()
     {
-        return new byte[] { 0x08, 0x20, 0x10, 0x01 };
+        return [0x08, 0x20, 0x10, 0x01];
     }
 
     private byte[] CreatePairingMessage(string pin)

@@ -1,5 +1,4 @@
 using FastEndpoints;
-using Zapper.Core.Models;
 using Zapper.Device.AppleTV.Services;
 
 namespace Zapper.API.Endpoints.Devices.AppleTV;

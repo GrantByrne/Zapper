@@ -1,5 +1,4 @@
 using Refit;
-using Zapper.Client;
 using Zapper.Client.Devices;
 // using Zapper.Client; // No need to reference own namespace
 

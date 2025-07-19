@@ -1,5 +1,4 @@
 using Refit;
-using Zapper.Client;
 using Zapper.Client.Activities;
 
 namespace Zapper.Client;

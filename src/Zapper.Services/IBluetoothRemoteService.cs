@@ -1,5 +1,3 @@
-using Zapper.Core.Models;
-
 namespace Zapper.Services;
 
 public interface IBluetoothRemoteService

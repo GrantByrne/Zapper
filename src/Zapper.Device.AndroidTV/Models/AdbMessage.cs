@@ -1,11 +1,8 @@
-using System.Text;
-
 namespace Zapper.Device.AndroidTV.Models;
 
 public class AdbMessage
 {
     public const uint AdbHeaderLength = 24;
-    public const uint MaxDataLength = 4096;
 
     public uint Command { get; set; }
     public uint Arg0 { get; set; }
@@ -13,7 +10,7 @@ public class AdbMessage
     public uint DataLength { get; set; }
     public uint DataCrc32 { get; set; }
     public uint Magic { get; set; }
-    public byte[] Data { get; set; } = Array.Empty<byte>();
+    public byte[] Data { get; set; } = [];
 
     public byte[] ToBytes()
     {

@@ -171,7 +171,7 @@ public class RokuDeviceController(INetworkDeviceController networkController, IL
             // Handle app launch commands
             if (command.NetworkPayload.StartsWith("launch:"))
             {
-                var appId = command.NetworkPayload.Substring(7);
+                var appId = command.NetworkPayload[7..];
                 return await LaunchApp(ipAddress, appId, cancellationToken);
             }
 

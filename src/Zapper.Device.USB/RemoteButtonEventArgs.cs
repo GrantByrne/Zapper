@@ -29,7 +29,7 @@ public class RemoteButtonEventArgs : EventArgs
         Timestamp = DateTime.UtcNow;
         EventType = eventType;
         HoldDuration = holdDuration;
-        RawData = rawData ?? Array.Empty<byte>();
+        RawData = rawData ?? [];
         IsRepeat = isRepeat;
         ShouldIntercept = false;
     }

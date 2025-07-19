@@ -77,19 +77,19 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private void OnTouchStart(TouchEventArgs e)
     {
-        if (e.Touches.Length > 0)
-        {
-            var touch = e.Touches[0];
-            _isTracking = true;
-            _lastX = touch.ClientX;
-            _lastY = touch.ClientY;
-            _currentX = touch.ClientX;
-            _currentY = touch.ClientY;
-            _accumulatedX = 0;
-            _accumulatedY = 0;
-            _movementTimer?.Start();
-            StateHasChanged();
-        }
+        if (e.Touches.Length <= 0) 
+            return;
+        
+        var touch = e.Touches[0];
+        _isTracking = true;
+        _lastX = touch.ClientX;
+        _lastY = touch.ClientY;
+        _currentX = touch.ClientX;
+        _currentY = touch.ClientY;
+        _accumulatedX = 0;
+        _accumulatedY = 0;
+        _movementTimer?.Start();
+        StateHasChanged();
     }
 
     private void OnTouchEnd(TouchEventArgs e)
@@ -101,23 +101,23 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private void OnTouchMove(TouchEventArgs e)
     {
-        if (_isTracking && e.Touches.Length > 0)
-        {
-            var touch = e.Touches[0];
-            var deltaX = (touch.ClientX - _lastX) * Sensitivity;
-            var deltaY = (touch.ClientY - _lastY) * Sensitivity;
+        if (!_isTracking || e.Touches.Length <= 0) 
+            return;
+        
+        var touch = e.Touches[0];
+        var deltaX = (touch.ClientX - _lastX) * Sensitivity;
+        var deltaY = (touch.ClientY - _lastY) * Sensitivity;
 
-            _accumulatedX += deltaX;
-            _accumulatedY += deltaY;
+        _accumulatedX += deltaX;
+        _accumulatedY += deltaY;
 
-            _lastX = touch.ClientX;
-            _lastY = touch.ClientY;
-            _currentX = touch.ClientX;
-            _currentY = touch.ClientY;
-            _lastMoveTime = DateTime.Now;
+        _lastX = touch.ClientX;
+        _lastY = touch.ClientY;
+        _currentX = touch.ClientX;
+        _currentY = touch.ClientY;
+        _lastMoveTime = DateTime.Now;
 
-            StateHasChanged();
-        }
+        StateHasChanged();
     }
 
     private void OnTouchCancel(TouchEventArgs e)
@@ -129,17 +129,17 @@ public partial class Trackpad : ComponentBase, IDisposable
 
     private async void OnMovementTimer(object? sender, ElapsedEventArgs e)
     {
-        if (_isTracking && (_accumulatedX != 0 || _accumulatedY != 0))
+        if (!_isTracking || (_accumulatedX == 0 && _accumulatedY == 0)) 
+            return;
+        
+        if (OnMouseMove.HasDelegate)
         {
-            if (OnMouseMove.HasDelegate)
+            await InvokeAsync(async () =>
             {
-                await InvokeAsync(async () =>
-                {
-                    await OnMouseMove.InvokeAsync((_accumulatedX, _accumulatedY));
-                    _accumulatedX = 0;
-                    _accumulatedY = 0;
-                });
-            }
+                await OnMouseMove.InvokeAsync((_accumulatedX, _accumulatedY));
+                _accumulatedX = 0;
+                _accumulatedY = 0;
+            });
         }
     }
 

@@ -3,7 +3,6 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Zapper.Device.Network;
 using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox;

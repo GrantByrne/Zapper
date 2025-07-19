@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using System.Net.Http.Json;
-using Zapper.Client;
 using Zapper.Core.Models;
 
 namespace Zapper.Blazor.Pages;

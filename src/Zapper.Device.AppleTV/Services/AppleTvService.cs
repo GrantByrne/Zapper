@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using Zapper.Core.Models;
 using Zapper.Data;
 using Zapper.Device.AppleTV.Interfaces;

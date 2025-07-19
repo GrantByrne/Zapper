@@ -4,8 +4,8 @@ public static class HidReportDescriptors
 {
     public static byte[] GetRemoteControlDescriptor()
     {
-        return new byte[]
-        {
+        return
+        [
             0x05, 0x0C,        // Usage Page (Consumer)
             0x09, 0x01,        // Usage (Consumer Control)
             0xA1, 0x01,        // Collection (Application)
@@ -52,13 +52,13 @@ public static class HidReportDescriptors
             0x29, 0x65,        //   Usage Maximum (101)
             0x81, 0x00,        //   Input (Data,Array,Abs)
             0xC0               // End Collection
-        };
+        ];
     }
 
     public static byte[] GetGamepadDescriptor()
     {
-        return new byte[]
-        {
+        return
+        [
             0x05, 0x01,        // Usage Page (Generic Desktop)
             0x09, 0x05,        // Usage (Game Pad)
             0xA1, 0x01,        // Collection (Application)
@@ -111,7 +111,7 @@ public static class HidReportDescriptors
             0x81, 0x02,        //   Input (Data,Var,Abs)
             
             0xC0               // End Collection
-        };
+        ];
     }
 
     public static byte[] CreateRemoteKeyReport(HidKeyCode keyCode, bool pressed)

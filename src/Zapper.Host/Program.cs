@@ -1,7 +1,5 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Microsoft.EntityFrameworkCore;
-using Zapper.API.Endpoints.Devices;
 using Zapper.API.Endpoints.Devices.Bluetooth;
 using Zapper.Core.Interfaces;
 using Zapper.Data;

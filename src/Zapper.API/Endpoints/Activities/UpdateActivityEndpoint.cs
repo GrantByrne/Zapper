@@ -22,12 +22,12 @@ public class UpdateActivityEndpoint(IActivityService activityService) : Endpoint
                 Description = "Updated sequence for movie watching",
                 Type = "Scene",
                 IsEnabled = true,
-                Steps = new List<UpdateActivityStepRequest>
-                {
+                Steps =
+                [
                     new() { Id = 1, DeviceId = 1, Command = "Power", DelayMs = 1000, SortOrder = 1 },
                     new() { Id = 2, DeviceId = 2, Command = "Power", DelayMs = 500, SortOrder = 2 },
                     new() { DeviceId = 1, Command = "Input_HDMI2", DelayMs = 500, SortOrder = 3 }
-                }
+                ]
             };
             s.Responses[200] = "Activity updated successfully";
             s.Responses[400] = "Invalid request - validation errors";

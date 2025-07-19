@@ -1,9 +1,5 @@
 using FastEndpoints;
 using Zapper.Client.Devices;
-using Zapper.Client.IRCodes;
-using Zapper.Client.Settings;
-using Zapper.Client.System;
-using Zapper.Client.UsbRemotes;
 using Zapper.Services;
 
 namespace Zapper.API.Endpoints.Devices;

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -102,7 +101,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UsbRemoteButtonMappings_ButtonId_DeviceId_EventType",
                 table: "UsbRemoteButtonMappings",
-                columns: new[] { "ButtonId", "DeviceId", "EventType" },
+                columns: ["ButtonId", "DeviceId", "EventType"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -118,7 +117,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UsbRemoteButtons_RemoteId_KeyCode",
                 table: "UsbRemoteButtons",
-                columns: new[] { "RemoteId", "KeyCode" },
+                columns: ["RemoteId", "KeyCode"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -130,7 +129,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UsbRemotes_VendorId_ProductId_SerialNumber",
                 table: "UsbRemotes",
-                columns: new[] { "VendorId", "ProductId", "SerialNumber" },
+                columns: ["VendorId", "ProductId", "SerialNumber"],
                 unique: true);
         }
 

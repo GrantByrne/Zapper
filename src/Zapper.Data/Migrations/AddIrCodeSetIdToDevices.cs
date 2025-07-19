@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -229,7 +228,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ActivityDevices_ActivityId_DeviceId",
                 table: "ActivityDevices",
-                columns: new[] { "ActivityId", "DeviceId" },
+                columns: ["ActivityId", "DeviceId"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -240,7 +239,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ActivitySteps_ActivityId_StepOrder",
                 table: "ActivitySteps",
-                columns: new[] { "ActivityId", "StepOrder" },
+                columns: ["ActivityId", "StepOrder"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -251,13 +250,13 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCommands_DeviceId_Name",
                 table: "DeviceCommands",
-                columns: new[] { "DeviceId", "Name" },
+                columns: ["DeviceId", "Name"],
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_IpAddress_Port",
                 table: "Devices",
-                columns: new[] { "IpAddress", "Port" });
+                columns: ["IpAddress", "Port"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Devices_Name",
@@ -279,7 +278,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_IrCodes_Brand_Model_CommandName",
                 table: "IrCodes",
-                columns: new[] { "Brand", "Model", "CommandName" });
+                columns: ["Brand", "Model", "CommandName"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IrCodes_IRCodeSetId",
@@ -289,7 +288,7 @@ namespace Zapper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_IrCodeSets_Brand_Model",
                 table: "IrCodeSets",
-                columns: new[] { "Brand", "Model" },
+                columns: ["Brand", "Model"],
                 unique: true);
         }
 

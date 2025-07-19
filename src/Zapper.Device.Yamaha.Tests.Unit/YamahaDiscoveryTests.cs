@@ -1,7 +1,5 @@
-using System.Net;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 
 namespace Zapper.Device.Yamaha.Tests.Unit;
 

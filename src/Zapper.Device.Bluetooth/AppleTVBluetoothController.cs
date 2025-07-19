@@ -184,7 +184,7 @@ public class AppleTvBluetoothController(
         {
             if (command.NetworkPayload.StartsWith("text:"))
             {
-                var text = command.NetworkPayload.Substring(5);
+                var text = command.NetworkPayload[5..];
                 return await hidController.SendText(deviceAddress, text, cancellationToken);
             }
 

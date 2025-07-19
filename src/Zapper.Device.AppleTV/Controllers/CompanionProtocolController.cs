@@ -28,7 +28,7 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
 
             await _sslStream.AuthenticateAsClientAsync(device.IpAddress!);
 
-            if (device.RequiresPairing && !device.IsPaired)
+            if (device is { RequiresPairing: true, IsPaired: false })
             {
                 Logger.LogWarning("Device requires pairing. Please pair first.");
                 return false;
@@ -76,7 +76,7 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
             var packet = BuildCommandPacket(commandCode);
             if (_sessionKey != null)
             {
-                packet = EncryptPacket(packet, _sessionKey);
+                packet = EncryptPacket(packet);
             }
 
             await _sslStream.WriteAsync(packet);
@@ -101,7 +101,7 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
             var statusRequest = BuildStatusRequestPacket();
             if (_sessionKey != null)
             {
-                statusRequest = EncryptPacket(statusRequest, _sessionKey);
+                statusRequest = EncryptPacket(statusRequest);
             }
 
             await _sslStream.WriteAsync(statusRequest);
@@ -115,10 +115,10 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
                 var response = buffer[..bytesRead];
                 if (_sessionKey != null)
                 {
-                    response = DecryptPacket(response, _sessionKey);
+                    response = DecryptPacket(response);
                 }
 
-                return ParseStatusResponse(response);
+                return ParseStatusResponse();
             }
 
             return null;
@@ -189,7 +189,7 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
 
     private byte[] BuildStatusRequestPacket()
     {
-        return new byte[] { 0x02, 0x00 };
+        return [0x02, 0x00];
     }
 
     private byte[] BuildPairingRequest(string pin)
@@ -202,17 +202,17 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
         return packet;
     }
 
-    private byte[] EncryptPacket(byte[] data, byte[] key)
+    private static byte[] EncryptPacket(byte[] data)
     {
         return data;
     }
 
-    private byte[] DecryptPacket(byte[] data, byte[] key)
+    private static byte[] DecryptPacket(byte[] data)
     {
         return data;
     }
 
-    private AppleTvStatus ParseStatusResponse(byte[] response)
+    private static AppleTvStatus ParseStatusResponse()
     {
         return new AppleTvStatus
         {
@@ -220,17 +220,15 @@ public class CompanionProtocolController(ILogger<CompanionProtocolController> lo
         };
     }
 
-    private (bool success, byte[]? pairingKey) ParsePairingResponse(byte[] response)
+    private static (bool success, byte[]? pairingKey) ParsePairingResponse(byte[] response)
     {
-        if (response.Length > 0 && response[0] == 0x00)
-        {
-            if (response.Length > 32)
-            {
-                var key = new byte[32];
-                Array.Copy(response, 1, key, 0, 32);
-                return (true, key);
-            }
-        }
-        return (false, null);
+        if (response.Length <= 0 || response[0] != 0x00 || response.Length <= 32) 
+            return (false, null);
+
+        var key = new byte[32];
+        Array.Copy(response, 1, key, 0, 32);
+            
+        return (true, key);
+
     }
 }

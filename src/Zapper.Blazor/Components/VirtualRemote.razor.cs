@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Zapper.Client.Devices;
-using Zapper.Client;
 using CommandType = Zapper.Core.Models.CommandType;
 
 namespace Zapper.Blazor.Components;

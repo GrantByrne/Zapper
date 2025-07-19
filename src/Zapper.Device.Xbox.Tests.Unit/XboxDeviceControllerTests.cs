@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Zapper.Device.Network;
 using Zapper.Device.Xbox.Network;
 
 namespace Zapper.Device.Xbox.Tests.Unit;

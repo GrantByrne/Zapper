@@ -1,10 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
 using Zapper.Client.Devices;
-using Zapper.Client.IRCodes;
-using Zapper.Client.Settings;
-using Zapper.Client.System;
-using Zapper.Client.UsbRemotes;
 
 namespace Zapper.API.Validators;
 

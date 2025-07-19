@@ -21,12 +21,12 @@ public class CreateActivityEndpoint(IActivityService activityService) : Endpoint
                 Description = "Turn on TV, sound system, and set to correct input",
                 Type = "Scene",
                 IsEnabled = true,
-                Steps = new List<CreateActivityStepRequest>
-                {
+                Steps =
+                [
                     new() { DeviceId = 1, Command = "Power", DelayMs = 1000, SortOrder = 1 },
                     new() { DeviceId = 2, Command = "Power", DelayMs = 500, SortOrder = 2 },
                     new() { DeviceId = 1, Command = "Input_HDMI1", DelayMs = 500, SortOrder = 3 }
-                }
+                ]
             };
             s.Responses[201] = "Activity created successfully";
             s.Responses[400] = "Invalid request - validation errors";

@@ -105,7 +105,7 @@ public partial class IrCodeSelector(IZapperApiClient? apiClient, HttpClient http
             var response = await httpClient.GetAsync("/api/ir-codes/external/manufacturers");
             if (response.IsSuccessStatusCode)
             {
-                _manufacturers = await response.Content.ReadFromJsonAsync<List<string>>() ?? new();
+                _manufacturers = await response.Content.ReadFromJsonAsync<List<string>>() ?? [];
             }
         }
         catch (Exception ex)

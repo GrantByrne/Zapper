@@ -14,10 +14,10 @@ public partial class UsbRemoteConfiguration(IZapperApiClient? apiClient, HttpCli
     [Parameter] public int RemoteId { get; set; }
 
     private UsbRemote? _remote;
-    private List<UsbRemoteButton> _buttons = new();
-    private List<DeviceDto> _devices = new();
-    private List<DeviceCommand> _deviceCommands = new();
-    private List<ButtonEventData> _buttonEvents = new();
+    private List<UsbRemoteButton> _buttons = [];
+    private List<DeviceDto> _devices = [];
+    private List<DeviceCommand> _deviceCommands = [];
+    private List<ButtonEventData> _buttonEvents = [];
     private bool _isLoading = true;
     private string? _errorMessage;
     private HubConnection? _hubConnection;
@@ -39,11 +39,11 @@ public partial class UsbRemoteConfiguration(IZapperApiClient? apiClient, HttpCli
         FullWidth = true
     };
 
-    private readonly List<BreadcrumbItem> _breadcrumbs = new()
-    {
+    private readonly List<BreadcrumbItem> _breadcrumbs =
+    [
         new BreadcrumbItem("USB Remotes", href: "/usb-remotes"),
         new BreadcrumbItem("Configure", href: null, disabled: true)
-    };
+    ];
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,7 +70,7 @@ public partial class UsbRemoteConfiguration(IZapperApiClient? apiClient, HttpCli
 
             // Load buttons
             var buttons = await httpClient.GetFromJsonAsync<IEnumerable<UsbRemoteButton>>($"/api/usb-remotes/{RemoteId}/buttons");
-            _buttons = buttons?.ToList() ?? new List<UsbRemoteButton>();
+            _buttons = buttons?.ToList() ?? [];
 
             // Load devices for mapping
             if (apiClient != null)
@@ -198,13 +198,13 @@ public partial class UsbRemoteConfiguration(IZapperApiClient? apiClient, HttpCli
         {
             // TODO: Load device commands from API
             // For now, create some default commands
-            _deviceCommands = new List<DeviceCommand>
-            {
+            _deviceCommands =
+            [
                 new DeviceCommand { Id = 1, Name = "power", DeviceId = deviceId },
                 new DeviceCommand { Id = 2, Name = "volume_up", DeviceId = deviceId },
                 new DeviceCommand { Id = 3, Name = "volume_down", DeviceId = deviceId },
                 new DeviceCommand { Id = 4, Name = "mute", DeviceId = deviceId }
-            };
+            ];
             await InvokeAsync(StateHasChanged);
         }
         catch

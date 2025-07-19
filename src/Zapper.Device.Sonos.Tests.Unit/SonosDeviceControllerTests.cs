@@ -1,11 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using Zapper.Core.Models;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Zapper.Device.Sonos.Tests.Unit;
 

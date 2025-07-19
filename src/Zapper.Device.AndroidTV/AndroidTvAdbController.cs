@@ -234,13 +234,13 @@ public class AndroidTvAdbController(IAdbClient adbClient, ILogger<AndroidTvAdbCo
 
         if (payload.StartsWith("shell:"))
         {
-            var shellCommand = payload.Substring(6);
+            var shellCommand = payload[6..];
             return await _adbClient.ExecuteShellCommandAsync(shellCommand);
         }
 
         if (payload.StartsWith("text:"))
         {
-            var text = payload.Substring(5);
+            var text = payload[5..];
             var escapedText = text.Replace(" ", "%s").Replace("'", "\\'");
             var inputCommand = $"input text '{escapedText}'";
             return await _adbClient.ExecuteShellCommandAsync(inputCommand);
@@ -248,7 +248,7 @@ public class AndroidTvAdbController(IAdbClient adbClient, ILogger<AndroidTvAdbCo
 
         if (payload.StartsWith("app:"))
         {
-            var packageName = payload.Substring(4);
+            var packageName = payload[4..];
             var launchCommand = $"am start -n {packageName}";
             return await _adbClient.ExecuteShellCommandAsync(launchCommand);
         }

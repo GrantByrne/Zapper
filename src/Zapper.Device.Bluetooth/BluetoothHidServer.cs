@@ -1,13 +1,12 @@
 using Linux.Bluetooth;
-using Linux.Bluetooth.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Zapper.Device.Bluetooth;
 
-public class BluetoothHidServer : BackgroundService, IBluetoothHidServer
+public class BluetoothHidServer(ILogger<BluetoothHidServer> logger) : BackgroundService, IBluetoothHidServer
 {
-    private readonly ILogger<BluetoothHidServer> _logger;
+    private readonly ILogger<BluetoothHidServer> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly object _lock = new();
     private IAdapter1? _adapter;
 #pragma warning disable CS0414
@@ -20,17 +19,6 @@ public class BluetoothHidServer : BackgroundService, IBluetoothHidServer
     private string? _connectedClientAddress;
     private HidDeviceType _currentDeviceType;
     private bool _isAdvertising;
-
-    private const string HID_SERVICE_UUID = "00001812-0000-1000-8000-00805f9b34fb";
-    private const string HID_INFORMATION_UUID = "00002a4a-0000-1000-8000-00805f9b34fb";
-    private const string REPORT_MAP_UUID = "00002a4b-0000-1000-8000-00805f9b34fb";
-    private const string HID_CONTROL_POINT_UUID = "00002a4c-0000-1000-8000-00805f9b34fb";
-    private const string REPORT_UUID = "00002a4d-0000-1000-8000-00805f9b34fb";
-
-    public BluetoothHidServer(ILogger<BluetoothHidServer> logger)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
 
     public event EventHandler<BluetoothHidConnectionEventArgs>? ClientConnected;
     public event EventHandler<BluetoothHidConnectionEventArgs>? ClientDisconnected;

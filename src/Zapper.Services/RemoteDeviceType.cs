@@ -2,7 +2,7 @@ namespace Zapper.Services;
 
 public enum RemoteDeviceType
 {
-    TVRemote,
+    TvRemote,
     GameController,
     MediaRemote
 }
