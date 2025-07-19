@@ -8,6 +8,7 @@ using Zapper.Device.WebOS;
 using Zapper.Device.Roku;
 using Zapper.Device.AppleTV.Services;
 using Zapper.Device.AndroidTV;
+using Zapper.Device.Tizen;
 using Zapper.Core.Models;
 
 namespace Zapper.Services;
@@ -20,6 +21,7 @@ public class DeviceService(
     IRokuDeviceController rokuController,
     AppleTvService appleTvService,
     AndroidTvAdbController androidTvAdbController,
+    ITizenDeviceController tizenController,
     INotificationService notificationService,
     IIrCodeService irCodeService,
     ILogger<DeviceService> logger) : IDeviceService
@@ -326,6 +328,8 @@ public class DeviceService(
                     irTransmitter.IsAvailable,
                 ConnectionType.WebOs =>
                     await webOsController.TestConnection(device),
+                ConnectionType.Tizen =>
+                    await tizenController.TestConnection(device),
                 ConnectionType.CompanionProtocol or ConnectionType.MediaRemoteProtocol or ConnectionType.Dacp or ConnectionType.AirPlay =>
                     await TestAppleTvDevice(device),
                 _ => false
@@ -379,6 +383,7 @@ public class DeviceService(
             ConnectionType.NetworkHttp => await rokuController.SendCommand(device, command, cancellationToken),
             ConnectionType.WebOs => await webOsController.SendCommand(device, command, cancellationToken),
             ConnectionType.Adb => await androidTvAdbController.SendCommand(device, command),
+            ConnectionType.Tizen => await tizenController.SendCommand(device, command, cancellationToken),
             ConnectionType.CompanionProtocol or ConnectionType.MediaRemoteProtocol or ConnectionType.Dacp or ConnectionType.AirPlay =>
                 await appleTvService.SendCommandAsync(device.Id, command),
             _ => throw new NotSupportedException($"Connection type {device.ConnectionType} not supported")

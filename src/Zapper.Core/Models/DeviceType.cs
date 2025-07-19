@@ -18,5 +18,6 @@ public enum DeviceType
     Sonos,
     YamahaReceiver,
     AndroidTv,
-    DenonReceiver
+    DenonReceiver,
+    TizenTv
 }

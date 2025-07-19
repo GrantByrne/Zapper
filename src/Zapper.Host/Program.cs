@@ -16,6 +16,7 @@ using Zapper.Device.Yamaha;
 using Zapper.Device.AppleTV.Extensions;
 using Zapper.Device.AndroidTV;
 using Zapper.Device.Denon;
+using Zapper.Device.Tizen;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -121,6 +122,9 @@ builder.Services.AddAppleTvSupport();
 
 // Register Android TV ADB services
 builder.Services.AddAndroidTvAdbSupport();
+
+// Register Samsung Tizen TV services
+builder.Services.AddTizenDevice();
 
 // Register protocol implementations
 builder.Services.AddTransient<InfraredDeviceController>();

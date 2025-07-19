@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Zapper.Device.AppleTV\Zapper.Device.AppleTV.csproj" />
     <ProjectReference Include="..\Zapper.Device.AndroidTV\Zapper.Device.AndroidTV.csproj" />
     <ProjectReference Include="..\Zapper.Device.Bluetooth\Zapper.Device.Bluetooth.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Tizen\Zapper.Device.Tizen.csproj" />
   </ItemGroup>
 
 </Project>

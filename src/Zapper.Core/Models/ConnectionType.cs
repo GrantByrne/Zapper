@@ -15,5 +15,6 @@ public enum ConnectionType
     CompanionProtocol,
     Dacp,
     AirPlay,
-    Adb
+    Adb,
+    Tizen
 }
