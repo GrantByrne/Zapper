@@ -1,21 +1,8 @@
 using FastEndpoints;
 using Zapper.Core.Models;
-using Zapper.Device.AppleTV.Models;
 using Zapper.Device.AppleTV.Services;
 
 namespace Zapper.API.Endpoints.Devices.AppleTV;
-
-public class CreateAppleTvDeviceRequest
-{
-    public required AppleTvDevice DiscoveredDevice { get; set; }
-}
-
-public class CreateAppleTvDeviceResponse
-{
-    public Zapper.Core.Models.Device? Device { get; set; }
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-}
 
 public class CreateAppleTvDeviceEndpoint(AppleTvService appleTvService)
     : Endpoint<CreateAppleTvDeviceRequest, CreateAppleTvDeviceResponse>

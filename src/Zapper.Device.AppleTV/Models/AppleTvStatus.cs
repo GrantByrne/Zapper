@@ -14,13 +14,3 @@ public class AppleTvStatus
     public byte[]? Artwork { get; set; }
     public PlaybackState PlaybackState { get; set; }
 }
-
-public enum PlaybackState
-{
-    Unknown,
-    Playing,
-    Paused,
-    Stopped,
-    FastForward,
-    Rewind
-}

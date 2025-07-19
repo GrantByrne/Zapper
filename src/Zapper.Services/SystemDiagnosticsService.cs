@@ -6,13 +6,6 @@ using Zapper.Core.Models;
 
 namespace Zapper.Services;
 
-public interface ISystemDiagnosticsService
-{
-    Task<UsbPermissionStatus> CheckUsbPermissionsAsync();
-    Task<UsbPermissionFixResult> FixUsbPermissionsAsync(string password);
-    Task<SystemInfo> GetSystemInfoAsync();
-}
-
 public class SystemDiagnosticsService(ILogger<SystemDiagnosticsService> logger) : ISystemDiagnosticsService
 {
     public async Task<UsbPermissionStatus> CheckUsbPermissionsAsync()

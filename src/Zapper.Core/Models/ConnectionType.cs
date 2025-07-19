@@ -14,5 +14,6 @@ public enum ConnectionType
     MediaRemoteProtocol,
     CompanionProtocol,
     Dacp,
-    AirPlay
+    AirPlay,
+    Adb
 }

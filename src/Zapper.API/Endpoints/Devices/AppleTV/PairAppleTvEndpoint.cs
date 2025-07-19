@@ -3,18 +3,6 @@ using Zapper.Device.AppleTV.Services;
 
 namespace Zapper.API.Endpoints.Devices.AppleTV;
 
-public class PairAppleTvRequest
-{
-    public int DeviceId { get; set; }
-    public required string Pin { get; set; }
-}
-
-public class PairAppleTvResponse
-{
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-}
-
 public class PairAppleTvEndpoint(AppleTvService appleTvService)
     : Endpoint<PairAppleTvRequest, PairAppleTvResponse>
 {

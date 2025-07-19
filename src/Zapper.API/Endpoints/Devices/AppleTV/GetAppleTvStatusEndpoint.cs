@@ -1,20 +1,7 @@
 using FastEndpoints;
-using Zapper.Device.AppleTV.Models;
 using Zapper.Device.AppleTV.Services;
 
 namespace Zapper.API.Endpoints.Devices.AppleTV;
-
-public class GetAppleTvStatusRequest
-{
-    public int DeviceId { get; set; }
-}
-
-public class GetAppleTvStatusResponse
-{
-    public AppleTvStatus? Status { get; set; }
-    public bool Success { get; set; }
-    public string? Message { get; set; }
-}
 
 public class GetAppleTvStatusEndpoint(AppleTvService appleTvService)
     : Endpoint<GetAppleTvStatusRequest, GetAppleTvStatusResponse>

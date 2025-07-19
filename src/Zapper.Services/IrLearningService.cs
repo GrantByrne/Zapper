@@ -4,13 +4,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Zapper.Services;
 
-public interface IIrLearningService
-{
-    Task<IrCode?> LearnCommandAsync(string commandName, TimeSpan timeout, CancellationToken cancellationToken = default);
-    Task<int[]?> LearnRawCommandAsync(TimeSpan timeout, CancellationToken cancellationToken = default);
-    bool IsReceiverAvailable { get; }
-}
-
 public class IrLearningService(IInfraredReceiver infraredReceiver, ILogger<IrLearningService> logger) : IIrLearningService
 {
     public bool IsReceiverAvailable => infraredReceiver.IsAvailable;

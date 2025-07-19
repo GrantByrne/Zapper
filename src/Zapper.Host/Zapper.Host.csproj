@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Zapper.API\Zapper.API.csproj" />
     <ProjectReference Include="..\Zapper.Blazor\Zapper.Blazor.csproj" />
     <ProjectReference Include="..\Zapper.Device.AppleTV\Zapper.Device.AppleTV.csproj" />
+    <ProjectReference Include="..\Zapper.Device.AndroidTV\Zapper.Device.AndroidTV.csproj" />
   </ItemGroup>
 
 </Project>

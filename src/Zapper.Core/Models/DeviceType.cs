@@ -16,5 +16,6 @@ public enum DeviceType
     SteamDeck,
     PlayStation,
     Sonos,
-    YamahaReceiver
+    YamahaReceiver,
+    AndroidTv
 }

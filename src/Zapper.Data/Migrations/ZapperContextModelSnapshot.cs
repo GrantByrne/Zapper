@@ -146,6 +146,9 @@ namespace Zapper.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DeviceIdentifier")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("IpAddress")
                         .HasColumnType("TEXT");
 
@@ -156,6 +159,9 @@ namespace Zapper.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsOnline")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPaired")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("LastSeen")
@@ -177,8 +183,23 @@ namespace Zapper.Data.Migrations
                     b.Property<string>("NetworkAddress")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PairingId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("PairingKey")
+                        .HasColumnType("BLOB");
+
                     b.Property<int?>("Port")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ProtocolVersion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("RequiresPairing")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("SupportsKeyboardInput")
                         .HasColumnType("INTEGER");

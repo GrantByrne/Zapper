@@ -16,6 +16,7 @@ using Zapper.Device.PlayStation;
 using Zapper.Device.Sonos;
 using Zapper.Device.Yamaha;
 using Zapper.Device.AppleTV.Extensions;
+using Zapper.Device.AndroidTV;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -119,6 +120,9 @@ builder.Services.AddYamahaDevice();
 
 // Register Apple TV services
 builder.Services.AddAppleTvSupport();
+
+// Register Android TV ADB services
+builder.Services.AddAndroidTvAdbSupport();
 
 // Register protocol implementations
 builder.Services.AddTransient<InfraredDeviceController>();
