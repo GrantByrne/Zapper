@@ -43,3 +43,11 @@ public class SonosDevice
     public string? RoomName { get; set; }
     public string? SerialNumber { get; set; }
 }
+
+public class DenonDevice
+{
+    public string Name { get; set; } = "";
+    public string IpAddress { get; set; } = "";
+    public string Model { get; set; } = "";
+    public string SerialNumber { get; set; } = "";
+}

@@ -29,6 +29,7 @@
     <ProjectReference Include="..\Zapper.Device.PlayStation\Zapper.Device.PlayStation.csproj" />
     <ProjectReference Include="..\Zapper.Device.Sonos\Zapper.Device.Sonos.csproj" />
     <ProjectReference Include="..\Zapper.Device.Yamaha\Zapper.Device.Yamaha.csproj" />
+    <ProjectReference Include="..\Zapper.Device.Denon\Zapper.Device.Denon.csproj" />
   </ItemGroup>
 
 </Project>

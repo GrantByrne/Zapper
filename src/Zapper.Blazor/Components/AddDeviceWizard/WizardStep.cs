@@ -10,6 +10,7 @@ public enum WizardStep
     RokuScan,
     YamahaScan,
     SonosScan,
+    DenonScan,
     IrCodeSelection,
     Configuration
 }

@@ -15,6 +15,7 @@ using Zapper.Device.Sonos;
 using Zapper.Device.Yamaha;
 using Zapper.Device.AppleTV.Extensions;
 using Zapper.Device.AndroidTV;
+using Zapper.Device.Denon;
 using Zapper.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -111,6 +112,9 @@ builder.Services.AddSonosDevice();
 
 // Register Yamaha services
 builder.Services.AddYamahaDevice();
+
+// Register Denon services
+builder.Services.AddDenonDevice();
 
 // Register Apple TV services
 builder.Services.AddAppleTvSupport();

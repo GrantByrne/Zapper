@@ -17,5 +17,6 @@ public enum DeviceType
     PlayStation,
     Sonos,
     YamahaReceiver,
-    AndroidTv
+    AndroidTv,
+    DenonReceiver
 }
