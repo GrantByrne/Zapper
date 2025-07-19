@@ -62,14 +62,10 @@ builder.Services.AddSingleton<IInfraredReceiver>(provider =>
     return new GpioInfraredReceiver(gpioPin, logger);
 });
 
-builder.Services.AddSingleton<IUsbRemoteHandler>(provider =>
-{
-    var logger = provider.GetRequiredService<ILogger<UsbRemoteHandler>>();
-    return new UsbRemoteHandler(logger);
-});
+// Register USB services
+builder.Services.AddUsbServices(builder.Configuration);
 
-// Register USB remote hosted services
-builder.Services.AddHostedService<UsbRemoteHostedService>();
+// Register USB remote event handler
 builder.Services.AddHostedService<UsbRemoteEventHandler>();
 
 builder.Services.AddTransient<IWebOsClient>(provider =>

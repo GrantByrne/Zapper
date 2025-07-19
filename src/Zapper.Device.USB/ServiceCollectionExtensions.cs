@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Zapper.Core.Interfaces;
 
 namespace Zapper.Device.USB;
@@ -10,6 +11,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddUsbServices(this IServiceCollection services, IConfiguration configuration)
     {
+        // Configure USB settings
+        services.Configure<UsbRemoteConfiguration>(config => configuration.GetSection("USB").Bind(config));
+
         var useMockHandler = configuration.GetValue<bool>("USB:UseMockHandler", true);
 
         if (useMockHandler)
@@ -25,7 +29,8 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<IUsbRemoteHandler>(provider =>
             {
                 var logger = provider.GetRequiredService<ILogger<UsbRemoteHandler>>();
-                return new UsbRemoteHandler(logger);
+                var config = provider.GetRequiredService<IOptions<UsbRemoteConfiguration>>();
+                return new UsbRemoteHandler(logger, config);
             });
         }
 

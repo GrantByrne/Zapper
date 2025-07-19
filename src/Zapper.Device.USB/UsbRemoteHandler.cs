@@ -1,6 +1,7 @@
 using HidSharp;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Zapper.Core.Models;
 
 namespace Zapper.Device.USB;
@@ -8,6 +9,7 @@ namespace Zapper.Device.USB;
 public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
 {
     private readonly ILogger<UsbRemoteHandler> _logger;
+    private readonly UsbRemoteConfiguration _configuration;
     private readonly ConcurrentDictionary<string, HidDevice> _connectedDevices = new();
     private readonly ConcurrentDictionary<string, HidStream> _activeStreams = new();
     private readonly ConcurrentDictionary<string, ButtonState> _buttonStates = new();
@@ -23,9 +25,10 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
     public event EventHandler<string>? RemoteConnected;
     public event EventHandler<string>? RemoteDisconnected;
 
-    public UsbRemoteHandler(ILogger<UsbRemoteHandler> logger)
+    public UsbRemoteHandler(ILogger<UsbRemoteHandler> logger, IOptions<UsbRemoteConfiguration>? configuration = null)
     {
         _logger = logger;
+        _configuration = configuration?.Value ?? new UsbRemoteConfiguration();
     }
 
     public bool IsListening => _isListening;
@@ -99,6 +102,11 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
     {
         var deviceList = DeviceList.Local;
         var hidDevices = deviceList.GetHidDevices();
+
+        if (_configuration.EnableDebugLogging)
+        {
+            _logger.LogDebug("Found {DeviceCount} total HID devices", hidDevices.Count());
+        }
 
         foreach (var device in hidDevices)
         {
@@ -338,28 +346,63 @@ public class UsbRemoteHandler : IUsbRemoteHandler, IDisposable
     {
         try
         {
-            // Check if device looks like a remote control based on product name and vendor
             var productName = device.GetProductName()?.ToLowerInvariant() ?? "";
             var vendorId = device.VendorID;
             var productId = device.ProductID;
+            var deviceId = GetDeviceId(device);
 
-            // Check product name for remote-like keywords
-            if (productName.Contains("remote") ||
-                productName.Contains("media") ||
-                productName.Contains("control") ||
-                productName.Contains("receiver"))
+            // If AllowAllHidDevices is true, accept any HID device
+            if (_configuration.AllowAllHidDevices)
             {
+                _logger.LogDebug("Accepting HID device {DeviceId} ({ProductName}) - AllowAllHidDevices is enabled",
+                    deviceId, device.GetProductName() ?? "Unknown");
                 return true;
             }
 
-            // Known remote control vendor/product IDs (examples)
-            // This would be expanded with real device IDs
-            var knownRemoteVendors = new[] { 0x046D, 0x054C, 0x05AC }; // Logitech, Sony, Apple examples
+            // Check if device matches a supported device profile
+            if (_configuration.SupportedDevices.Any(profile =>
+                profile.VendorId == vendorId &&
+                (profile.ProductId == 0 || profile.ProductId == productId)))
+            {
+                _logger.LogDebug("Accepting device {DeviceId} ({ProductName}) - matches supported device profile",
+                    deviceId, device.GetProductName() ?? "Unknown");
+                return true;
+            }
 
-            return knownRemoteVendors.Contains(vendorId);
+            // Check product name for configured keywords
+            var keywords = new List<string> { "remote", "media", "control", "receiver" };
+            keywords.AddRange(_configuration.AdditionalKeywords);
+
+            if (keywords.Any(keyword => productName.Contains(keyword.ToLowerInvariant())))
+            {
+                _logger.LogDebug("Accepting device {DeviceId} ({ProductName}) - product name contains keyword",
+                    deviceId, device.GetProductName() ?? "Unknown");
+                return true;
+            }
+
+            // Check vendor IDs (including additional configured ones)
+            var knownVendors = new List<int> { 0x046D, 0x054C, 0x05AC }; // Logitech, Sony, Apple
+            knownVendors.AddRange(_configuration.AdditionalVendorIds);
+
+            if (knownVendors.Contains(vendorId))
+            {
+                _logger.LogDebug("Accepting device {DeviceId} ({ProductName}) - vendor ID {VendorId:X4} is in known list",
+                    deviceId, device.GetProductName() ?? "Unknown", vendorId);
+                return true;
+            }
+
+            // Log why device was rejected
+            if (_configuration.EnableDebugLogging)
+            {
+                _logger.LogDebug("Rejecting device {DeviceId} ({ProductName}) - VendorID: {VendorId:X4}, ProductID: {ProductId:X4}",
+                    deviceId, device.GetProductName() ?? "Unknown", vendorId, productId);
+            }
+
+            return false;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogWarning(ex, "Error checking if device is remote");
             return false;
         }
     }
