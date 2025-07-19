@@ -1,0 +1,43 @@
+@using Zapper.Core.Models
+
+<MudText Class="mb-4">Almost done! Please provide a name for your device:</MudText>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTextField @bind-Value="Device.Name" 
+                      Label="Device Name" 
+                      Variant="Variant.Outlined"
+                      Required="true"
+                      RequiredError="Device name is required" />
+    </MudItem>
+    
+    @if (!string.IsNullOrEmpty(Device.Brand))
+    {
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="Device.Brand" 
+                          Label="Brand" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+    }
+    
+    @if (!string.IsNullOrEmpty(Device.Model))
+    {
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="Device.Model" 
+                          Label="Model" 
+                          Variant="Variant.Outlined" />
+        </MudItem>
+    }
+    
+    @if (!string.IsNullOrEmpty(Device.IpAddress))
+    {
+        <MudItem xs="12">
+            <MudTextField @bind-Value="Device.IpAddress" 
+                          Label="IP Address" 
+                          Variant="Variant.Outlined"
+                          ReadOnly="true"
+                          HelperText="Automatically detected" />
+        </MudItem>
+    }
+    
+</MudGrid>

@@ -1,0 +1,62 @@
+@typeparam TDevice where TDevice : class
+
+<MudText Class="mb-4">@ScanningMessage</MudText>
+
+@if (ScanState.IsScanning)
+{
+    <div class="d-flex justify-center align-center" style="min-height: 200px;">
+        <div class="text-center">
+            <MudProgressCircular Size="Size.Large" Indeterminate="true" Class="mb-4" />
+            <MudText Typo="Typo.h6" Class="mb-2">@ScanningTitle</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                @ScanningHelpText
+            </MudText>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(ScanState.Error))
+{
+    <MudAlert Severity="Severity.Error" Class="mb-4">
+        @ScanState.Error
+    </MudAlert>
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="RetryScanning" Class="mb-4">
+        Retry Scan
+    </MudButton>
+}
+else if (ScanState.DiscoveredDevices.Any())
+{
+    <MudText Class="mb-3">Found @ScanState.DiscoveredDevices.Count device(s). Select the device you want to add:</MudText>
+    <div class="mb-4">
+        @foreach (var device in ScanState.DiscoveredDevices)
+        {
+            <MudButton FullWidth="true" 
+                      Color="@(IsDeviceSelected(device) ? Color.Primary : Color.Default)"
+                      Variant="@(IsDeviceSelected(device) ? Variant.Filled : Variant.Outlined)"
+                      OnClick="@(() => SelectDevice(device))"
+                      Class="mb-2">
+                @DeviceButtonContent(device)
+            </MudButton>
+        }
+    </div>
+    <MudButton Color="Color.Secondary" Variant="Variant.Text" OnClick="RetryScanning" StartIcon="@Icons.Material.Filled.Refresh" Class="mt-2">
+        Rescan
+    </MudButton>
+}
+else
+{
+    <MudText Class="mb-4">No devices found. You can try scanning again or enter the device information manually.</MudText>
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="RetryScanning" Class="mb-4">
+        Retry Scan
+    </MudButton>
+}
+
+@if (ShowManualEntry && !ScanState.IsScanning)
+{
+    <MudDivider Class="my-4" />
+    <MudText Class="mb-3">Or enter device IP address manually:</MudText>
+    <MudTextField @bind-Value="ScanState.ManualIpAddress" 
+                  Label="IP Address" 
+                  Variant="Variant.Outlined"
+                  Immediate="true"
+                  OnKeyUp="@OnManualIpKeyUp" />
+}

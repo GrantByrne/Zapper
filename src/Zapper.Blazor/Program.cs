@@ -14,4 +14,7 @@ builder.Services.AddMudServices();
 // Add Zapper API client
 builder.Services.AddZapperApiClient(builder.HostEnvironment.BaseAddress);
 
+// Add Device Wizard services
+builder.Services.AddDeviceWizard();
+
 await builder.Build().RunAsync();

@@ -1,0 +1,44 @@
+@using Zapper.Blazor.Components.AddDeviceWizard.Steps
+@using Zapper.Core.Models
+
+<MudDialog @bind-Visible="IsVisible" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @GetWizardTitle()
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <DynamicComponent Type="@GetCurrentStepComponent()" Parameters="@GetStepParameters()" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CancelWizard">Cancel</MudButton>
+        @if (_currentStep != WizardStep.DeviceType)
+        {
+            <MudButton OnClick="PreviousStep">Back</MudButton>
+        }
+        @if (_currentStep == WizardStep.Configuration)
+        {
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="FinishWizard" 
+                       Disabled="@string.IsNullOrWhiteSpace(_newDevice.Name)">
+                Add Device
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .device-type-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .device-type-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .device-type-card.selected {
+        border-color: var(--mud-palette-primary);
+        background-color: var(--mud-palette-primary-hover);
+    }
+</style>
